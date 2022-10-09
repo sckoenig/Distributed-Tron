@@ -7,17 +7,17 @@ Dieses Projekt entsteht im Rahmen des Moduls “Verteilte Systeme” und hat zum
 
 ## 1.1 Requirements Overview
 
-Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich folgende Spielregeln: 
+Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich folgende Spielregeln:
 
 - Das Spiel wird mit mehreren Spielern gespielt, die jeweils ein Motorrad in einer Arena (das Spielfeld) steuern.
 - Die Motorräder bewegen sich stetig vorwärts, in einer konstanten Geschwindigkeit.
 - Der Spieler kann das Motorrad nach links oder rechts steuern und sich so über das Spielfeld nach oben, unten, links, rechts bewegen.
 - Die Motorräder ziehen farbige “Schatten” hinter sich auf, die für die Lebenszeit des Spielers auf dem Spielfeld bleiben und durch die Vorwärtsbewegung der Motorräder länger werden.
 - Ein Spieler stirbt, wenn er gegen die Wand der Arena oder den Schatten eines anderen Spielers fährt. Treffen zwei Spieler aufeinander, sterben beide.
-- Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen. 
+- Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
 
-Mit dem Kunden wurde über Storyboarding die Details der Anforderungen erarbeitet: 
+Mit dem Kunden wurde über Storyboarding die Details der Anforderungen erarbeitet:
 
 [ STORY BOARD ]
 
@@ -42,7 +42,7 @@ Mit dem Kunden wurde über Storyboarding die Details der Anforderungen erarbeite
 - Alle Motorräder sollen “faire” Startkondition haben. (”Fair” ist nicht näher definiert und den Entwicklern überlassen).
 - Die Entwickler sollen sich eine “geeignete Logik” überlegen, durch die die Spieler wissen, welche Figur sie steuern.
 - Wenn das Spiel zu Ende ist, wird Screen 4 angezeigt.
-- Das Spiel ist beendet, wenn: 
+- Das Spiel ist beendet, wenn:
     - Es ist nur noch ein Spieler übrig und es gibt einen Gewinner.
     - Die letzten beiden Spieler sterben gleichzeitig. Das Spiel ist unentschieden
 
@@ -53,7 +53,7 @@ Mit dem Kunden wurde über Storyboarding die Details der Anforderungen erarbeite
 
 **Konfiguration**
 
-Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein: 
+Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein:
 - Timer des Waiting Screens.
 - Timer des Endscreens
 - Defaultwert für Spieleranzahl
@@ -62,10 +62,10 @@ Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein:
     - 1% = 1 b/s, 100% = 500 b/s
 - Größe der Arena anhand von 3 Werten:
     - Größe der Rasterpunkte/-zellen, z.B. in Pixel.
-    - Anzahl der Rasterpunkte/-zellen in x-Richtung und y-Richtung. 
+    - Anzahl der Rasterpunkte/-zellen in x-Richtung und y-Richtung.
 - Tastenkombinationen für die Bewegung der Spieler
 
-Die Konfiguration greift dabei nur bei Neustart der Applikation. 
+Die Konfiguration greift dabei nur bei Neustart der Applikation.
 
 **Weitere Aspekte**
 - Das Motorrad muss nicht konfigurierbar sein (Farbe einstellen oder ähnliches).
@@ -81,9 +81,9 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 | Fehlertoleranz      | Ein Spiel soll ungestört durchspielbar sein. Auch wenn ein Teilnehmer abstürzt, läuft das Spiel weiter.       |
 | Bedienbarkeit | Spieler sollen das Spiel einfach bedienen können und Spaß haben |
 | Kompatibilität   | Mindestens 2 Teams müssen miteinander spielen können.        |
-| Fairness | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln 
+| Fairness | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln
 
-## 1.3 Stakeholders 
+## 1.3 Stakeholders
 
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
@@ -92,31 +92,34 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 | Spieler   | ...        | ... |
 
 
-# 2. Architecture Constraints 
+# 2. Architecture Constraints
 
 - Es muss eine objektorientierte Programmiersprache verwendet werden (z.B. Java).
-- Das Einsetzen von Architektur/Entwurdsmustern (MVC, Observer, State) ist erwünscht. 
+- Das Einsetzen von Architektur/Entwurdsmustern (MVC, Observer, State) ist erwünscht.
 
 
-# 3. System Scope and Context 
+# 3. System Scope and Context
 
 ## Business Context 
 
-## Technical Context
+![image info](./diagrams/scope_business.png)
 
-# 4. Solution Strategy 
+## Technical Context
+![image info](./diagrams/scope_technical.png)
+
+# 4. Solution Strategy
 
 # 5. Building Block View
 
-# 6. Runtime View 
+# 6. Runtime View
 
-# 7. Deployment View 
+# 7. Deployment View
 
-# 8. Cross-cutting Concepts 
+# 8. Cross-cutting Concepts
 
 # 9. Architecture Decisions
 
-# 10. Quality Requirements 
+# 10. Quality Requirements
 
 # 11. Risks and Technical Debts
 
