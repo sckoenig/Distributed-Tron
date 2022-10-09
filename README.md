@@ -21,57 +21,8 @@ Mit dem Kunden wurde über Storyboarding die Details der Anforderungen erarbeite
 
 [ STORY BOARD ]
 
-**1: Starting Screen**
-- Ermöglicht die Wahl der Spieleranzahl.
-    - Es wird ein Defaultwert angezeigt.
-    - Es kann zwischen 2-6 Spielern ausgewählt werden.
-- Enthält einen “Spiel starten” Button.
-- Wird der Button betätigt, erscheint Bildschirm 2.
+Näheres siehe [Anforderungsdetails](#13.1-requirement-details).
 
-**2: Waiting Screen**
-- Wird solange angezeigt, bis die vorher eingestellte Spielerzahl erreicht ist.
-- Timer: Wird nach Ablauf des Timers die Spielerzahl nicht erreicht, wird
-    - das Spiel gestartet, wenn > 2 Spieler bereit sind, damit die Spieler nicht so lange warten müssen.
-    - der Starting Screen wieder angezeigt, wenn < 2 Spieler bereit sind.
-- Ist der Timer  mit > 2 Spieler oder die eingestellte Spielerzahl erreicht, erscheint Bildschirm 3.
-
-**3: Arena**
-- Zuerst wird ein Countdown (3-2-1-go) angezeigt.
-- Die Arena besteht aus einem Raster, auf dem die Motorräder fahren.
-- Hier gelten die oben genannten Spielregeln.
-- Alle Motorräder sollen “faire” Startkondition haben. (”Fair” ist nicht näher definiert und den Entwicklern überlassen).
-- Die Entwickler sollen sich eine “geeignete Logik” überlegen, durch die die Spieler wissen, welche Figur sie steuern.
-- Wenn das Spiel zu Ende ist, wird Screen 4 angezeigt.
-- Das Spiel ist beendet, wenn:
-    - Es ist nur noch ein Spieler übrig und es gibt einen Gewinner.
-    - Die letzten beiden Spieler sterben gleichzeitig. Das Spiel ist unentschieden
-
-**4: End Screen**
-- Anzeige “Spiel ist zu Ende”
-- Anzeige des Gewinners oder “Unentschieden”. Identifikation des Gewinners ist den Entwicklern überlassen.
-- Dieser Screen wird für eine gewisse Zeit angezeigt, danach geht es zurück zum Bildschirm 1.
-
-**Konfiguration**
-
-Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein:
-- Timer des Waiting Screens.
-- Timer des Endscreens
-- Defaultwert für Spieleranzahl
-- Geschwindigkeit der Motorräder
-    - Auf einer Skala von 1%-100%, gemessen in Bewegungen pro Sekunde b/s
-    - 1% = 1 b/s, 100% = 500 b/s
-- Größe der Arena anhand von 3 Werten:
-    - Größe der Rasterpunkte/-zellen, z.B. in Pixel.
-    - Anzahl der Rasterpunkte/-zellen in x-Richtung und y-Richtung.
-- Tastenkombinationen für die Bewegung der Spieler
-
-Die Konfiguration greift dabei nur bei Neustart der Applikation.
-
-**Weitere Aspekte**
-- Das Motorrad muss nicht konfigurierbar sein (Farbe einstellen oder ähnliches).
-- Es gibt kein Punktesystem oder ähnliches. Jedes Spiel wird für sich gespielt.
-- Die Multiplayer-Anzeige (Splitscreen mit mehreren Arenen oder eine Arena für alle) ist den Entwicklern überlassen.
-- Zum Schließen des Spiels reicht der Standard "x"-Button.
 
 ## 1.2 Quality Goals
 
@@ -100,7 +51,7 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 
 # 3. System Scope and Context
 
-## Business Context 
+## Business Context
 
 ![image info](./diagrams/scope_business.png)
 
@@ -124,3 +75,6 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 # 11. Risks and Technical Debts
 
 # 12. Glossary
+
+# 13. Appendices
+## 13.1 Requirement Details
