@@ -36,9 +36,9 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
 | Martin Becke      | martin.becke@haw-hamburg.de       |  Pattern verwenden, Lernfortschritt der Entwickler | 
-| Entwickler - Sandra Carina König | Sandra.Koenig@haw-hamburg.de | Spaß an der Entwicklung |
-| Entwickler - Inken Dulige | Inken.Dulige@haw-hamburg.de | Bug freies Spiel |
-| Entwickler - Majid | majid.moussaadoyi@haw-hamburg.de | Gute Projektstruktur und Time handling |
+| Entwickler - Sandra Carina König | Sandra.Koenig@haw-hamburg.de | Spaß an der Entwicklung, stabile GUI |
+| Entwickler - Inken Dulige | Inken.Dulige@haw-hamburg.de | Bug freies Spiel, JavaFX kentnisse verbessern |
+| Entwickler - Majid | majid.moussaadoyi@haw-hamburg.de | Gute Projektstruktur und gutes Time handling |
 | Spieler   | ...        | Stabile Anwendung, Spaß am Spielen |
 
 
