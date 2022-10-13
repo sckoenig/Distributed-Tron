@@ -35,11 +35,11 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
-| Martin Becke      | martin.becke@haw-hamburg.de       | - Pattern verwenden
-- Lernfortschritt der Entwickler |
-| Entwickler | ... | - Spaß an der Entwicklung |
-| Spieler   | ...        | - Stabile Anwendung
-- Spaß am Spiel |
+| Martin Becke      | martin.becke@haw-hamburg.de       |  Pattern verwenden, Lernfortschritt der Entwickler | 
+| Entwickler - Sandra Carina König | Sandra.Koenig@haw-hamburg.de | Spaß an der Entwicklung |
+| Entwickler - Inken Dulige | Inken.Dulige@haw-hamburg.de | Bug freies Spiel |
+| Entwickler - Majid | majid.moussaadoyi@haw-hamburg.de | Gute Projektstruktur und Time handling |
+| Spieler   | ...        | Stabile Anwendung, Spaß am Spielen |
 
 
 # 2. Architecture Constraints
