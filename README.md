@@ -28,6 +28,7 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 | Bedienbarkeit | Spieler sollen das Spiel einfach bedienen können und Spaß haben |
 | Kompatibilität   | Mindestens 2 Teams müssen miteinander spielen können.        |
 | Fairness | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln
+| Spielbarkeit | Damit das Spiel flüssig läuft, brauchen wir mindestens 18 Frames
 
 ## 1.3 Stakeholders
 
@@ -84,6 +85,7 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 
 **2: Waiting Screen**
 - Wird solange angezeigt, bis die vorher eingestellte Spielerzahl erreicht ist.
+    - unter waiting wird angezeigt wie viele Spieler bereits warten 
 - Timer: Wird nach Ablauf des Timers die Spielerzahl nicht erreicht, wird
     - das Spiel gestartet, wenn > 2 Spieler bereit sind, damit die Spieler nicht so lange warten müssen.
     - der Starting Screen wieder angezeigt, wenn < 2 Spieler bereit sind.
