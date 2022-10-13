@@ -16,8 +16,6 @@ Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich f
 - Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
 
-[ STORY BOARD ]
-
 Näheres siehe [Anforderungsdetails](#requirement-details).
 
 
