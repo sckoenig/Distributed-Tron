@@ -74,10 +74,9 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 # 11. Risks and Technical Debts
 
 # 12. Glossary
-
 # 13. Appendices
 ## Requirement Details
-
+![image info](./diagrams/storyboard.jpg )
 **1: Starting Screen**
 - Ermöglicht die Wahl der Spieleranzahl.
     - Es wird ein Defaultwert angezeigt.
