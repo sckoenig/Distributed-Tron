@@ -1,11 +1,10 @@
 [[_TOC_]]
 
-# 1. Introduction and Goals
+# 1. Einführung und Ziele
 
 Dieses Projekt entsteht im Rahmen des Moduls “Verteilte Systeme” und hat zum Ziel, das Multiplayer-Spiel “Tron” als Standalone Applikation zu entwickeln.
 
-## 1.1 Requirements Overview
-
+## 1.1 Aufgabenstellung
 Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich folgende Spielregeln:
 
 - Das Spiel wird mit mehreren Spielern gespielt, die jeweils ein Motorrad in einer Arena (das Spielfeld) steuern.
@@ -16,10 +15,10 @@ Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich f
 - Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
 
-Näheres siehe [Anforderungsdetails](#requirement-details).
+Näheres siehe [Anforderungsdetails](#anforderungsdetails).
 
 
-## 1.2 Quality Goals
+## 1.2 Qualitätsziele
 
 | Ziel        | Beschreibung |
 | ----------- | ----------- |
@@ -41,40 +40,40 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 | Spieler   | ...        | Stabile Anwendung, Spaß am Spielen |
 
 
-# 2. Architecture Constraints
+# 2. Randbedingungen
 
 - Es muss eine objektorientierte Programmiersprache verwendet werden (z.B. Java).
 - Das Einsetzen von Architektur/Entwurdsmustern (MVC, Observer, State) ist erwünscht.
 
 
-# 3. System Scope and Context
+# 3. Kontextabgrenzung 
 
-## Business Context
+## 3.1 Business Kontext
 
 ![image info](./diagrams/scope_business.png)
 
-## Technical Context
+## 3.2 Technischer Kontext
 ![image info](./diagrams/scope_technical.png)
 
-# 4. Solution Strategy
+# 4. Lösungsstrategie 
 
-# 5. Building Block View
+# 5. Bausteinsicht
 
-# 6. Runtime View
+# 6. Laufzeitsicht 
 
-# 7. Deployment View
+# 7. Verteilungssicht 
 
-# 8. Cross-cutting Concepts
+# 8. Querschnittliche Konzepte
 
-# 9. Architecture Decisions
+# 9. Architekturentscheidungen 
 
-# 10. Quality Requirements
+# 10. Qualitätsanforderungen 
 
-# 11. Risks and Technical Debts
+# 11. Risiken und technische Schulden
 
-# 12. Glossary
-# 13. Appendices
-## Requirement Details
+# 12. Glossar
+# 13. Anhang
+## Anforderungsdetails
 ![image info](./diagrams/storyboard.jpg )
 **1: Starting Screen**
 - Ermöglicht die Wahl der Spieleranzahl.
