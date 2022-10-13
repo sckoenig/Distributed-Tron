@@ -1,4 +1,3 @@
-
 [[_TOC_]]
 
 # 1. Introduction and Goals
@@ -36,9 +35,11 @@ Näheres siehe [Anforderungsdetails](#requirement-details).
 
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
-| Martin Becke      | ...       | ... |
-| Entwickler | ... | ... |
-| Spieler   | ...        | ... |
+| Martin Becke      | martin.becke@haw-hamburg.de       | - Pattern verwenden
+- Lernfortschritt der Entwickler |
+| Entwickler | ... | - Spaß an der Entwicklung |
+| Spieler   | ...        | - Stabile Anwendung
+- Spaß am Spiel |
 
 
 # 2. Architecture Constraints
