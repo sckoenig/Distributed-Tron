@@ -5,7 +5,8 @@
 Dieses Projekt entsteht im Rahmen des Moduls “Verteilte Systeme” und hat zum Ziel, das Multiplayer-Spiel “Tron” als Standalone Applikation zu entwickeln.
 
 ## 1.1 Aufgabenstellung
-Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich folgende Spielregeln:
+
+Allgemeine Spielprinzipien:
 
 - Das Spiel wird mit mehreren Spielern gespielt, die jeweils ein Motorrad in einer Arena (das Spielfeld) steuern.
 - Die Motorräder bewegen sich stetig vorwärts, in einer konstanten Geschwindigkeit.
@@ -15,7 +16,7 @@ Der Kunde wurde über das allgemeine Spielprinzip befragt. Daraus ergaben sich f
 - Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
 
-Näheres siehe [Anforderungsdetails](#anforderungsdetails).
+Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 
 ## 1.2 Qualitätsziele
@@ -33,24 +34,30 @@ Näheres siehe [Anforderungsdetails](#anforderungsdetails).
 
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
-| Martin Becke      | martin.becke@haw-hamburg.de       |  Pattern verwenden, Lernfortschritt der Entwickler | 
-| Entwickler - Sandra Carina König | Sandra.Koenig@haw-hamburg.de | Spaß an der Entwicklung, stabile GUI |
-| Entwickler - Inken Dulige | Inken.Dulige@haw-hamburg.de | Bug freies Spiel, JavaFX kentnisse verbessern |
-| Entwickler - Majid | majid.moussaadoyi@haw-hamburg.de | Gute Projektstruktur und gutes Time handling |
-| Spieler   | ...        | Stabile Anwendung, Spaß am Spielen |
+| Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de |  Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler | 
+| Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf lernen, gutes Time handling, JavaFX Kenntnisse verbessern|
+| Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Stabile Anwendung, Spaß am Spielen |
 
 
 # 2. Randbedingungen
 
-- Es muss eine objektorientierte Programmiersprache verwendet werden (z.B. Java).
-- Das Einsetzen von Architektur/Entwurdsmustern (MVC, Observer, State) ist erwünscht.
+| Technische Randbedingung        | Beschreibung |
+| ----------- | ----------- |
+| Java in der Version ... | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.85 passen. | 
+| View Library | Es wird die zur Verfügung gestellte JavaFX View Library verwendet, um Zeit in der UI-Erstellung zu sparen. |
+
+| Konventionen | Beschreibung |
+| ----------- | ----------- |
+| Dokumentation | Gliederung nach dem deutschen arc42-Template, um Struktur zu wahren. |
+| Sprache | Die Dokumentation erfolgt auf deutsch, während die Diagramme auf Englisch gehalten werden, um die Umsetzung in (englischen) Code zu erleichern. |
 
 
 # 3. Kontextabgrenzung 
 
 ## 3.1 Business Kontext
 
-![image info](./diagrams/scope_business.png)
+![image info](./diagrams/scope_business.png) \
+Details siehe [Use Cases](#use-cases).
 
 ## 3.2 Technischer Kontext
 ![image info](./diagrams/scope_technical.png)
@@ -128,3 +135,131 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 - Die Multiplayer-Anzeige (Splitscreen mit mehreren Arenen oder eine Arena für alle) ist den Entwicklern überlassen.
 - Spieler können ein Spiel weder pausieren noch beenden.
 - Zum Schließen des Spiels reicht der Standard "x"-Button.
+
+## Use Cases
+
+**UC-1: Configure Game**
+
+Akteur: Spieler \
+Ziel: Spiel nach seinen Wünschen konfigurieren \
+Auslöser: Öffnen der Config-File \
+Nachbedingungen: Neue Konfigurationsdaten sind gespeichert und werden bei Applikationsstart verwendet. 
+
+Standardfall:
+
+    1. Der Benutzer bearbeitet die Daten der Config-Datei:
+        waitingTimer (Sekunden)
+        endingTimer (Sekunden)
+        defaultPlayerNumber (Ganzzahl zwischen 2-6)
+        speed (Ganzzahl zwischen 1-100)
+        rasterSize (Pixel)
+        rasterX (Anzahl in X Richtung)
+        rasterY (Anzahl in y Richtung)
+        controllsPlayer1-6 (bsp: W,A,S,D)
+    2. Der Benutzer speichert die Datei.
+    3. Der Benutzer startet das System.
+    4. Das System lädt die Daten aus der Konfigurationsdatei.
+    5. Das System überprüft die Daten der Konfigurationsdatei auf Fehler.
+    6. Das System zeigt den Starting Screen an.
+
+Fehlerfälle: 
+
+    6.a. Das System findet einen Fehler in der Konfigurationsdatei.
+        6.a.1 Das System zeigt eine Fehlermeldung "Konfigurationsdaten fehlerhaft".
+        6.a.2 Das System beendet sich.
+
+| Methode      | Baustein | Erläuterung 
+| ----------- | ----------- | ----------- | 
+| loadConfig() : Properties; throws IOException  | | |
+| checkConfig() : void; throws InvalidConfigException | | |
+| showAlert() : void | | |
+| showStartingScreen() : void | | |
+
+<br/>
+
+**UC-2: Start Game**
+
+Akteur: Spieler \
+Ziel: Tron-Spiel spielen. \
+Vorbedingungen: Das System befindet sich im Starting-Screen. \
+Nachbedingungen: Es wird ein Tron-Game begonnen und angezeigt.
+
+Standardfall:
+
+    1. Das System zeigt den Starting Screen mit der defaultPlayerNumber und einen "Spiel starten" Button an.
+    2. Der Spieler betätigt den Button.
+    3. Das System startet den Waiting-Timer.
+    4. Das System wechselt in den Waiting-Screen.
+    5. Das System initialisiert ein Tron-Game mit der defaultPlayerNumber und konfigurierten Arenagröße.
+    6. Das System berechnet die Startpositionen der Spieler. 
+    7. Das System wechselt in den Arena-Screen.
+    8. Es beginnt US-3: Play Game
+
+Erweiterungsfälle:
+
+    6.a Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit >= 2 Spieler.
+        6.a.1 Das System initialisiert das Tron-Game mit der vorhandenen Spieleranzahl.
+    2.a Der Spieler wählt eine andere Spielerzahl (Choose Player Number)
+        2.a.1 Der Spieler wählt eine Spielerzahl zwischen 2-6 aus einem Drop Down MenÃ¼.
+        2.a.2 Das System verwendet den eingegebenen Wert anstelle des Defaultwertes.
+        2.a.3 Weiter im Standardfall Punkt 2.
+
+Fehlerfälle:
+
+    4.b Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit <2 Spieler.
+        4.b.1 Das System kehrt zum Starting-Screen zurück.
+
+| Methode      | Baustein | Erläuterung 
+| ----------- | ----------- | ----------- | 
+| showWaitingScreen() : void| | |
+| startTimer(seconds : int) : void | | |
+| initializeGame(playerNumber : int): Game | | |
+| initializePlayers(playerCount : int) : void | | |
+| initializeArena() : void | | |
+| setPlayerCount(actualPlayerCount : int) : void | | |
+| calculateFairStartingPositions() : void | Game | Berechnet die Startpositionen der Spieler in Abhängigkeit zur Spieleranzahl.|
+| showArenaScreen() : void | | |
+
+<br/>
+
+**UC-3: Play Game**
+
+Akteur: Spieler \
+Ziel: Gewinnen \
+Vorbedingungen: UC-2: Spiel Starten erfolgreich abgeschlossen. \
+Nachbedingungen: Das Spiel ist mit "Gewinner" oder "unentschieden" geendet.
+
+Standardfall:
+
+    1. Das System zeigt das Spielfeld in der konfigurierten Größe und die Spieler an. 
+    2. Das System zeigt einen Countdown(3-2-1) an.
+    3. Das System zeigt während des Countdowns die Farben und ID der Spieler an ihrer Startposition an.
+    4. Das System bewegt die Bikes stetig in die aktuelle Richtung in der konfigurierten Geschwindigkeit vorwärts.
+    5. Das System vergrößert den Schatten des Bikes mit jeder Vorwärtsbewegung.
+    6. Der / Die Mitspieler stirbt / sterben bei Kollision. 
+    7. Das System zeigt die Schatten der gestorbenen Spieler nicht mehr an. 
+    8. Das System beendet das Spiel, wenn nur noch einer oder kein Spieler mehr am Leben ist.
+    9. Das System startet den Ending-Timer.
+    10. Das System zeigt den Ending-Screen an, in dem "Gewinner:" und die Farbe des Spielers angezeigt werden. 
+    11. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
+
+Erweiterungsfälle:
+
+    10.a Die letzten beiden Spieler sind gleichzeitig gestorben
+        10.a.1 Das System zeigt den Ending Screen mit "Unentschieden" an.
+
+    4.a Der Spieler steuert sein Bike durch Tasteneingaben (Steer Bike)
+        4.a.1 Das System verarbeitet die Tasteneingabe abhängig von der Konfiguration des Spielers. 
+        4.a.2 Das System ändert die Richtung des Bikes des Spielers abhängig von der Taste.
+
+| Methode      | Baustein | Erläuterung 
+| ----------- | ----------- | ----------- | 
+| countDown() : void   | Game | Es wird ein Countdown 3-2-1 heruntergezählt, bevor das Spiel startet. | 
+| calculateNextCoordinate() : void | Bike | Berechnet die nächste Koordinate eines Bikes. |
+| addToBike(coordinate : Coordinate) : void | Bike | Eine Koordinate wird zum Schatten eines Bikes hinzugefügt, sodass er länger wird. |
+| changeDirection(direction : Direction) : void | Bike |Verändert die Richtung eines Spielers. |
+| detectCollision() : void | Game |Überprüft für alle Bikes eines Games, ob sie (1) gegen eine Wand, (2) gegen den Schatten eines anderen Spielers (3) ineinander gefahren sind. |
+| crash(playerId : int) : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. | 
+| isGameOver() : boolean | Game | Überprüft, ob nur noch ein Spieler oder kein Spieler am Leben ist. |
+| calculateWinner(): Bike | Game | Prüft, welcher Spieler am Ende noch am Leben ist und gibt ihn zurück. Wurde das Spiel beendet, weil alle Spieler gestorben sind, wird null zurückgegeben. | 
+| showEndingScreen() | Controller | Wechselt in den Ending-Screen. | 
