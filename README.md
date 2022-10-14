@@ -259,7 +259,7 @@ Erweiterungsfälle:
 | addToBike(coordinate : Coordinate) : void | Bike | Eine Koordinate wird zum Schatten eines Bikes hinzugefügt, sodass er länger wird. |
 | changeDirection(direction : Direction) : void | Bike |Verändert die Richtung eines Spielers. |
 | detectCollision() : void | Game |Überprüft für alle Bikes eines Games, ob sie (1) gegen eine Wand, (2) gegen den Schatten eines anderen Spielers (3) ineinander gefahren sind. |
-| crash(playerId : int) : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. | 
+| crash() : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. | 
 | isGameOver() : boolean | Game | Überprüft, ob nur noch ein Spieler oder kein Spieler am Leben ist. |
 | calculateWinner(): Bike | Game | Prüft, welcher Spieler am Ende noch am Leben ist und gibt ihn zurück. Wurde das Spiel beendet, weil alle Spieler gestorben sind, wird null zurückgegeben. | 
 | showEndingScreen() | Controller | Wechselt in den Ending-Screen. | 
