@@ -170,10 +170,12 @@ Fehlerfälle:
 
 | Methode      | Baustein | Erläuterung 
 | ----------- | ----------- | ----------- | 
-| loadConfig() : Properties; throws IOException  | | |
-| checkConfig() : void; throws InvalidConfigException | | |
-| showAlert() : void | | |
-| showStartingScreen() : void | | |
+| loadConfig() : Properties; throws IOException  | Game | Die Konfigurationsdatei ist ein '.properties' File. Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen.  |
+|getAttribute(key : String) : String| Game | Lädt einzelnes Attribut aus Properties-Objekt.|
+| checkConfig() : void; ~~throws InvalidConfigException~~ | Game | Beim einlesen der '.properties' wird die Zulässigkeit der Values überprüft. Bei unzulässigen Werten, setzt das Spiel default Werte und informiert den Spieler darüber.|
+|reloadConfig() : .properties| Game | Bei fehlender '.properties' am vermuteten Speicherort, wird eine neue default-Datei erstellt.|
+| ~~showAlert() : void~~ | | |
+| showStartingScreen() : void | Controller | Der Menue-Screen wird angezeigt.|
 
 <br/>
 
