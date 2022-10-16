@@ -214,8 +214,9 @@ Fehlerfälle:
 | ----------- | ----------- | ----------- | 
 | showWaitingScreen() : void| Controller | Wechselt in den Waiting Screen.|
 | startTimer(seconds : int) : void | Game | Startet den Timer, wie lange der Waiting Screen angezeigt werden soll.|
-| initializeGame(playerNumber : int): Game | Controller | Ändert den State des Spiels.|
-| startGame(playerCount: int): void | Controller | Initialisiert das Spiel. |
+| initializeGame(playerNumber : int) : void | Game | Ändert den State des Spiels.|
+| getGameState(): GameState | Game | Gibt den State des Spieles zurück.|
+| startGame(playerCount: int) : void | Controller | Initialisiert das Spiel. |
 | initializePlayers(playerCount : int) : void | Game | Initialisiert die Anzahl der Spieler.|
 | initializeArena() : void | Game | Initialisiert die Arena, nach den vorgegebenen Parametern.|
 | setPlayerCount(actualPlayerCount : int) : void | Game | Setzt die Anzahl der Spieler, auf die Anzahl der erstellten Spieler.|
