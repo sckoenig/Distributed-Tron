@@ -164,9 +164,10 @@ Standardfall:
 
 Fehlerfälle: 
 
-    6.a. Das System findet einen Fehler in der Konfigurationsdatei.
+    6.a. Das System findet einen Fehler in der Konfigurationsdatei oder findet die Konfigurationsdatei nicht.
         6.a.1 Das System zeigt eine Fehlermeldung "Konfigurationsdaten fehlerhaft".
-        6.a.2 Das System beendet sich.
+        6.a.2 Das System erstellt eine neue .properties-Datei und ersetzt die alte.
+
 
 | Methode      | Baustein | Erläuterung 
 | ----------- | ----------- | ----------- | 
