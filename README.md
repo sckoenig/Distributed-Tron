@@ -211,14 +211,14 @@ Fehlerfälle:
 
 | Methode      | Baustein | Erläuterung 
 | ----------- | ----------- | ----------- | 
-| showWaitingScreen() : void| | |
-| startTimer(seconds : int) : void | | |
-| initializeGame(playerNumber : int): Game | | |
-| initializePlayers(playerCount : int) : void | | |
-| initializeArena() : void | | |
-| setPlayerCount(actualPlayerCount : int) : void | | |
+| showWaitingScreen() : void| Controller | Wechselt in den Waiting Screen.|
+| startTimer(seconds : int) : void | Game | Startet den Timer, wie lange der Waiting Screen angezeigt werden soll.|
+| initializeGame(playerNumber : int): Game | Controller | Initialisiert das Spiel mit der Anzahl der erstellten Spieler.|
+| initializePlayers(playerCount : int) : void | Game | Initialisiert die Anzahl der Spieler.|
+| initializeArena() : void | Game | Initialisiert die Arena, nach den vorgegebenen Parametern.|
+| setPlayerCount(actualPlayerCount : int) : void | Game | Setzt die Anzahl der Spieler, auf die Anzahl der erstellten Spieler.|
 | calculateFairStartingPositions() : void | Game | Berechnet die Startpositionen der Spieler in Abhängigkeit zur Spieleranzahl.|
-| showArenaScreen() : void | | |
+| showArenaScreen() : void | Controller | Wechselt in den Arena Screen.|
 
 <br/>
 
