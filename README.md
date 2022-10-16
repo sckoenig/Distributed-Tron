@@ -175,6 +175,7 @@ Fehlerfälle:
 | isConfigValid() : boolean; ~~throws InvalidConfigException~~ | Config | Beim einlesen der '.properties' wird die Zulässigkeit der Values überprüft. Bei unzulässigen Werten, setzt das Spiel default Werte und informiert den Spieler darüber.|
 |reloadConfig() : .properties| Game | Bei fehlender '.properties' am vermuteten Speicherort, wird eine neue default-Datei erstellt.|
 | showAlert(message : String) : void | Controller | Zeigt Hinweis Pop-up. |
+| getGameState(): GameState | Game | Gibt den State des Spieles zurück.|
 
 <br/>
 
@@ -215,7 +216,6 @@ Fehlerfälle:
 | showWaitingScreen() : void| Controller | Wechselt in den Waiting Screen.|
 | startTimer(seconds : int) : void | Game | Startet den Timer, wie lange der Waiting Screen angezeigt werden soll.|
 | initializeGame(playerNumber : int) : void | Game | Ändert den State des Spiels.|
-| getGameState(): GameState | Game | Gibt den State des Spieles zurück.|
 | startGame(playerCount: int) : void | Controller | Initialisiert das Spiel. |
 | initializePlayers(playerCount : int) : void | Game | Initialisiert die Anzahl der Spieler.|
 | initializeArena() : void | Game | Initialisiert die Arena, nach den vorgegebenen Parametern.|
