@@ -67,6 +67,17 @@ Details siehe [Use Cases](#use-cases).
 # 5. Bausteinsicht
 
 # 6. Laufzeitsicht 
+## 6.1 Sequenzdiagramm Ebene 1 Spiel starten
+![image info](./diagrams/sd_mvc_startGame.jpg)
+
+## 6.2 Sequenzdiagramm Ebene 1 Spiel spielen 
+![image info](./diagrams/sd_mvc_playGame.jpg)
+
+## 6.3 Sequenzdiagramm Ebene 2 Spiel starten
+![image info](./diagrams/sd_startGame.jpg)
+
+## 6.4 Sequenzdiagramm Ebene 2 Spiel spielen 
+![image info](./diagrams/sd_playGame.jpg)
 
 # 7. Verteilungssicht 
 
