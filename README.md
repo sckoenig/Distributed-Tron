@@ -34,7 +34,7 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
-| Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de |  Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler | 
+| Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de |  Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler |
 | Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf lernen, gutes Time handling, JavaFX Kenntnisse verbessern|
 | Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Stabile Anwendung, Spaß am Spielen |
 
@@ -43,7 +43,7 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 | Technische Randbedingung        | Beschreibung |
 | ----------- | ----------- |
-| Java in der Version ... | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.85 passen. | 
+| Java in der Version ... | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.85 passen. |
 | View Library | Es wird die zur Verfügung gestellte JavaFX View Library verwendet, um Zeit in der UI-Erstellung zu sparen. |
 
 | Konventionen | Beschreibung |
@@ -52,7 +52,7 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 | Sprache | Die Dokumentation erfolgt auf deutsch, während die Diagramme auf Englisch gehalten werden, um die Umsetzung in (englischen) Code zu erleichern. |
 
 
-# 3. Kontextabgrenzung 
+# 3. Kontextabgrenzung
 
 ## 3.1 Business Kontext
 
@@ -62,30 +62,41 @@ Details siehe [Use Cases](#use-cases).
 ## 3.2 Technischer Kontext
 ![image info](./diagrams/scope_technical.png)
 
-# 4. Lösungsstrategie 
+# 4. Lösungsstrategie
 
 # 5. Bausteinsicht
+## 5.1 Ebene 1
+![image info](./diagrams/bs_layer1.png)
+## 5.1 Ebene 2
+![image info](./diagrams/bs_layer2_view_controller.png)
+![image info](./diagrams/bs_layer2_model.png)
 
-# 6. Laufzeitsicht 
+# 6. Laufzeitsicht
 ## 6.1 Sequenzdiagramm Ebene 1 Spiel starten
-![image info](./diagrams/sd_mvc_startGame.jpg)
+![image info](./diagrams/sd_mvc_startGame.png)
 
-## 6.2 Sequenzdiagramm Ebene 1 Spiel spielen 
-![image info](./diagrams/sd_mvc_playGame.jpg)
+## 6.2 Sequenzdiagramm Ebene 1 Spiel spielen
+![image info](./diagrams/sd_mvc_playGame.png)
 
-## 6.3 Sequenzdiagramm Ebene 2 Spiel starten
+## 6.3 GameManager States
+![image info](./diagrams/GameManager_states.png)
+
+## 6.4 Sequenzdiagramm Ebene 2 Spiel starten
 ![image info](./diagrams/sd_startGame.jpg)
 
-## 6.4 Sequenzdiagramm Ebene 2 Spiel spielen 
+## 6.5 Sequenzdiagramm Ebene 2 Spiel spielen
 ![image info](./diagrams/sd_playGame.jpg)
 
-# 7. Verteilungssicht 
+## 6.6 Zustandsdiagramm Ebene 2 Configure
+![image info](./diagrams/configure.jpg)
+
+# 7. Verteilungssicht
 
 # 8. Querschnittliche Konzepte
 
-# 9. Architekturentscheidungen 
+# 9. Architekturentscheidungen
 
-# 10. Qualitätsanforderungen 
+# 10. Qualitätsanforderungen
 
 # 11. Risiken und technische Schulden
 
@@ -102,7 +113,7 @@ Details siehe [Use Cases](#use-cases).
 
 **2: Waiting Screen**
 - Wird solange angezeigt, bis die vorher eingestellte Spielerzahl erreicht ist.
-    - unter waiting wird angezeigt wie viele Spieler bereits warten 
+    - unter waiting wird angezeigt wie viele Spieler bereits warten
 - Timer: Wird nach Ablauf des Timers die Spielerzahl nicht erreicht, wird
     - das Spiel gestartet, wenn > 2 Spieler bereit sind, damit die Spieler nicht so lange warten müssen.
     - der Starting Screen wieder angezeigt, wenn < 2 Spieler bereit sind.
@@ -154,7 +165,7 @@ Die Konfiguration greift dabei nur bei Neustart der Applikation.
 Akteur: Spieler \
 Ziel: Spiel nach seinen Wünschen konfigurieren \
 Auslöser: Öffnen der Config-File \
-Nachbedingungen: Neue Konfigurationsdaten sind gespeichert und werden bei Applikationsstart verwendet. 
+Nachbedingungen: Neue Konfigurationsdaten sind gespeichert und werden bei Applikationsstart verwendet.
 
 Standardfall:
 
@@ -173,15 +184,15 @@ Standardfall:
     5. Das System überprüft die Daten der Konfigurationsdatei auf Fehler.
     6. Das System zeigt den Starting Screen an.
 
-Fehlerfälle: 
+Fehlerfälle:
 
     6.a. Das System findet einen Fehler in der Konfigurationsdatei oder findet die Konfigurationsdatei nicht.
         6.a.1 Das System zeigt eine Fehlermeldung "Konfigurationsdaten fehlerhaft".
         6.a.2 Das System erstellt eine neue .properties-Datei und ersetzt die alte.
 
 
-| Methode      | Baustein | Erläuterung 
-| ----------- | ----------- | ----------- | 
+| Methode      | Baustein | Erläuterung
+| ----------- | ----------- | ----------- |
 | loadConfig() : Properties; throws IOException  | Config | Die Konfigurationsdatei ist ein '.properties' File. Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen.  |
 |getAttribute(key : String) : String| Config | Lädt einzelnes Attribut aus Properties-Objekt.|
 | isConfigValid() : boolean; ~~throws InvalidConfigException~~ | Config | Beim einlesen der '.properties' wird die Zulässigkeit der Values überprüft. Bei unzulässigen Werten, setzt das Spiel default Werte und informiert den Spieler darüber.|
@@ -205,7 +216,7 @@ Standardfall:
     3. Das System startet den Waiting-Timer.
     4. Das System wechselt in den Waiting-Screen.
     5. Das System initialisiert ein Tron-Game mit der defaultPlayerNumber und konfigurierten Arenagröße.
-    6. Das System berechnet die Startpositionen der Spieler. 
+    6. Das System berechnet die Startpositionen der Spieler.
     7. Das System wechselt in den Arena-Screen.
     8. Es beginnt US-3: Play Game
 
@@ -223,8 +234,8 @@ Fehlerfälle:
     4.b Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit <2 Spieler.
         4.b.1 Das System kehrt zum Starting-Screen zurück.
 
-| Methode      | Baustein | Erläuterung 
-| ----------- | ----------- | ----------- | 
+| Methode      | Baustein | Erläuterung
+| ----------- | ----------- | ----------- |
 | showWaitingScreen() : void| Controller | Wechselt in den Waiting Screen.|
 | startTimer(seconds : int) : void | Game | Startet den Timer, wie lange der Waiting Screen angezeigt werden soll.|
 | initializeGame(playerNumber : int) : void | Game | Ändert den State des Spiels.|
@@ -246,16 +257,16 @@ Nachbedingungen: Das Spiel ist mit "Gewinner" oder "unentschieden" geendet.
 
 Standardfall:
 
-    1. Das System zeigt das Spielfeld in der konfigurierten Größe und die Spieler an. 
+    1. Das System zeigt das Spielfeld in der konfigurierten Größe und die Spieler an.
     2. Das System zeigt einen Countdown(3-2-1) an.
     3. Das System zeigt während des Countdowns die Farben und ID der Spieler an ihrer Startposition an.
     4. Das System bewegt die Bikes stetig in die aktuelle Richtung in der konfigurierten Geschwindigkeit vorwärts.
     5. Das System vergrößert den Schatten des Bikes mit jeder Vorwärtsbewegung.
-    6. Der / Die Mitspieler stirbt / sterben bei Kollision. 
-    7. Das System zeigt die Schatten der gestorbenen Spieler nicht mehr an. 
+    6. Der / Die Mitspieler stirbt / sterben bei Kollision.
+    7. Das System zeigt die Schatten der gestorbenen Spieler nicht mehr an.
     8. Das System beendet das Spiel, wenn nur noch einer oder kein Spieler mehr am Leben ist.
     9. Das System startet den Ending-Timer.
-    10. Das System zeigt den Ending-Screen an, in dem "Gewinner:" und die Farbe des Spielers angezeigt werden. 
+    10. Das System zeigt den Ending-Screen an, in dem "Gewinner:" und die Farbe des Spielers angezeigt werden.
     11. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
 
 Erweiterungsfälle:
@@ -264,17 +275,17 @@ Erweiterungsfälle:
         10.a.1 Das System zeigt den Ending Screen mit "Unentschieden" an.
 
     4.a Der Spieler steuert sein Bike durch Tasteneingaben (Steer Bike)
-        4.a.1 Das System verarbeitet die Tasteneingabe abhängig von der Konfiguration des Spielers. 
+        4.a.1 Das System verarbeitet die Tasteneingabe abhängig von der Konfiguration des Spielers.
         4.a.2 Das System ändert die Richtung des Bikes des Spielers abhängig von der Taste.
 
-| Methode      | Baustein | Erläuterung 
-| ----------- | ----------- | ----------- | 
-| countDown() : void   | Game | Es wird ein Countdown 3-2-1 heruntergezählt, bevor das Spiel startet. | 
+| Methode      | Baustein | Erläuterung
+| ----------- | ----------- | ----------- |
+| countDown() : void   | Game | Es wird ein Countdown 3-2-1 heruntergezählt, bevor das Spiel startet. |
 | calculateNextCoordinate() : void | Bike | Berechnet die nächste Koordinate eines Bikes. |
 | addToBike(coordinate : Coordinate) : void | Bike | Eine Koordinate wird zum Schatten eines Bikes hinzugefügt, sodass er länger wird. |
 | changeDirection(direction : Direction) : void | Bike |Verändert die Richtung eines Spielers. |
 | detectCollision() : void | Game |Überprüft für alle Bikes eines Games, ob sie (1) gegen eine Wand, (2) gegen den Schatten eines anderen Spielers (3) ineinander gefahren sind. |
-| crash() : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. | 
+| crash() : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. |
 | isGameOver() : boolean | Game | Überprüft, ob nur noch ein Spieler oder kein Spieler am Leben ist. |
-| calculateWinner(): Bike | Game | Prüft, welcher Spieler am Ende noch am Leben ist und gibt ihn zurück. Wurde das Spiel beendet, weil alle Spieler gestorben sind, wird null zurückgegeben. | 
-| showEndingScreen() | Controller | Wechselt in den Ending-Screen. | 
+| calculateWinner(): Bike | Game | Prüft, welcher Spieler am Ende noch am Leben ist und gibt ihn zurück. Wurde das Spiel beendet, weil alle Spieler gestorben sind, wird null zurückgegeben. |
+| showEndingScreen() | Controller | Wechselt in den Ending-Screen. |
