@@ -88,7 +88,7 @@ Details siehe [Use Cases](#use-cases).
 ![image info](./diagrams/sd_playGame.jpg)
 
 ## 6.6 Zustandsdiagramm Ebene 2 Configure
-![image info](./diagrams/configure.jpg)
+![image info](./diagrams/configure.png)
 
 # 7. Verteilungssicht
 
