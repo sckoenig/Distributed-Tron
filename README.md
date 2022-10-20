@@ -66,12 +66,12 @@ Details siehe [Use Cases](#use-cases).
 
 Das Tron-Spiel soll die Erwartungen aller Stakeholdern gleichermaßen bedienen. Um dies zu gewährleisten haben wir uns für einen Katalog an Qualitätszielen entschieden, welche mit den dazugehörigen Lösungsstrategie umgesetzt werden sollen. 
 
-| Qualitätsziel | Gruppe | Lösungsstrategie |
+| Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
 | ----------- | ----------- |----------- |
 | Fachliche Komponenten Trennung | Funktionalität, Wartbarkeit, Übertragbarkeit | Die Einführung vom MVC-Pattern soll die bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.  |
 | Grenzen der Konfiguration | Stabilität | Wir wollen vermeiden, dass Spieler die Konfigurationsdatei auf eine nicht vorgesehene Art und Weise manipulieren können. Um dies zu Gewährleisten überprüfen wir die Konfigurationsdatei bei jedem Start der Tron Anwendung und erstellen im Fall einer Beschädigung eine neu.  |
 | Gleichmäßige Geschwindigkeit für alle Spieler | Zuverlässigkeit | Die generelle Spielgeschwindigkeit wird über die Konfigurationsdatei festgelegt. Jeder Spieler erhält in einem "Steuerungs-Intervall" die gleiche Anzahl an Bewegungen (Eine Bewegung) welcher er machen kann. |
-| Faire Steuerung | Benutzbarkeit | Jeder Spieler soll die Möglichkeit haben seine favoritisierte Steuerung in der Konfigurationsdatei zu hinterlegen. Vor jedem Match wird den Spieler die Steuerung nochmal angezeigt. Doppelte Tastenbelegungen werden zwar zugelassen, die Spieler werden aber darüber informiert und eine Anpassung der Steuerung wird empfohlen. |
+| Faire konfigurierbare Steuerung | Benutzbarkeit | Jeder Spieler soll die Möglichkeit haben seine favoritisierte Steuerung in der Konfigurationsdatei zu hinterlegen. Vor jedem Match wird den Spieler die Steuerung nochmal angezeigt. Doppelte Tastenbelegungen werden zwar zugelassen, die Spieler werden aber darüber informiert und eine Anpassung der Steuerung wird empfohlen. |
 | Stabilität bei Absturz anderer Teilnehmer | Stabilität | Ein Spieler, welcher als nicht mehr erreichbar identifiziert wurde, wird aus dem Spiel entfernt. Dazu gehört sein Bike, sowie der Schatten, welchen er  im laufe des Spiels gelegt hat. |
 
 # 5. Bausteinsicht
