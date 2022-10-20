@@ -91,13 +91,16 @@ Das Tron-Spiel soll die Erwartungen aller Stakeholdern gleichermaßen bedienen. 
 ## 6.3 GameManager States
 ![image info](./diagrams/GameManager_states.png)
 
-## 6.4 Sequenzdiagramm Ebene 2 Spiel starten
+## 6.4 Sequenzdiagramm Tastenanschlag
+![image info](./diagrams/sd_handlePlayerEvent.png)
+
+## 6.5 Sequenzdiagramm Ebene 2 Spiel starten
 ![image info](./diagrams/sd_startGame.jpg)
 
-## 6.5 Sequenzdiagramm Ebene 2 Spiel spielen
+## 6.6 Sequenzdiagramm Ebene 2 Spiel spielen
 ![image info](./diagrams/sd_playGame.jpg)
 
-## 6.6 Zustandsdiagramm Ebene 2 Configure
+## 6.7 Zustandsdiagramm Ebene 2 Configure
 ![image info](./diagrams/configure.png)
 
 # 7. Verteilungssicht
