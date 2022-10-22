@@ -66,13 +66,22 @@ Details siehe [Use Cases](#use-cases).
 
 Das Tron-Spiel soll die Erwartungen aller Stakeholdern gleichermaßen bedienen. Um dies zu gewährleisten haben wir uns für einen Katalog an Qualitätszielen entschieden, welche mit den dazugehörigen Lösungsstrategie umgesetzt werden sollen. 
 
-| Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
-| ----------- | ----------- |----------- |
-| Fachliche Komponenten Trennung | Funktionalität, Wartbarkeit, Übertragbarkeit | Die Einführung vom MVC-Pattern soll die bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.  |
-| Grenzen der Konfiguration | Stabilität | Wir wollen vermeiden, dass Spieler die Konfigurationsdatei auf eine nicht vorgesehene Art und Weise manipulieren können. Um dies zu Gewährleisten überprüfen wir die Konfigurationsdatei bei jedem Start der Tron Anwendung und erstellen im Fall einer Beschädigung eine neu.  |
-| Gleichmäßige Geschwindigkeit für alle Spieler | Zuverlässigkeit | Die generelle Spielgeschwindigkeit wird über die Konfigurationsdatei festgelegt. Jeder Spieler erhält in einem "Steuerungs-Intervall" die gleiche Anzahl an Bewegungen (Eine Bewegung) welcher er machen kann. |
-| Faire konfigurierbare Steuerung | Benutzbarkeit | Jeder Spieler soll die Möglichkeit haben seine favoritisierte Steuerung in der Konfigurationsdatei zu hinterlegen. Vor jedem Match wird den Spieler die Steuerung nochmal angezeigt. Doppelte Tastenbelegungen werden zwar zugelassen, die Spieler werden aber darüber informiert und eine Anpassung der Steuerung wird empfohlen. |
-| Stabilität bei Absturz anderer Teilnehmer | Stabilität | Ein Spieler, welcher als nicht mehr erreichbar identifiziert wurde, wird aus dem Spiel entfernt. Dazu gehört sein Bike, sowie der Schatten, welchen er  im laufe des Spiels gelegt hat. |
+| Funktion | Objekt(**Menge?**) |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ----------- | ----------- |----------- |----------- |----------- |----------- |
+|loadConfig() : Properties| Config / .properties-Datei |-| Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Config-Objekt eingelesen.| Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+|getAttribute(key : String) : String| Properties | Es existiert ein Properties-Objekt | String-Varaible mit dem passenden 'Value' zum 'Key' | Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | Wenn Wert nicht interpretiert werden kann oder nicht vorhanden ist, wird ein leerer String übergeben. |
+|isConfigValid()| Properties | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. | Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+|reloadConfig() : .properties| Config / Properties | - | Properties mit 'default'-Werten. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal  in Form einer .properties-Datei hinterlegt.  | Wenn kein Zugriff auf den lokalen Speicher besteht, wird der Anwender darüber informiert. |
+|getSteer(key : KeyCode) : Steer| Config, Map<**KeyCode? (String)**, Steer> | - | **Steer-Objekt?** | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als 'Value' enthält die Map dann den dazugehörigen Spieler. Die Methode erhält also eine beliebige Taste und **gibt den dazugehörigen Spieler in Form eines Steer-Objekts** zurück. | Wenn der Taste kein Spieler zugeordnet werden konnte **gibt die Methode einen leeren String zurück?** |
+|||||||
+|||||||
+|||||||
+|||||||
+|||||||
+|||||||
+|||||||
+
+
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
