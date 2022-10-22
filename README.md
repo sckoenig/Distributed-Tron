@@ -64,15 +64,26 @@ Details siehe [Use Cases](#use-cases).
 
 # 4. Lösungsstrategie
 
-Das Tron-Spiel soll die Erwartungen aller Stakeholdern gleichermaßen bedienen. Um dies zu gewährleisten haben wir uns für einen Katalog an Qualitätszielen entschieden, welche mit den dazugehörigen Lösungsstrategie umgesetzt werden sollen. 
 
-| Funktion | Objekt(**Menge?**) |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ----------- | ----------- |----------- |----------- |----------- |----------- |
-|loadConfig() : Properties| Config / .properties-Datei |-| Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Config-Objekt eingelesen.| Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
-|getAttribute(key : String) : String| Properties | Es existiert ein Properties-Objekt | String-Varaible mit dem passenden 'Value' zum 'Key' | Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | Wenn Wert nicht interpretiert werden kann oder nicht vorhanden ist, wird ein leerer String übergeben. |
-|isConfigValid()| Properties | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. | Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
-|reloadConfig() : .properties| Config / Properties | - | Properties mit 'default'-Werten. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal  in Form einer .properties-Datei hinterlegt.  | Wenn kein Zugriff auf den lokalen Speicher besteht, wird der Anwender darüber informiert. |
-|getSteer(key : KeyCode) : Steer| Config, Map<**KeyCode? (String)**, Steer> | - | **Steer-Objekt?** | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als 'Value' enthält die Map dann den dazugehörigen Spieler. Die Methode erhält also eine beliebige Taste und **gibt den dazugehörigen Spieler in Form eines Steer-Objekts** zurück. | Wenn der Taste kein Spieler zugeordnet werden konnte **gibt die Methode einen leeren String zurück?** |
+|loadConfig() : Properties| Config |-| Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Config-Objekt eingelesen.| Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+|getAttribute(key : String) : String| Config | Es existiert ein Properties-Objekt | String-Varaible mit dem passenden 'Value' zum 'Key' | Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | Wenn Wert nicht interpretiert werden kann oder nicht vorhanden ist, wird ein leerer String übergeben. |
+|isConfigValid()| Config | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. | Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+|reloadConfig() : .properties| Config | - | Properties mit 'default'-Werten. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal  in Form einer .properties-Datei hinterlegt.  | Wenn kein Zugriff auf den lokalen Speicher besteht, wird der Anwender darüber informiert. |
+|getSteer(key : KeyCode) : Steer| Config | - | Steer-Objekt | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als 'Value' enthält die Map dann den dazugehörigen Spieler. Die Methode erhält also eine beliebige Taste und gibt den dazugehörigen Spieler in Form eines Steer-Objekts zurück. | Wenn der Taste kein Spieler zugeordnet werden konnte **gibt die Methode einen leeren String zurück?** |
+|gameLoop() : void| Game | - | - | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie beinahltet das steuern der Spieler (handleSteer(key : KeyCode)) in jedem Takt, sowie die Überprüfung ob Spieler ineinander gefahren sind (headColision()) oder ob ein Spiel zuende ist (isGameOver()). | *- ?* |
+|countDown() : **void?**| Game | - | - | **Ein CountDown welcher von 3 auf 0 runterzählt?** ||
+|initializePlayers() : void| Game |||||
+|calculateFairStartingPositions**(int actualPlayerCount)**| Game | actualPlayerCount > 1 | - | Anhand der SPielerzahl wird eine faire Aufteilung der Strartposition in der Arena berechnet. Jeder Spieler soll gleich viel Abstand zu den Rändern der Arena und zu den Anderen Spielern haben. | - |
+|setActualPlayerCount(actualPlayerCount : int) : void | Game | - | aktualisierter playerCount | Der playerCount wird auf die tatsächlich registrierte Spielerzahl aktualisierter. | - |
+|headColision() : void| Game | Anzahl aktiver Spieler > 1 | - | Es wird nach jedem Takt überprüft ob Spieler direkt miteinander kolidiert sind. Ist dies der Fall werden beide auf inaktiv **(SetisAlive(false))** gesetzt. | |
+|isGameOver() : boolean| Game | - | Varaible ist wahr oder falsch | Wenn der Zähler der aktiven Spieler < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
+|getWinner() : void | Game | - | String mit ID des Gewinners oder 'unentscheiden' | Der String-Wert der Variable winner wird ausgelesen | - |
+|setWinner() : void| Game | Das Spiel ist zuende (isGameOver()) | String mit ID des Gewinners oder 'unentscheiden' | Nachdem das Spiel entschieden ist, wird der Gewinner des Matches übernommen. Dies ist in der Regel der letzte Spieler auf dem Feld. Wenn es zu einem Unentscheiden kommt wird ein allgemeines 'unentschieden' übernommen. | - |
+|handleSteer(key : KeyCode) : void| Game | - | Der Spieler bewegt sich bzw. erhält eine neue Koordinate (addCoordinate(coordinate : Coordinate)).| handleSteer(key : KeyCode) erhält einen Key, welcher eine Taste auf der Tastaur wiederspiegelt und überarbeitet die Position des Players anhand dieser. **(Wird hier auch getSteer() aufgerufen)** | Wenn eine irreguläre Taste gedrückt wurde, dann wird dem Spieler keine neue Koordinate hinzugefügt und er hat keine Möglichkeit der Steuerung für diesen Takt. |
+|draw() : void| Game | - | - | Die Positionsaktualisierungen der Spieler werden auf den Screen gezeichnet. | - |
+|||||||
 |||||||
 |||||||
 |||||||
