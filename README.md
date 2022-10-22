@@ -65,32 +65,34 @@ Details siehe [Use Cases](#use-cases).
 # 4. Lösungsstrategie
 
 
-| Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ----------- | ----------- |----------- |----------- |----------- |----------- |
-|loadConfig() : Properties| Config |-| Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Config-Objekt eingelesen.| Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
-|getAttribute(key : String) : String| Config | Es existiert ein Properties-Objekt | String-Varaible mit dem passenden 'Value' zum 'Key' | Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | Wenn Wert nicht interpretiert werden kann oder nicht vorhanden ist, wird ein leerer String übergeben. |
-|isConfigValid()| Config | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. | Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
-|reloadConfig() : .properties| Config | - | Properties mit 'default'-Werten. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal  in Form einer .properties-Datei hinterlegt.  | Wenn kein Zugriff auf den lokalen Speicher besteht, wird der Anwender darüber informiert. |
-|getSteer(key : KeyCode) : Steer| Config | - | Steer-Objekt | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als 'Value' enthält die Map dann den dazugehörigen Spieler. Die Methode erhält also eine beliebige Taste und gibt den dazugehörigen Spieler in Form eines Steer-Objekts zurück. | Wenn der Taste kein Spieler zugeordnet werden konnte **gibt die Methode einen leeren String zurück?** |
-|gameLoop() : void| Game | - | - | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie beinahltet das steuern der Spieler (handleSteer(key : KeyCode)) in jedem Takt, sowie die Überprüfung ob Spieler ineinander gefahren sind (headColision()) oder ob ein Spiel zuende ist (isGameOver()). | *- ?* |
-|countDown() : **void?**| Game | - | - | **Ein CountDown welcher von 3 auf 0 runterzählt?** ||
-|initializePlayers() : void| Game |||||
-|calculateFairStartingPositions**(int actualPlayerCount)**| Game | actualPlayerCount > 1 | - | Anhand der SPielerzahl wird eine faire Aufteilung der Strartposition in der Arena berechnet. Jeder Spieler soll gleich viel Abstand zu den Rändern der Arena und zu den Anderen Spielern haben. | - |
-|setActualPlayerCount(actualPlayerCount : int) : void | Game | - | aktualisierter playerCount | Der playerCount wird auf die tatsächlich registrierte Spielerzahl aktualisierter. | - |
-|headColision() : void| Game | Anzahl aktiver Spieler > 1 | - | Es wird nach jedem Takt überprüft ob Spieler direkt miteinander kolidiert sind. Ist dies der Fall werden beide auf inaktiv **(SetisAlive(false))** gesetzt. | |
-|isGameOver() : boolean| Game | - | Varaible ist wahr oder falsch | Wenn der Zähler der aktiven Spieler < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
-|getWinner() : void | Game | - | String mit ID des Gewinners oder 'unentscheiden' | Der String-Wert der Variable winner wird ausgelesen | - |
-|setWinner() : void| Game | Das Spiel ist zuende (isGameOver()) | String mit ID des Gewinners oder 'unentscheiden' | Nachdem das Spiel entschieden ist, wird der Gewinner des Matches übernommen. Dies ist in der Regel der letzte Spieler auf dem Feld. Wenn es zu einem Unentscheiden kommt wird ein allgemeines 'unentschieden' übernommen. | - |
-|handleSteer(key : KeyCode) : void| Game | - | Der Spieler bewegt sich bzw. erhält eine neue Koordinate (addCoordinate(coordinate : Coordinate)).| handleSteer(key : KeyCode) erhält einen Key, welcher eine Taste auf der Tastaur wiederspiegelt und überarbeitet die Position des Players anhand dieser. **(Wird hier auch getSteer() aufgerufen)** | Wenn eine irreguläre Taste gedrückt wurde, dann wird dem Spieler keine neue Koordinate hinzugefügt und er hat keine Möglichkeit der Steuerung für diesen Takt. |
-|draw() : void| Game | - | - | Die Positionsaktualisierungen der Spieler werden auf den Screen gezeichnet. | - |
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
+| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
+| UC-1 |loadConfig() : Properties| Config |-| Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Config-Objekt eingelesen.| Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+| UC-1 |getAttribute(key : String) : String| Config | Es existiert ein Properties-Objekt | String-Varaible mit dem passenden 'Value' zum 'Key' | Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | Wenn Wert nicht interpretiert werden kann oder nicht vorhanden ist, wird ein leerer String übergeben. |
+| UC-1 |isConfigValid()| Config | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. | Bei fehlender Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt. |
+| UC-1 |reloadConfig() : .properties| Config | - | Properties mit 'default'-Werten. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal  in Form einer .properties-Datei hinterlegt.  | Wenn kein Zugriff auf den lokalen Speicher besteht, wird der Anwender darüber informiert. |
+| UC-1 |getSteer(key : KeyCode) : Steer| Config | - | Steer-Objekt | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als 'Value' enthält die Map dann den dazugehörigen Spieler. Die Methode erhält also eine beliebige Taste und gibt den dazugehörigen Spieler in Form eines Steer-Objekts zurück. | Wenn der Taste kein Spieler zugeordnet werden konnte **gibt die Methode einen leeren String zurück?** |
+| UC-2 |gameLoop() : void| Game | - | - | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie beinahltet das steuern der Spieler (handleSteer(key : KeyCode)) in jedem Takt, sowie die Überprüfung ob Spieler ineinander gefahren sind (headColision()) oder ob ein Spiel zuende ist (isGameOver()). | *- ?* |
+| UC-3 |countDown() : **void?**| Game | - | - | **Ein CountDown welcher von 3 auf 0 runterzählt?** ||
+| UC-2|initializePlayers() : void| Game |||||
+| |calculateFairStartingPositions**(int actualPlayerCount)**| Game | actualPlayerCount > 1 | - | Anhand der SPielerzahl wird eine faire Aufteilung der Strartposition in der Arena berechnet. Jeder Spieler soll gleich viel Abstand zu den Rändern der Arena und zu den Anderen Spielern haben. | - |
+| UC-2 |setActualPlayerCount(actualPlayerCount : int) : void | Game | - | aktualisierter playerCount | Der playerCount wird auf die tatsächlich registrierte Spielerzahl aktualisierter. | - |
+| UC-3 |headColision() : void| Game | Anzahl aktiver Spieler > 1 | - | Es wird nach jedem Takt überprüft ob Spieler direkt miteinander kolidiert sind. Ist dies der Fall werden beide auf inaktiv **(SetisAlive(false))** gesetzt. | |
+| UC-3 |isGameOver() : boolean| Game | - | Varaible ist wahr oder falsch | Wenn der Zähler der aktiven Spieler < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
+| UC-3 |getWinner() : void | Game | - | String mit ID des Gewinners oder 'unentscheiden' | Der String-Wert der Variable winner wird ausgelesen | - |
+| UC-3 |setWinner() : void| Game | Das Spiel ist zuende (isGameOver()) | String mit ID des Gewinners oder 'unentscheiden' | Nachdem das Spiel entschieden ist, wird der Gewinner des Matches übernommen. Dies ist in der Regel der letzte Spieler auf dem Feld. Wenn es zu einem Unentscheiden kommt wird ein allgemeines 'unentschieden' übernommen. | - |
+| UC-3 |handleSteer(key : KeyCode) : void| Game | - | Der Spieler bewegt sich bzw. erhält eine neue Koordinate (addCoordinate(coordinate : Coordinate)).| handleSteer(key : KeyCode) erhält einen Key, welcher eine Taste auf der Tastaur wiederspiegelt und überarbeitet die Position des Players anhand dieser. **(Wird hier auch getSteer() aufgerufen)** | Wenn eine irreguläre Taste gedrückt wurde, dann wird dem Spieler keine neue Koordinate hinzugefügt und er hat keine Möglichkeit der Steuerung für diesen Takt. |
+| UC-3 |draw() : void| Game | - | - | Die Positionsaktualisierungen der Spieler werden auf den Screen gezeichnet. | - |
+| UC-3 | changeState() : void| GameManager |  |  | Wenn das Spiel den nächsten Zustand erreicht, wird der Zustand aktualisiert. | | 
+| | doesActionMatchState(action : Action) : boolean | GameManager |  | Variable ist wahr oder falsch. | Wenn das Spiel, den Zustand wechseln möchte wird überprüft, ob der angefragte Zustand der folgende zum jetzigen ist. | Wenn der Zustand nicht passt kann er nicht geändert werden, **aber was passiert dann** |
+| | handleState() : void | GameManager | | | | |
+| | setWinner(winnerColor : String) : void | GameManager | | | Nachdem der Gewinner ausgelesen wurde, wir die Spielfarbe des Gewinners gesetzt. | |
+| | setGameStatus(status : Strind) : void | GameManager | | | | |
+| | addPlayerPosition(playerId : int, coordinate : Coordinate) : void | Arena | | | Die aktuellen Koordinaten des übergebenen Spielers werden in der Arena eingetragen. | |
+| | deletePlayerPositions(playerIds : int[]) : void | Arena | | | Die Schatten und aktuellen Koordinaten aller Spieler mit Kollision werden gelöscht. | |
+| | Arena(rows : int, columns : int) | Arena | | | | **was genau soll das für eine Funktion sein** |
+| | detectCollision(player : Player) : boolean | Arena | | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | |
+| | | | | | | |
 
 
 
