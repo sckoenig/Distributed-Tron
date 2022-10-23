@@ -92,7 +92,15 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | deletePlayerPositions(playerIds : int[]) : void | Arena | | | Die Schatten und aktuellen Koordinaten aller Spieler mit Kollision werden gelöscht. | |
 | | Arena(rows : int, columns : int) | Arena | | | | **was genau soll das für eine Funktion sein** |
 | UC-3 | detectCollision(player : Player) : boolean | Arena | | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | |
-| | | | | | | |
+| UC-3 |getHeadPosition() : void | Player | List<Coordinate> > 0 | - | Die vorderste Position in der Liste ist immer die headPosition, welche durch die Methode getHeadPosition abgefragt werden kann. | - | 
+| UC-3 |getCoordinates(): List<Coordinate> | Player | - | - | Die Methode gibt eine Ansammlung von Feldern der Arena aus, auf denen der Player positioniert ist. | - | 
+| UC-3 |addCoordinate(coordinate : Coordinate) : void| Player | - | Neue koordinate dem Spieler hinzugefügt | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - | 
+| UC-3 |calculateNextCoordinate() : Coordinate | Player | - | Player hat neue headPosition | Berechnet die nächste headPosition eines Players. | - | 
+| UC-3 |getColor() : Color| | Player | - | - | Der Farbcode, welcher ein Player bei Erstellung erhalten hat, wird abgefragt. | - |
+| UC-3 |isALive() : boolean | Player | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| | 
+| UC-3 |**crash() : void ???** | Player |  | | | | 
+| UC-3 |getId() : int | Player | - | - | Die ID eines Players wird abgefragt. | | 
+| UC-3 |setDirection(direction : Direction) | Player | - | - | Auf Basis seiner aktuellen Fahrtrichtung hat jeder Spieler eine "Direction". Lenkt der Player verändert sich diese. | - | 
 
 
 
