@@ -126,6 +126,8 @@ Details siehe [Use Cases](#use-cases).
 | | initializeGame(playerNumber : int) : void
 
 ### 4.2.2 Controller
+| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
 | UC-2 | btnStartGame(event : ActionEvent) : void | TronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
 | UC-3.1 | handleKeyEvent(event : KeyEvent) : void | TronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. 
 | UC-2,3,4 | initialize() : void | OverlayController | | | Die Overlay Controller registrieren ChangeListener für entsprechende GUI-Elemente der View. | |
