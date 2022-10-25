@@ -117,13 +117,12 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 |getId() : int | Player | - | - | Die ID eines Players wird abgefragt. | | 
 | UC-2,3 |setDirection(direction : Direction) | Player | Ein Game wird initialisiert oder ein Spieler hat per Tastenanschlag gelenkt | Die Direction des Players wurde der Taste entsprechend verändert. | Auf Basis seiner aktuellen Fahrtrichtung hat jeder Spieler eine "Direction". Lenkt der Player verändert sich diese. | - | 
 | UC-3.1 | handleSteerEvent( key : KeyCode ) : void | ITronModel | | | | |
-| | getWinnerObservable() : StringProperty | | | | |
-| | handleSteerEvent( key : KeyCode ) : void
-| | getWinnerObservable() : StringProperty
-| | getGameResultObservable() : StringProperty
-| | getCounterObservable() : IntegerProperty
-| | getPlayerCountObservable(): IntegerProperty
-| | initializeGame(playerNumber : int) : void
+| | getWinnerObservable() : StringProperty | IGameManager | Das Spielergebnis wurde festgelegt. | Die Gewinnerfarbe kann angezeigt werden. | Es wird ermittlt wer der Gewinner ist. | |
+| | handleSteerEvent( key : KeyCode ) : void | IGameManager | Das Model wurde über einen Tastenanschlag informiert. | Es kann innerhalb des Models, ermittlt werden zu welchem Spieler der Tastenanschlag gehört. | Tastenanschlag wird vom Controller an das Model weitergegeben. |  |
+| | getGameResultObservable() : StringProperty | IGameManager | Das Spiel ist zu Ende und es wurde das Spielergebnis ermittlt. | Danach kann die Information an den Controller weiter gegeben werden. | Aus dem GameManager wird ermittlt, ob es ein Unentschieden war oder es einen Gewinner gibt. | |
+| | getCounterObservable() : IntegerProperty | IGameManager | Der Countdown wurde gestartet. |  | Der Stand des Countdown wird abgerufen. | |
+| | getPlayerCountObservable(): IntegerProperty | IGameManager | Die Player wurden initialisiert und der Waiting Timer ist abgelaufen. | | Die Spieleranzahl wird ausgelesen. | |
+| | initializeGame(playerNumber : int) : void | IGameManager | Der Controller gibt Bescheid das ein Spiel gestartet werden soll. | Ein Spiel wurde initialisiert. | Es wird ein Spiel initialisiert in dem dann auch die Arena und die Spieler initialisiert werden. | |
 
 ### 4.2.2 Controller
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
