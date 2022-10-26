@@ -76,6 +76,7 @@ Details siehe [Use Cases](#use-cases).
 | Stabilität bei Absturz anderer Teilnehmer | Stabilität | Ein Spieler, welcher als nicht mehr erreichbar identifiziert wurde, wird aus dem Spiel entfernt. Dazu gehört sein Bike, sowie der Schatten, welchen er  im laufe des Spiels gelegt hat. |
 
 ## 4.2 Funktionale Zerlegung anhand der Use Cases
+Details siehe [Use Cases](#use-cases).
 ### 4.2.1 Model
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
@@ -137,26 +138,39 @@ Details siehe [Use Cases](#use-cases).
 ![image info](./diagrams/bs_layer2_model.png)
 
 # 6. Laufzeitsicht
-## 6.1 Sequenzdiagramm Ebene 1 Spiel starten
+## 6.1 Ebene 1
+### 6.1.1 UC-2: Spiel starten
 ![image info](./diagrams/sd_mvc_startGame.png)
 
-## 6.2 Sequenzdiagramm Ebene 1 Spiel spielen
+### 6.1.2 UC-3: Spiel spielen
 ![image info](./diagrams/sd_mvc_playGame.png)
 
-## 6.3 GameManager States
+### 6.1.3 UC-3.1: Lenken
+![image info](./diagrams/sd_mvc_steerBike.png)
+
+### 6.1.4 UC-4: Ergebnisse ansehen
+![image info](./diagrams/sd_mvc_seeResults.png)
+
+## 6.2 Ebene 2: Model
+### 6.2.1 GameManager States
 ![image info](./diagrams/GameManager_states.png)
 
-## 6.4 Sequenzdiagramm Tastenanschlag
-![image info](./diagrams/sd_handlePlayerEvent.png)
+### 6.2.2 UC-1: Spiel konfigurieren
+![image info](./diagrams/configure.png)
 
-## 6.5 Sequenzdiagramm Ebene 2 Spiel starten
+### 6.2.3 UC-2: Spiel starten
 ![image info](./diagrams/sd_startGame.jpg)
+![image info](./diagrams/sd_startGame_prepare.png)
 
-## 6.6 Sequenzdiagramm Ebene 2 Spiel spielen
+### 6.2.4 UC-3: Spiel spielen
 ![image info](./diagrams/sd_playGame.jpg)
 
-## 6.7 Zustandsdiagramm Ebene 2 Configure
-![image info](./diagrams/configure.png)
+### 6.2.4 UC-3.1: Lenken
+![image info](./diagrams/sd_steerBike.png)
+
+### 6.2.6 UC-4: Ergebnis ansehen
+![image info](./diagrams/sd_seeResults.png)
+
 
 # 7. Verteilungssicht
 
@@ -258,16 +272,6 @@ Fehlerfälle:
         6.a.1 Das System zeigt eine Fehlermeldung "Konfigurationsdaten fehlerhaft".
         6.a.2 Das System erstellt eine neue .properties-Datei und ersetzt die alte.
 
-
-| Methode      | Baustein | Erläuterung
-| ----------- | ----------- | ----------- |
-| loadConfig() : Properties; throws IOException  | Config | Die Konfigurationsdatei ist ein '.properties' File. Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen.  |
-|getAttribute(key : String) : String| Config | Lädt einzelnes Attribut aus Properties-Objekt.|
-| isConfigValid() : boolean; ~~throws InvalidConfigException~~ | Config | Beim einlesen der '.properties' wird die Zulässigkeit der Values überprüft. Bei unzulässigen Werten, setzt das Spiel default Werte und informiert den Spieler darüber.|
-|reloadConfig() : .properties| Game | Bei fehlender '.properties' am vermuteten Speicherort, wird eine neue default-Datei erstellt.|
-| showAlert(message : String) : void | Controller | Zeigt Hinweis Pop-up. |
-| getGameState(): GameState | Game | Gibt den State des Spieles zurück.|
-
 <br/>
 
 **UC-2: Start Game**
@@ -292,8 +296,8 @@ Erweiterungsfälle:
 
     6.a Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit >= 2 Spieler.
         6.a.1 Das System initialisiert das Tron-Game mit der vorhandenen Spieleranzahl.
-    2.a Der Spieler wählt eine andere Spielerzahl (Choose Player Number)
-        2.a.1 Der Spieler wählt eine Spielerzahl zwischen 2-6 aus einem Drop Down MenÃ¼.
+    2.a UC-2.1: Choose Player Number: Der Spieler wählt eine andere Spielerzahl.
+        2.a.1 Der Spieler wählt eine Spielerzahl zwischen 2-6 aus einem Drop Down Menü.
         2.a.2 Das System verwendet den eingegebenen Wert anstelle des Defaultwertes.
         2.a.3 Weiter im Standardfall Punkt 2.
 
@@ -301,18 +305,6 @@ Fehlerfälle:
 
     4.b Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit <2 Spieler.
         4.b.1 Das System kehrt zum Starting-Screen zurück.
-
-| Methode      | Baustein | Erläuterung
-| ----------- | ----------- | ----------- |
-| showWaitingScreen() : void| Controller | Wechselt in den Waiting Screen.|
-| startTimer(seconds : int) : void | Game | Startet den Timer, wie lange der Waiting Screen angezeigt werden soll.|
-| initializeGame(playerNumber : int) : void | Game | Ändert den State des Spiels.|
-| startGame(playerCount: int) : void | Controller | Initialisiert das Spiel. |
-| initializePlayers(playerCount : int) : void | Game | Initialisiert die Anzahl der Spieler.|
-| initializeArena() : void | Game | Initialisiert die Arena, nach den vorgegebenen Parametern.|
-| setPlayerCount(actualPlayerCount : int) : void | Game | Setzt die Anzahl der Spieler, auf die Anzahl der erstellten Spieler.|
-| calculateFairStartingPositions() : void | Game | Berechnet die Startpositionen der Spieler in Abhängigkeit zur Spieleranzahl.|
-| showArenaScreen() : void | Controller | Wechselt in den Arena Screen.|
 
 <br/>
 
@@ -333,27 +325,27 @@ Standardfall:
     6. Der / Die Mitspieler stirbt / sterben bei Kollision.
     7. Das System zeigt die Schatten der gestorbenen Spieler nicht mehr an.
     8. Das System beendet das Spiel, wenn nur noch einer oder kein Spieler mehr am Leben ist.
-    9. Das System startet den Ending-Timer.
-    10. Das System zeigt den Ending-Screen an, in dem "Gewinner:" und die Farbe des Spielers angezeigt werden.
-    11. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
+    9. Das System aktualisiert die Ergebnisdaten des Spiels.
 
 Erweiterungsfälle:
 
-    10.a Die letzten beiden Spieler sind gleichzeitig gestorben
-        10.a.1 Das System zeigt den Ending Screen mit "Unentschieden" an.
-
-    4.a Der Spieler steuert sein Bike durch Tasteneingaben (Steer Bike)
+    4.a UC-3.1: Steer Bike: Der Spieler steuert sein Bike durch Tasteneingaben
         4.a.1 Das System verarbeitet die Tasteneingabe abhängig von der Konfiguration des Spielers.
         4.a.2 Das System ändert die Richtung des Bikes des Spielers abhängig von der Taste.
+    
+<br>
 
-| Methode      | Baustein | Erläuterung
-| ----------- | ----------- | ----------- |
-| countDown() : void   | Game | Es wird ein Countdown 3-2-1 heruntergezählt, bevor das Spiel startet. |
-| calculateNextCoordinate() : void | Bike | Berechnet die nächste Koordinate eines Bikes. |
-| addToBike(coordinate : Coordinate) : void | Bike | Eine Koordinate wird zum Schatten eines Bikes hinzugefügt, sodass er länger wird. |
-| changeDirection(direction : Direction) : void | Bike |Verändert die Richtung eines Spielers. |
-| detectCollision() : void | Game |Überprüft für alle Bikes eines Games, ob sie (1) gegen eine Wand, (2) gegen den Schatten eines anderen Spielers (3) ineinander gefahren sind. |
-| crash() : void | Bike | Setzt den "alive"-Status eines Bikes auf false nach einer Kollision. |
-| isGameOver() : boolean | Game | Überprüft, ob nur noch ein Spieler oder kein Spieler am Leben ist. |
-| calculateWinner(): Bike | Game | Prüft, welcher Spieler am Ende noch am Leben ist und gibt ihn zurück. Wurde das Spiel beendet, weil alle Spieler gestorben sind, wird null zurückgegeben. |
-| showEndingScreen() | Controller | Wechselt in den Ending-Screen. |
+**UC-4: See Results**
+
+Akteur: Spieler \
+Ziel: Ergebnisse des letzten Spiels ansehen \
+Vorbedingungen: UC-3: Spiel Spielen erfolgreich abgeschlossen. \
+Nachbedingungen: Die Applikation ist ins Menü zurückgekehrt.\
+
+Standardfall:
+
+    1. Das System startet den Ending-Timer.
+    2. Das System zeigt den Ending-Screen an, in dem "Gewinner:" und die Farbe des Spielers 
+       / "Unentschieden!" und eine Default-Farbe angezeigt werden.
+    3. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
+
