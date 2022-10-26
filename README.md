@@ -113,13 +113,12 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 |crash() : void | Player | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - | 
 | UC-3 |getId() : int | Player | - | - | Die ID eines Players wird abgefragt. | - | 
 | UC-2,3 |setDirection(direction : Direction) | Player | Ein Game wird initialisiert oder ein Spieler hat per Tastenanschlag gelenkt | Die Direction des Players wurde der Taste entsprechend verändert. | Auf Basis seiner aktuellen Fahrtrichtung hat jeder Spieler eine "Direction". Lenkt der Player verändert sich diese. | - | 
-| UC-3.1 | handleSteerEvent( key : KeyCode ) : void | ITronModel | | | | |
-| | getWinnerObservable() : StringProperty | IGameManager | Das Spielergebnis wurde festgelegt. | Die Gewinnerfarbe kann angezeigt werden. | Es wird ermittlt wer der Gewinner ist. | |
-| | handleSteerEvent( key : KeyCode ) : void | IGameManager | Das Model wurde über einen Tastenanschlag informiert. | Es kann innerhalb des Models, ermittlt werden zu welchem Spieler der Tastenanschlag gehört. | Tastenanschlag wird vom Controller an das Model weitergegeben. |  |
-| | getGameResultObservable() : StringProperty | IGameManager | Das Spiel ist zu Ende und es wurde das Spielergebnis ermittlt. | Danach kann die Information an den Controller weiter gegeben werden. | Aus dem GameManager wird ermittlt, ob es ein Unentschieden war oder es einen Gewinner gibt. | |
-| | getCounterObservable() : IntegerProperty | IGameManager | Der Countdown wurde gestartet. |  | Der Stand des Countdown wird abgerufen. | |
-| | getPlayerCountObservable(): IntegerProperty | IGameManager | Die Player wurden initialisiert und der Waiting Timer ist abgelaufen. | | Die Spieleranzahl wird ausgelesen. | |
-| | initializeGame(playerNumber : int) : void | IGameManager | Der Controller gibt Bescheid das ein Spiel gestartet werden soll. | Ein Spiel wurde initialisiert. | Es wird ein Spiel initialisiert in dem dann auch die Arena und die Spieler initialisiert werden. | |
+| UC-4 | getWinnerObservable() : StringProperty | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Winner-Objekt. | - |
+| UC-3.1 | handleSteerEvent( key : KeyCode ) : void | ITronModel | Der GameManager wurde initialisiert. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben. |  |
+| UC-4 | getGameResultObservable() : StringProperty | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben.  | Andere Komponenten(View) erhalten eine Referenz auf das Observable-GameResult-Objekt. | |
+| UC-3 | getCounterObservable() : IntegerProperty | ITronModel | Der GameManager wurde initialisiert.  | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt.| | 
+| UC-2 | getPlayerCountObservable(): IntegerProperty | ITronModel | Der GameManager wurde initialisiert. | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt. | |
+| UC-2 | initializeGame(playerNumber : int) : void | ITronModel | Der Controller gibt Bescheid, dass ein Spiel gestartet werden soll. | Ein Spiel wurde initialisiert. | Im Model wird ein Game initialisiert, in dem dann auch die Arena und die Spieler initialisiert werden. | |
 
 ### 4.2.2 Controller
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
