@@ -132,9 +132,10 @@ Details siehe [Use Cases](#use-cases).
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
 ![image info](./diagrams/bs_layer1.png)
-## 5.1 Ebene 2
+## 5.2 Ebene 2
 ![image info](./diagrams/bs_layer2_view_controller.png)
-![image info](./diagrams/bs_layer2_model.png)
+## 5.3 Ebene 3
+![image info](./diagrams/bs_layer3_model.png)
 
 # 6. Laufzeitsicht
 ## 6.1 Ebene 1
@@ -169,6 +170,8 @@ Details siehe [Use Cases](#use-cases).
 
 ### 6.2.6 UC-4: Ergebnis ansehen
 ![image info](./diagrams/sd_seeResults.png)
+
+
 
 
 # 7. Verteilungssicht
