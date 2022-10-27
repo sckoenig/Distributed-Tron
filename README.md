@@ -91,7 +91,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 |gameLoop() : void| Game | Es muss ein Game-Objekt erstellt und das 'Game' erfolgreich vorbereitet worden sein && Der Countdown ist abgelaufen. | Es ist ein oder kein Spieler am Leben. | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie berechnet in jedem Takt die neue Koordinate der Spieler anhand deren Direction (calculateNextCoordinate()). Ebenfalls überprüft sie ob Spieler ineinander gefahren sind (headColision()), gegen die Arena-Wand (detectCollision()) oder ob ein Spiel zuende ist (isGameOver()). | - |
 | UC-2 |calculateFairStartingCoordinates(int playerCount) : List<Coordinate> | Game | playerCount > 1 | Es existieren genau soviele faire Startpositionen wie es Player gibt. | Anhand der Spielerzahl wird eine faire Aufteilung der Strartposition in der Arena berechnet. Jeder Spieler soll gleich viel Abstand zu den Rändern der Arena und zu den Anderen Spielern haben. | - |
 | UC-2 |calculateStartingDirection(coordinate : Coordinate ) : Direction| Game | Coordinate darf nicht NULL sein. |Es wurde eine Strartposition errechnet.| Es wird eine Direction zurückgegeben, welche richtung Spielfeldmitte zeigt. | - |
-| UC-3 | CalculateNextCoordinate(direction : Direction) : Coordinate | Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
+| UC-3 | CalculateNextCoordinate(direction : Direction) : Coordinate | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
 | UC-3 |detectHeadColision(headCoordinate : Coordinate) : boolean| Game | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
 | UC-3 |isGameOver() : boolean| Game | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
 | UC-3.1 |handleSteer(steer : Steer ) : void| Game | Player muss noch am Leben sein. | Der Player hat eine neue Direction.| Anhand der ausgelesenen Player-ID und Direction eines Steer-Objekts, wird die Fahrtrichtung des Players angepasst. | - |
@@ -124,10 +124,9 @@ Details siehe [Use Cases](#use-cases).
 ### 4.2.2 Controller
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
-| UC-2 | btnStartGame(event : ActionEvent) : void | TronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
-| UC-3.1 | handleKeyEvent(event : KeyEvent) : void | TronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. 
-| UC-2,3,4 | initialize() : void | OverlayController | | | Die Overlay Controller registrieren ChangeListener für entsprechende GUI-Elemente der View. | |
-| UC-2,3,4 | setTronController(tc : TronController) : void | OverlayController | der TronController darf nicht NULL sein | Referenz auf den TronController vorhanden. | Die OverlayController erhalten für die Kommunikation nach außen eine Referenz auf den TronController. | - |
+| UC-2 | btnStartGame(event : ActionEvent) : void | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
+| UC-3.1 | handleKeyEvent(event : KeyEvent) : void | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. 
+
 
 
 # 5. Bausteinsicht
