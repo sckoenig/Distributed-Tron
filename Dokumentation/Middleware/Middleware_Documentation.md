@@ -13,10 +13,8 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 
 | Ziel        | Beschreibung |
 | ----------- | ----------- |
-| Offenheit | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern :) |
-| Skalierbarkeit | Größenskalierbarkeit: Es müssen sich 2-6 Nodes beteiligen können.
-Geographische Skalierbarkeit: Die Anwendung läuft in einem LAN beim Kunden (Raum ... )
-Administrative Skalierbarkeit: Es gibt eine administrative Domäne. |
+| Offenheit | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern |
+| Skalierbarkeit | <ul><li>Größenskalierbarkeit: Es müssen sich 2-6 Nodes beteiligen können.</li><li>Geographische Skalierbarkeit: Die Anwendung läuft in einem LAN beim Kunden (Raum 7.85 )</li><li>Administrative Skalierbarkeit: Es gibt eine administrative Domäne. </li></ul>|
 | Transparenz |  <ul><li>Access</li><li>Location</li><li>Relocation</li><li>Migration</li><li>Replication</li><li>Concurrency</li><li>Failure</li></ul> |
 
 ## 1.3 Stakeholders
@@ -24,7 +22,7 @@ Administrative Skalierbarkeit: Es gibt eine administrative Domäne. |
 | Rolle      | Kontakt | Erwartungen
 | ----------- | ----------- | ----------- |
 | Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de | Wohldefinierten Schnittstellen, Lernfortschritt der Entwickler |
-| Entwickler | Stabile Anwendung, Anforderungen an Middleware verstehen und umsetzen |
+| Entwickler |  Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de | Stabile Anwendung, Anforderungen an Middleware verstehen und umsetzen |
 | Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Kriegt nicht mit, dass es eine Middleware gibt. |
 
 
