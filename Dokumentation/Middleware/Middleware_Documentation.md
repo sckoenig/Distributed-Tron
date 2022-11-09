@@ -14,7 +14,7 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 | Ziel        | Beschreibung |
 | ----------- | ----------- |
 | Offenheit | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern :) |
-| Skalierbarkeit | Größenskalierbarkeit: Es müssen sich 2-6 Nodes beteiligen können. 
+| Skalierbarkeit | Größenskalierbarkeit: Es müssen sich 2-6 Nodes beteiligen können.
 Geographische Skalierbarkeit: Die Anwendung läuft in einem LAN beim Kunden (Raum ... )
 Administrative Skalierbarkeit: Es gibt eine administrative Domäne. |
 | Transparenz |  <ul><li>Access</li><li>Location</li><li>Relocation</li><li>Migration</li><li>Replication</li><li>Concurrency</li><li>Failure</li></ul> |
@@ -44,9 +44,10 @@ Administrative Skalierbarkeit: Es gibt eine administrative Domäne. |
 # 3. Kontextabgrenzung
 
 ## 3.1 Business Kontext
-
+![image info](./diagrams/scope_business.png)
 
 ## 3.2 Technischer Kontext
+![image info](./diagrams/scope_technical.png)
 
 # 4. Lösungsstrategie
 
