@@ -6,16 +6,20 @@ In diesem Dokument wird eine Middleware für die Applikation Tron beschrieben.
 
 ## 1.1 Aufgabenstellung
 
-Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betriebssystem. Sie soll den Aufruf von Funktionen zwischen voneinander unabhängigen Nodes ermöglichen.
+Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betriebssystem. Sie soll den Aufruf von Funktionen zwischen voneinander unabhängigen Nodes ermöglichen:
+- Sie bietet der Applikation eine einfache Schnittstelle zum Aufrufen von Funktionen.
+- Sie verpackt diese Aufrufe in Nachrichten und versendet sie über das Netzwerk.
+- Sie entpackt Nachrichten aus dem Netzwerk und gibt sie an die Applikation weiter.
+- Sie kommuniziert dafür mit der Middleware anderer Nodes, d.h. sie kann andere Nodes finden, ihnen Services anbieten oder ihre Services nutzen.
 
 
 ## 1.2 Qualitätsziele
 
 | Ziel        | Beschreibung |
 | ----------- | ----------- |
-| Offenheit | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern |
+| Offenheit | Anbieten von einfachen und offenen Schnittstellen |
 | Skalierbarkeit | <ul><li>Größenskalierbarkeit: Es müssen sich 2-6 Nodes beteiligen können.</li><li>Geographische Skalierbarkeit: Die Anwendung läuft in einem LAN beim Kunden (Raum 7.85 )</li><li>Administrative Skalierbarkeit: Es gibt eine administrative Domäne. </li></ul>|
-| Transparenz |  <ul><li>Access</li><li>Location</li><li>Relocation</li><li>Migration</li><li>Replication</li><li>Concurrency</li><li>Failure</li></ul> |
+| Transparenz |  <ul><li>Access: Die Applikation und die Spieler merken nicht, ob ein Methodenaufruf lokal oder remote ausgeführt wird. </li><li>Location: Weder Nutzer noch Anwendung wissen, mit welchem Computer sie sprechen (keine Eingabe von IP oder ähnliches). </li><li>Relocation: </li><li>Migration: </li><li>Replication:</li><li>Concurrency:</li><li>Failure:</li></ul> |
 
 ## 1.3 Stakeholders
 
@@ -32,7 +36,7 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 | Technische Randbedingung        | Beschreibung |
 | ----------- | ----------- |
 | Java in der Version ... | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.85 passen. |
-| Kommunikation | Die Kommunikation der Middleware erfolgt über RPC- und/oder ReST-Schnittstelle. |
+| Kommunikation | Die Kommunikation der Middleware erfolgt transient über RPC- und/oder ReST-Schnittstelle. |
 
 | Konventionen | Beschreibung |
 | ----------- | ----------- |

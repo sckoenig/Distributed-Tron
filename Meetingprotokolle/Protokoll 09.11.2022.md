@@ -17,7 +17,7 @@ Im folgenden haben wir zusammengefasst, welche Methodiken wir in der weiteren Be
 Wir haben für jedes Gruppenmitglied erfragt, wieviel Zeit in der Woche für das VS-Praktikum zur Verfügung steht. Die Einschätzung dient uns, um in den folgenden Wochen besser abschätzen zu können, wie groß wir die Arbeitspakete schnüren können. Allen ist bewusst, dass die Termine verbindlich sind.
 
 ### 1.2.1 Mögliche wöchentliche Bearbeitungszeit pro Mitglied
-Sandra: 10 Stunden
+Sandra: 10 Stunden (inkl. dienstags WDH)
 Majid: 7 Stunden
 Inken: ?
 
@@ -38,8 +38,9 @@ Wir konnten in diesem Termin einige Arbeitspakete erstellen. Wir haben noch kein
 | #4. App - ARK42 (Kapitel 11) |  |
 | #5. App - Steuerung anpassen  | Die aktuelle Steuerung von vier Tasten soll auf eine zwei Taste-Steuerung angepasst werden. |
 | #6. App - Sequenzdiagramm für DetectCollision | Die bestehende Logik in eigenes Sequenzdiagramm bringen. |
-| #7. App - Factory Pattern anwenden | Für ITronModel, IGameManager kann das Factory Pattern angewandt werden, gibt es noch andere Stellen wo es Sinn ergeben würde? - Frage an alle! |
-| #8. Middelware - Requirements engineering | ARC42 requirements engineering für die Middelware ausfüllen. |
+| #7. App - Lösungsstrategie anpassen | Getter/Setter rauswerfen, DetectCollision auslagern, Objektmenge erstellen |
+| #8. App - Factory Pattern anwenden | Für ITronModel, IGameManager kann das Factory Pattern angewandt werden, gibt es noch andere Stellen wo es Sinn ergeben würde? - Frage an alle! |
+| #9. Middelware - Requirements engineering | ARC42 requirements engineering für die Middelware ausfüllen. |
 
 ## 2.2 Sprint-1
 Wir wollen bis zum 17.11.2022 die erste Iteration der Middelware (in ARC42) fertigstellen.
