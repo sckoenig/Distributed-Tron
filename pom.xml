@@ -14,7 +14,17 @@
         <junit.version>5.7.1</junit.version>
     </properties>
 
+
+
+
     <dependencies>
+        <dependency>
+            <groupId>edu.cads.bai5.vsp.tron</groupId>
+            <artifactId>view-library</artifactId>
+            <version>0.1</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
