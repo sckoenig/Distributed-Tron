@@ -53,6 +53,19 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 
 # 4. Lösungsstrategie
 
+## 4.1 Allgemein
+
+| Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
+| ----------- | ----------- |----------- |
+| Service Directory | Transparenzziele (Access, Location) | Ein Service Directory bietet allen Teilnehmern die Möglichkeit, Services zu registrieren (register), zu entfernen (unregister) und nachzuschlagen (lookup). Wegen der relativ kleinen Größenskalierung wird mit einem einzigen Naming Service geplant. |
+
+## 4.2 Funktionale Zerlegung anhand der Use Cases
+Details siehe [Use Cases](#use-cases).
+
+| UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
+| - | - | - | - | - | - | - |
+
 
 # 5. Bausteinsicht
 
@@ -69,3 +82,45 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 # 11. Risiken und technische Schulden
 
 # 12. Glossar
+
+# 13. Anhang
+## Use Cases
+
+**UC-8: Call Remote Object **
+
+Akteur: ServerStub \
+Ziel: Nachricht in Methode umwandeln
+Auslöser: Nachrichtenempfang im ServerStub
+Vorbedingungen: ServerStub wurde erstellt. ServerStub kann Nachrichten empfangen. Remote-Object muss registriert sein.
+Nachbedingungen: Methode wird aufgerufen auf Remote Object.
+
+Standardfall:
+
+    1. System führt UC-4: unmarshaling durch.
+    2. System sucht im Remote-Object-Register nach dem aufzurufenden Remote Object (mittels ID).
+    3. System übergibt dem Remote-Object alle nötigen Informationen für den Methodenaufruf.
+    4. Das Remote-Object ruft die Methode auf.
+
+Fehlerfall:
+    2.a Remote-Object mit der ID gibt es nicht im Register.
+        2.a.1 Das System ignoriert die Nachricht.
+
+<br/>
+
+
+**UC-9: Register Remote Object **
+
+Akteur: ApplicationStub-Remote-Objekt \
+Ziel: Vom ServerStub aufgerufen werden können.
+Auslöser: Start der Applikation als NETWORK-Game \
+Vorbedingungen: ServerStub wurde erstellt. \
+Nachbedingungen: Der ServerStub merkt sich das Remote Objekt mit ID (ENUM)
+
+Standardfall:
+
+    1. Das System erstellt ein Remote Object.
+    2. Das System registriert das Remote Object beim ServerStub.
+    3. Der System speichert das RemoteObject mit ID im ServerStub.
+
+<br/>
+
