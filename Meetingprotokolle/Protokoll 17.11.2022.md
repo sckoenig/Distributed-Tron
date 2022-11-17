@@ -36,3 +36,7 @@
     - UDP: Gefahr der Multiregistrierung & Implementierungsaufwand mit Delay und einmalige Registrierung sicherstellen
     - TCP: Verbindungsaufwand
     -> TCP 
+
+## Java version 17 im Labor
+- installiert unter /mnt/fileserver/MyHome/jdk-17.0.5/bin/java
+- in Konsole verwendbar, zB: "/mnt/fileserver/MyHome/jdk-17.0.5/bin/java -version"
