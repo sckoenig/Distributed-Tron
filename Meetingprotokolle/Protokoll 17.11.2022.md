@@ -5,9 +5,8 @@
 ## Register at Game
 
 - Anpassungen vornehmen, mehrere Views vs eine View ist beim GameManager hinterlegt. Bei game.register werden nun Player erzeugt.
-- SIEHE Diagramm
 
-![image info](./sketches/activity_game.png)
+![image info](./activity_game.png)
 
     GameManager bei ButtonClick PLAY GAME:
     - game anschmeißen: game.prepare(rows, columns, waitingTimer, playercount)
