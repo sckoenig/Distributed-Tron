@@ -57,7 +57,7 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 
 | Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
 | ----------- | ----------- |----------- |
-| Service Directory | Transparenzziele (Access, Location) | Ein Service Directory bietet allen Teilnehmern die Möglichkeit, Services zu registrieren (register), zu entfernen (unregister) und nachzuschlagen (lookup). Wegen der relativ kleinen Größenskalierung wird mit einem einzigen Naming Service geplant. |
+| NamingService| Transparenzziele (Access, Location) | Ein NamingService bietet allen Teilnehmern die Möglichkeit, Services zu registrieren (register), zu entfernen (unregister) und nachzuschlagen (lookup). Wegen der relativ kleinen Größenskalierung wird mit einem einzigen Naming Service geplant. |
 
 ## 4.2 Funktionale Zerlegung anhand der Use Cases
 Details siehe [Use Cases](#use-cases).
@@ -86,6 +86,135 @@ Details siehe [Use Cases](#use-cases).
 # 13. Anhang
 ## Use Cases
 
+**UC-1: Invoke Method**
+
+Akteur: 
+Ziel: 
+Auslöser: 
+Vorbedingungen:
+Nachbedingungen:
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a 
+
+<br/>
+
+**UC-2: Lookup Service**
+
+Akteur: 
+Ziel: 
+Auslöser: 
+Vorbedingungen:
+Nachbedingungen:
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a 
+
+<br/>
+
+**UC-3: Marshalling/Pack Message**
+
+Akteur: 
+Ziel: 
+Auslöser: 
+Vorbedingungen:
+Nachbedingungen:
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a 
+
+<br/>
+
+**UC-4: Unmarshalling/Unpack Message**
+
+Akteur: 
+Ziel: 
+Auslöser: 
+Vorbedingungen:
+Nachbedingungen:
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a 
+
+<br/>
+
+**UC-5: Communicate Over Network**
+
+Akteur: 
+Ziel: 
+Auslöser: 
+Vorbedingungen:
+Nachbedingungen:
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a 
+
+<br/>
+
+**UC-6: Register as Service**
+
+Akteur: Applikation-Stub \
+Ziel: Der Applikations-Stub ist beim NamingService registriert.\
+Auslöser: Klicken des Start Button.\
+Vorbedingungen: Die Applikation wurde gestartet und der NamingService wurde gestartet.\
+Nachbedingungen: Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID.\
+
+Standardfall:
+
+    1. Das System holt sich aus der Config die IP und den Port des NamingService.
+    2. Das System öffnet einen TCP-Socket mit der IP und dem Port.
+    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId ("ich bin ein Host") und seiner Adresse. 
+    4. Der NamingService erhält die Nachricht und erstellt eine Id. 
+    5. Der NamingService speichert den Service mit Id und Adresse.
+    6. Der NamingService schickt die im NamingService erstellte Id zurück.
+    7. Das System merkt sich seine Id.
+
+Fehlerfall:
+    4.a Die Nachricht ist falsch kodiert. 
+        4.a.1 Der NamingService verwirft die Nachricht.
+
+<br/>
+
+
+**UC-7: Unregister as Service**
+
+Akteur: Appliaktion-Stub \
+Ziel: Der Applikations-Stub ist nicht mehr beim NamingService registrieren.
+Auslöser: 
+Vorbedingungen: Der Applikation-Stub wurde bereits beim NamingService registriert.
+Nachbedingungen: Der ApplicationStub ist nicht mehr registriert und kann nicht mehr vom ServerStub aufgerufen werden.
+
+Standardfall:
+
+    1. 
+
+Fehlerfall:
+    2.a Das Service-Objekt mit der Id exisitert nicht.
+
+<br/>
+
+
+
 **UC-8: Call Remote Object **
 
 Akteur: ServerStub \
@@ -93,6 +222,7 @@ Ziel: Nachricht in Methode umwandeln
 Auslöser: Nachrichtenempfang im ServerStub
 Vorbedingungen: ServerStub wurde erstellt. ServerStub kann Nachrichten empfangen. Remote-Object muss registriert sein.
 Nachbedingungen: Methode wird aufgerufen auf Remote Object.
+
 
 Standardfall:
 
@@ -115,6 +245,7 @@ Ziel: Vom ServerStub aufgerufen werden können.
 Auslöser: Start der Applikation als NETWORK-Game \
 Vorbedingungen: ServerStub wurde erstellt. \
 Nachbedingungen: Der ServerStub merkt sich das Remote Objekt mit ID (ENUM)
+
 
 Standardfall:
 
