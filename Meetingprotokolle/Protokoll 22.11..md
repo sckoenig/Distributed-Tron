@@ -3,3 +3,4 @@
 - [ ] Countdown Anzeige? Was wollen wir anzeigen (Player? Color? ID?) & Wie? & Wer soll das modellieren?
 - [ ] Wie Anforderungen aufschreiben? User Stories / Issues?
 - [ ] Was genau beim Naming Service registrieren? 
+- [ ] KeyEvents näher betrachen, gerade wird jeder bearbeitet ..?
