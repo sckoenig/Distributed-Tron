@@ -35,7 +35,7 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 
 | Technische Randbedingung        | Beschreibung |
 | ----------- | ----------- |
-| Java in der Version ... | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.85 passen. |
+| Java in der Version 17 | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.65 passen. Es wird Java in der Version 17 verwendet, da es sich um die neueste LTS-Version handelt.|
 | Kommunikation | Die Kommunikation der Middleware erfolgt transient über RPC- und/oder ReST-Schnittstelle. |
 
 | Konventionen | Beschreibung |
