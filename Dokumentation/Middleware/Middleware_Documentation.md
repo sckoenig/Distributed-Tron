@@ -86,17 +86,22 @@ Details siehe [Use Cases](#use-cases).
 # 13. Anhang
 ## Use Cases
 
-**UC-1: Invoke Method**
+**UC-5: **
 
-Akteur: 
-Ziel: 
-Auslöser: 
-Vorbedingungen:
-Nachbedingungen:
+Akteur: Applikationstub 
+Ziel: Eine Methode remote ausführen
+Auslöser: Ein Methodenaufruf auf einem Caller Objekt.
+Vorbedingungen: 
+Nachbedingungen: Methodenaufruf wurde ans Netzwerk weitergereicht.
 
 Standardfall:
 
-    1. 
+    1. Das Caller Objekt im Applikationstub ruft auf der Middleware die invoke-Methode auf und übergibt dieser den Methodenaufruf (TODO: Form).
+    2. Der Marshaller nimmt den Methodenaufruf entgegen.
+    3. UC-3: Marshalling durchführen.
+    4. UC-2: lookup service durchführen.
+    5. UC-5: send over network durchführen.
+    6. 
 
 Fehlerfall:
     2.a 
@@ -171,11 +176,11 @@ Fehlerfall:
 
 <br/>
 
-**UC-6: Register as Service**
+**UC-6: Register as Service** //TODO: Wann registern wir? Wer als HOST, wer als PLAYER? Ist jeder HOST und PLAYER? Flag? Ein Host? Was ist dann mit einem zweiten Spiel?
 
 Akteur: Applikation-Stub \
 Ziel: Der Applikations-Stub ist beim NamingService registriert.\
-Auslöser: Klicken des Start Button.\
+Auslöser: Klicken des Start Button. (Mit erstem invoke)\
 Vorbedingungen: Die Applikation wurde gestartet und der NamingService wurde gestartet.\
 Nachbedingungen: Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID.\
 
@@ -183,7 +188,7 @@ Standardfall:
 
     1. Das System holt sich aus der Config die IP und den Port des NamingService.
     2. Das System öffnet einen TCP-Socket mit der IP und dem Port.
-    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId ("ich bin ein Host") und seiner Adresse. 
+    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId (HOST, PLAYER -> "ich bin ein Host") und seiner Adresse. 
     4. Der NamingService erhält die Nachricht und erstellt eine Id. 
     5. Der NamingService speichert den Service mit Id und Adresse.
     6. Der NamingService schickt die im NamingService erstellte Id zurück.
@@ -196,10 +201,10 @@ Fehlerfall:
 <br/>
 
 
-**UC-7: Unregister as Service**
+**UC-7: Unregister as Service**//TODO: Wann unregistern wir uns? Unregistern wir uns überhaupt?
 
 Akteur: Appliaktion-Stub \
-Ziel: Der Applikations-Stub ist nicht mehr beim NamingService registrieren.
+Ziel: Der Applikations-Stub ist nicht mehr beim NamingService registriert.
 Auslöser: 
 Vorbedingungen: Der Applikation-Stub wurde bereits beim NamingService registriert.
 Nachbedingungen: Der ApplicationStub ist nicht mehr registriert und kann nicht mehr vom ServerStub aufgerufen werden.
