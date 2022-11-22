@@ -18,3 +18,8 @@
 ## Registrieren 
 - Probleme: wenn der Host einen Spieler "ablehnt" (zu viele Spieler)
     - Spieler wird informiert und soll selber das Spiel neustarten, landet automatisch wieder in der Menu-View -> **Bitte um Feedback**
+- ClientStub registriert sich mit ersten invoke, ClientStub kennt über Config Port des ServerStubs
+- Registrieren wir uns alle als Host oder nur einen?
+- Wann unregistern wir uns -> wie handeln wir das, sind wir immer registriert 
+- Wir haben im ClientStub den Marshaller und den Sender -> wer macht den lookup
+- was machen wir mit return Werten von Methoden von der invokeMethode -> callback()
