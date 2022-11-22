@@ -14,3 +14,7 @@
 - Services aufteilen? -> wir machen es mit Host und Player, schreiben das ins Arc42 -> das das dann zukünftige Skalierung schwieriger macht 
 - NamingService als extra Anwendung starten oder bei uns in der Anwendung mit Flag 
     - **Abstimmung:** Frage an Martin an Donnerstag, erstmal für das Erste: einer ist NamingService mit Flag in der Config
+
+## Registrieren 
+- Probleme: wenn der Host einen Spieler "ablehnt" (zu viele Spieler)
+    - Spieler wird informiert und soll selber das Spiel neustarten, landet automatisch wieder in der Menu-View -> **Bitte um Feedback**
