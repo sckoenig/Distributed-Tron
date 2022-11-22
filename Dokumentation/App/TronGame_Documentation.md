@@ -17,6 +17,10 @@ Allgemeine Spielprinzipien:
 - Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
 
+Weitere Anforderungen:
+- Das Spiel soll über eine Konfigurationsdatei konfiguriert werden können.
+- Das Spiel kann entweder lokal (LOCAL) oder im Netzwerk (NETWORK) gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein. 
+
 Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 
@@ -27,8 +31,8 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 | Wohldefinierte Schnittstellen | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern :) |
 | Fehlertoleranz      | Ein Spiel soll ungestört durchspielbar sein. Auch wenn ein Teilnehmer abstürzt, läuft das Spiel weiter.       |
 | Kompatibilität   | Mindestens 2 Teams müssen miteinander spielen können.        |
-| Fairness | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln
-| Bedienbarkeit | Spieler sollen das Spiel einfach bedienen können und Spaß haben |
+| Fairness | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln.
+| Bedienbarkeit | Spieler sollen das Spiel einfach bedienen können und Spaß haben. |
 
 ## 1.3 Stakeholders
 
@@ -120,6 +124,7 @@ Details siehe [Use Cases](#use-cases).
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
 | UC-2 | `btnStartGame(event : ActionEvent) : void` | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
+| UC-3 | `initKeyEventHandler(scene : Scene) : void` | ITronController | Scene nicht null, TronController wurde erstellt | Der Controller handelt die KeyEvents auf der übergebenen Scene. | Bei Start der Applikation wird der Controller als EventHandler für die Scene der View initialisiert, damit er KeyEvents des Users erhält und verarbeitet. | - |
 | UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. 
 
 
