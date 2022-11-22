@@ -23,3 +23,4 @@
 - Wann unregistern wir uns -> wie handeln wir das, sind wir immer registriert 
 - Wir haben im ClientStub den Marshaller und den Sender -> wer macht den lookup
 - was machen wir mit return Werten von Methoden von der invokeMethode -> callback()
+- lassen invoke drin stehen beschreiben das aber nicht weil UC zugroß
