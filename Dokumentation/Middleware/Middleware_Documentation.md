@@ -64,10 +64,23 @@ Details siehe [Use Cases](#use-cases).
 
 | UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| - | - | - | - | - | - | - |
+| UC-9 | registerRemoteObject( ..., remoteObject : IRemoteObject) : ?? | Unmarshaller(ServerStub) | - | - | - | - | - |
+| UC-8 | call(...) : ?? | IRemoteObject | - | - | - | - | - |
+| UC-1 | invoke(...) : ?? | IRemoteInvocation(ClientStub) | - | - | - | - | - |
+| UC-2 | lookup(...) : ?? | INamingService | - | - | - | - | - |
+| UC-3 | marshal(...) : ?? | Marshaller | - | - | - | - | - |
+| UC-4 | unmarshal(...) : ?? | IUnmarshaller | - | - | - | - | - |
+| UC-6 | registerService(...) : ?? | INamingService | - | - | - | - | - |
+| UC-7 | unregisterService(...) : ?? | INamingService | - | - | - | - | - |
+| UC-5 | send(...) : ?? | ISender(ClientStub) | - | - | - | - | - |
+| UC-10 |receive(...) : ?? | Receiver(ServerStub) | - | - | - | - | - |
 
 
 # 5. Bausteinsicht
+## Ebene 1:
+![image info](./diagrams/layer1.png)
+## Ebene 2:
+![image info](./diagrams/layer2.png)
 
 # 6. Laufzeitsicht
 
@@ -88,10 +101,10 @@ Details siehe [Use Cases](#use-cases).
 
 **UC-5: **
 
-Akteur: Applikationstub 
+Akteur: Applikationstub
 Ziel: Eine Methode remote ausführen
 Auslöser: Ein Methodenaufruf auf einem Caller Objekt.
-Vorbedingungen: 
+Vorbedingungen:
 Nachbedingungen: Methodenaufruf wurde ans Netzwerk weitergereicht.
 
 Standardfall:
@@ -101,78 +114,78 @@ Standardfall:
     3. UC-3: Marshalling durchführen.
     4. UC-2: lookup service durchführen.
     5. UC-5: send over network durchführen.
-    6. 
+    6.
 
 Fehlerfall:
-    2.a 
+    2.a
 
 <br/>
 
 **UC-2: Lookup Service**
 
-Akteur: 
-Ziel: 
-Auslöser: 
+Akteur:
+Ziel:
+Auslöser:
 Vorbedingungen:
 Nachbedingungen:
 
 Standardfall:
 
-    1. 
+    1.
 
 Fehlerfall:
-    2.a 
+    2.a
 
 <br/>
 
 **UC-3: Marshalling/Pack Message**
 
-Akteur: 
-Ziel: 
-Auslöser: 
+Akteur:
+Ziel:
+Auslöser:
 Vorbedingungen:
 Nachbedingungen:
 
 Standardfall:
 
-    1. 
+    1.
 
 Fehlerfall:
-    2.a 
+    2.a
 
 <br/>
 
 **UC-4: Unmarshalling/Unpack Message**
 
-Akteur: 
-Ziel: 
-Auslöser: 
+Akteur:
+Ziel:
+Auslöser:
 Vorbedingungen:
 Nachbedingungen:
 
 Standardfall:
 
-    1. 
+    1.
 
 Fehlerfall:
-    2.a 
+    2.a
 
 <br/>
 
 **UC-5: Communicate Over Network**
 
-Akteur: 
-Ziel: 
-Auslöser: 
+Akteur:
+Ziel:
+Auslöser:
 Vorbedingungen:
 Nachbedingungen:
 
 Standardfall:
 
-    1. 
+    1.
 
 Fehlerfall:
-    2.a 
+    2.a
 
 <br/>
 
@@ -188,14 +201,14 @@ Standardfall:
 
     1. Das System holt sich aus der Config die IP und den Port des NamingService.
     2. Das System öffnet einen TCP-Socket mit der IP und dem Port.
-    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId (HOST, PLAYER -> "ich bin ein Host") und seiner Adresse. 
-    4. Der NamingService erhält die Nachricht und erstellt eine Id. 
+    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId (HOST, PLAYER -> "ich bin ein Host") und seiner Adresse.
+    4. Der NamingService erhält die Nachricht und erstellt eine Id.
     5. Der NamingService speichert den Service mit Id und Adresse.
     6. Der NamingService schickt die im NamingService erstellte Id zurück.
     7. Das System merkt sich seine Id.
 
 Fehlerfall:
-    4.a Die Nachricht ist falsch kodiert. 
+    4.a Die Nachricht ist falsch kodiert.
         4.a.1 Der NamingService verwirft die Nachricht.
 
 <br/>
@@ -205,13 +218,13 @@ Fehlerfall:
 
 Akteur: Appliaktion-Stub \
 Ziel: Der Applikations-Stub ist nicht mehr beim NamingService registriert.
-Auslöser: 
+Auslöser:
 Vorbedingungen: Der Applikation-Stub wurde bereits beim NamingService registriert.
 Nachbedingungen: Der ApplicationStub ist nicht mehr registriert und kann nicht mehr vom ServerStub aufgerufen werden.
 
 Standardfall:
 
-    1. 
+    1.
 
 Fehlerfall:
     2.a Das Service-Objekt mit der Id exisitert nicht.
@@ -259,4 +272,3 @@ Standardfall:
     3. Der System speichert das RemoteObject mit ID im ServerStub.
 
 <br/>
-
