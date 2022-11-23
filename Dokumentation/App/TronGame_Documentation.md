@@ -2,7 +2,7 @@
 
 # 1. Einführung und Ziele
 
-Dieses Projekt entsteht im Rahmen des Moduls “Verteilte Systeme” und hat zum Ziel, das Multiplayer-Spiel “Tron” zu entwickeln. 
+Dieses Projekt entsteht im Rahmen des Moduls “Verteilte Systeme” und hat zum Ziel, das Multiplayer-Spiel “Tron” zu entwickeln.
 Das Spiel soll lokal an einem Computer oder verteilt auf mehrere Computer gespielt werden können.
 
 ## 1.1 Aufgabenstellung
@@ -19,7 +19,7 @@ Allgemeine Spielprinzipien:
 
 Weitere Anforderungen:
 - Das Spiel soll über eine Konfigurationsdatei konfiguriert werden können.
-- Das Spiel kann entweder lokal (LOCAL) oder im Netzwerk (NETWORK) gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein. 
+- Das Spiel kann entweder lokal (LOCAL) oder im Netzwerk (NETWORK) gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein.
 
 Details siehe [Anforderungsdetails](#anforderungsdetails).
 
@@ -99,7 +99,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `isGameOver() : boolean`                                                           | Game | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
 | UC-3.1 | `handleSteer(steer : Steer ) : void`                                              | IGame | Player muss noch am Leben sein. | Der Player hat eine neue Direction.| Anhand der ausgelesenen Player-ID und Direction eines Steer-Objekts, wird die Fahrtrichtung des Players angepasst. | - |
 | UC-3 | `draw() : void `                                                                    | Game | - | - | Die Positionen der Spieler werden auf den Screen gezeichnet. | - |
-| UC-2,3,4 | `handleGameState(gameState : GameState) : void`                                    | IGameManager | Der GameManager wurde über handleGameState(gameState:GameState) über eine Veränderung informiert. | Der ModelState des GameManagers hat sich gemäß des GameStates verändert. | Das Model wechselt vom aktuellen ModelState in den nächsten ModelState abhängig von der Nachricht. | Ist eine Nachricht nicht gültig im aktuellen ModelState, wird sie ignoriert. | 
+| UC-2,3,4 | `handleGameState(gameState : GameState) : void`                                    | IGameManager | Der GameManager wurde über handleGameState(gameState:GameState) über eine Veränderung informiert. | Der ModelState des GameManagers hat sich gemäß des GameStates verändert. | Das Model wechselt vom aktuellen ModelState in den nächsten ModelState abhängig von der Nachricht. | Ist eine Nachricht nicht gültig im aktuellen ModelState, wird sie ignoriert. |
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setWinnerColor(winnerColor : String) : void`                                     | IGameManager | Es gibt einen Gewinner oder es ist unentschieden| Farbe wurde geändert. | Nachdem der Gewinner identifiziert wurde, wir die Spielfarbe des Gewinners gesetzt. Und wenn es kein Gewinner gibt, wird eine default-Farbe gesetzt.| - |
 | UC-4 | `setGameResult(result : String) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis wurde mit "Der Gewinner ist ..." oder "Unentschieden" gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
@@ -108,16 +108,16 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | detectWallCollision(coordinate : Coordinate) : boolean                           | IArena | Die Coordinate muss innerhalb des Arena-Arrays sein. Coordinate darf nicht null sein. | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | - |
 | UC-3 | `detectHeadColision(players: List<Player>) : boolean`                       | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
 | UC-3 | `detectColision(players: List<Player>, arena : Arena) : void`                       | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
-| UC-3 | `getHeadPosition() : Coordinate`                                                   | IPlayer | Die Liste der Koordinaten eines Spielers darf nicht leer sein. | die Head-Position wird zurückgeben. | Die letzte Position in der Liste ist immer die headPosition, welche durch die Methode getHeadPosition abgefragt wird. | - | 
-| UC-3 | `addCoordinate(coordinate : Coordinate) : void `                                 | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - | 
-| UC-3 | `isAlive() : boolean`                                                              | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| | 
-| UC-3 | `crash() : void`                                                                   | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - | 
-| UC-3.1 | `handleActionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - | 
-| UC-2,3 | `handleDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - | 
+| UC-3 | `getHeadPosition() : Coordinate`                                                   | IPlayer | Die Liste der Koordinaten eines Spielers darf nicht leer sein. | die Head-Position wird zurückgeben. | Die letzte Position in der Liste ist immer die headPosition, welche durch die Methode getHeadPosition abgefragt wird. | - |
+| UC-3 | `addCoordinate(coordinate : Coordinate) : void `                                 | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
+| UC-3 | `isAlive() : boolean`                                                              | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| |
+| UC-3 | `crash() : void`                                                                   | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
+| UC-3.1 | `handleActionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - |
+| UC-2,3 | `handleDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 | UC-4 | `getWinnerObservable() : StringProperty`                                           | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Winner-Objekt. | - |
 | UC-3.1 | `handleSteerEvent( key : KeyCode ) : void`                                         | ITronModel | Der GameManager wurde initialisiert. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben. |  |
 | UC-4 | `getGameResultObservable() : StringProperty`                                       | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben.  | Andere Komponenten(View) erhalten eine Referenz auf das Observable-GameResult-Objekt. | |
-| UC-3 | `getCounterObservable() : IntegerProperty`                                         | ITronModel | Der GameManager wurde initialisiert.  | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt.| | 
+| UC-3 | `getCounterObservable() : IntegerProperty`                                         | ITronModel | Der GameManager wurde initialisiert.  | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt.| |
 | UC-2 | `getPlayerCountObservable(): IntegerProperty`                                      | ITronModel | Der GameManager wurde initialisiert. | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt. | |
 | UC-2 | `initializeGame(playerNumber : int) : void`                                        | ITronModel | Der GameManager wurde initialisiert. | Der GameManager befindet sich im State "WAITING" | Im Model wird ein Game vorbereitet, in dem dann auch die Arena und die Spieler initialisiert werden. | - |
 
@@ -126,15 +126,19 @@ Details siehe [Use Cases](#use-cases).
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
 | UC-2 | `btnStartGame(event : ActionEvent) : void` | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
 | UC-3 | `initKeyEventHandler(scene : Scene) : void` | ITronController | Scene nicht null, TronController wurde erstellt | Der Controller handelt die KeyEvents auf der übergebenen Scene. | Bei Start der Applikation wird der Controller als EventHandler für die Scene der View initialisiert, damit er KeyEvents des Users erhält und verarbeitet. | - |
-| UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. 
+| UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert.
 
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
 ![image info](./diagrams/bs_layer1.png)
-## 5.2 Ebene 2
+## 5.2 Ebene 2 : Application
 ![image info](./diagrams/bs_layer2_view_controller.png)
-## 5.3 Ebene 3
+## 5.2 Ebene 2 : ApplicationStub
+![image info](./diagrams/bs_layer3_stub_model_interfaces.png)
+![image info](./diagrams/bs_layer3_stub_model.png)
+## 5.3 Ebene 3 : Application
+![image info](./diagrams/bs_layer3_model_interfaces.png)
 ![image info](./diagrams/bs_layer3_model.png)
 
 # 6. Laufzeitsicht
@@ -342,7 +346,7 @@ Erweiterungsfälle:
     4.a UC-3.1: Steer Bike: Der Spieler steuert sein Bike durch Tasteneingaben
         4.a.1 Das System verarbeitet die Tasteneingabe abhängig von der Konfiguration des Spielers.
         4.a.2 Das System ändert die Richtung des Bikes des Spielers abhängig von der Taste.
-    
+
 <br>
 
 **UC-4: See Results**
@@ -357,4 +361,3 @@ Standardfall:
     1. Das System startet den Ending-Timer.
     2. Das System zeigt den Ending-Screen an, in dem das Ergebnis des Spiels ("Gewinner ist ..." oder "Unentschieden!") und die Farbe des Gewinners, falls es einen gibt.
     3. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
-
