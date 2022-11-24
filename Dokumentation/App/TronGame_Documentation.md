@@ -136,7 +136,10 @@ Details siehe [Use Cases](#use-cases).
 ![image info](./diagrams/bs_layer2_view_controller.png)
 ## 5.2 Ebene 2 : ApplicationStub
 ![image info](./diagrams/bs_layer3_stub_model_interfaces.png)
+
+Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
 ![image info](./diagrams/bs_layer3_stub_model.png)
+
 ## 5.3 Ebene 3 : Application
 ![image info](./diagrams/bs_layer3_model_interfaces.png)
 ![image info](./diagrams/bs_layer3_model.png)
