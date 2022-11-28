@@ -105,8 +105,8 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `calculateNextCoordinate(direction : Direction) : Coordinate`                    | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
 | UC-3 | `isGameOver() : boolean`                                                           | Game | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
 | UC-3.1 | `handleSteer(steer : Steer ) : void`                                              | IGame | Player muss noch am Leben sein. | Der Player hat eine neue Direction.| Anhand der ausgelesenen Player-ID und Direction eines Steer-Objekts, wird die Fahrtrichtung des Players angepasst. | - |
-| UC-3 | `draw() : void `                                                                    | Game | - | - | Die Positionen der Spieler werden auf den Screen gezeichnet. | - |
-
+| UC-3 | `updateViews() : void `                                                                    | Game | - | - | Für alle registerierten Views werden die Positionen der Spieler auf den Screen gezeichnet. Kollidierte Player werden gehighlightet. Tote Spieler werden in der Hintergrundfärbe gefärbt. | - |
+| UC-3 | `reset() : void `                                                                    | Game | - | - | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde.| - |
 
 <!-- GAMEMANAGER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
@@ -138,8 +138,8 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `addCoordinate(coordinate : Coordinate) : void `                                 | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
 | UC-3 | `isAlive() : boolean`                                                              | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| |
 | UC-3 | `crash() : void`                                                                   | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
-| UC-3.1 | `handleActionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - |
-| UC-2,3 | `handleDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
+| UC-3.1 | `setNextDirectionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - |
+| UC-2,3 | `performDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 
 <!-- ITRONMODEL -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
