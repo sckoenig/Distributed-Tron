@@ -3,3 +3,4 @@ Besprechen:
 - Activity Diagramme, prepare, reset, game states
 - Issues
 - To Dos / Plan 
+- invoke ... -> IDs? Wer wie was wann?
