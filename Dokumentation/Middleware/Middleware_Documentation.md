@@ -62,18 +62,28 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 ## 4.2 Funktionale Zerlegung anhand der Use Cases
 Details siehe [Use Cases](#use-cases).
 
+| Objekt | Erklärung |
+| ----------- | ----------- |
+| Receiver (ServerStub) | Lauscht auf einem Port und nimmt Nachrichten entgegen, die an den Unmarshaller weitergereicht werden. |
+| IUnmarshaller (ServerStub) | Nimmt Nachrichten entgegen und entpackt sie zu MethodenCalls. Kennt Remote Objekte und führt MethodenCall auf ihnen auf. |
+| Marshaller (ClientStub) | Nimmt Invoke-Aufrufe vom ApplikationStub an und verpackt sie in Nachrichten. Führt LookUps am NamingService durch. |
+| ISender (ClientStub) | Nimmt Nachrichten vom Marshaller entgegen und schickt sie ins Netzwerk. |
+| INamingService | Verwaltet Namen und dazugehörige Adressen. Ermöglicht Registrierung und LookUp von Services. |
+| IRemoteObject |  Remote Objekte können einen MethodenCall entgegen nehmen und ausführen. Sie sind dem Unmarshaller bekannt. |
+
+
 | UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-9 | registerRemoteObject( ..., remoteObject : IRemoteObject) : ?? | Unmarshaller(ServerStub) | - | - | - | - | - |
-| UC-8 | call(...) : ?? | IRemoteObject | - | - | - | - | - |
-| UC-1 | invoke(...) : ?? | IRemoteInvocation(ClientStub) | - | - | - | - | - |
-| UC-2 | lookup(...) : ?? | INamingService | - | - | - | - | - |
-| UC-3 | marshal(...) : ?? | Marshaller | - | - | - | - | - |
-| UC-4 | unmarshal(...) : ?? | IUnmarshaller | - | - | - | - | - |
-| UC-6 | registerService(...) : ?? | INamingService | - | - | - | - | - |
-| UC-7 | unregisterService(...) : ?? | INamingService | - | - | - | - | - |
+| UC-1 | registerRemoteObject( ..., remoteObject : IRemoteObject) : ?? | Unmarshaller(ServerStub) | - | - | - | - | - |
+| UC-2 | invoke(...) : ?? | IRemoteInvocation(ClientStub) | - | - | - | - | - |
+| UC-3 | lookup(...) : ?? | INamingService | - | - | - | - | - |
+| UC-4 | marshal(...) : ?? | Marshaller | - | - | - | - | - |
 | UC-5 | send(...) : ?? | ISender(ClientStub) | - | - | - | - | - |
-| UC-10 |receive(...) : ?? | Receiver(ServerStub) | - | - | - | - | - |
+| UC-6 | receive(...) : ?? | Receiver(ClientStub) | - | - | - | - | - |
+| UC-7 | unmarshal(...) : ?? | Unmarshaller | - | - | - | - | - |
+| UC-8 | call(...) : ?? | IRemoteObject | - | - | - | - | - |
+| UC-9 | registerService(...) : ?? | INamingService | - | - | - | - | - |
+| UC-10 | unregisterService(...) : ?? | INamingService | - | - | - | - | - |
 
 
 # 5. Bausteinsicht
