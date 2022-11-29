@@ -76,14 +76,13 @@ Details siehe [Use Cases](#use-cases).
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
 | UC-1 | registerRemoteObject(methodName: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ClientStub wurde erstel | - | - | - | - |
 | UC-2 | invoke(remoteID: String, methodName: int, methodParameters: int... (varargs)) : void | IRemoteInvocation(ClientStub) | ClientStub wurde erstellt | Die Methode wird durch ein Remote-Object ausgeführt (Callee) | UC ...  | - | 
-| UC-3 | lookup(...) : ?? | INamingService | - | - | - | - | - |
-| UC-4 | marshal(...) : ?? | Marshaller | - | - | - | - | - |
-| UC-5 | send(...) : ?? | ISender(ClientStub) | - | - | - | - | - |
-| UC-6 | receive(...) : ?? | Receiver(ClientStub) | - | - | - | - | - |
-| UC-7 | unmarshal(...) : ?? | Unmarshaller | - | - | - | - | - |
-| UC-8 | call(...) : ?? | IRemoteObject | - | - | - | - | - |
-| UC-9 | registerService(...) : ?? | INamingService | - | - | - | - | - |
-| UC-10 | unregisterService(...) : ?? | INamingService | - | - | - | - | - |
+| UC-3 | lookup(calleID: long, methodName: int) : void | INamingService | - | - | - | - | - |
+| UC-4 | marshal(remodeID: String, MethodCall) : byte[] | Marshaller | - | - | - | - | - |
+| UC-5 | send(message: byte[], address: InetAddress) : void | ISender(ClientStub) | - | - | - | - | - |
+| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | - | - | - | - |
+| UC-8 | call(method: MethodCall) : void | IRemoteObject | - | - | - | - | - |
+| UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | - | - | - | - | - |
+| UC-10 | unregisterService(remoteID: String) : void | INamingService | - | - | - | - | - |
 
 
 # 5. Bausteinsicht
