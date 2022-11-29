@@ -74,8 +74,8 @@ Details siehe [Use Cases](#use-cases).
 
 | UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-1 | registerRemoteObject( ..., remoteObject : IRemoteObject) : ?? | Unmarshaller(ServerStub) | - | - | - | - | - |
-| UC-2 | invoke(...) : ?? | IRemoteInvocation(ClientStub) | - | - | - | - | - |
+| UC-1 | registerRemoteObject(methodName: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ClientStub wurde erstel | - | - | - | - |
+| UC-2 | invoke(remoteID: String, methodName: int, methodParameters: int... (varargs)) : void | IRemoteInvocation(ClientStub) | ClientStub wurde erstellt | Die Methode wird durch ein Remote-Object ausgeführt (Callee) | UC ...  | - | 
 | UC-3 | lookup(...) : ?? | INamingService | - | - | - | - | - |
 | UC-4 | marshal(...) : ?? | Marshaller | - | - | - | - | - |
 | UC-5 | send(...) : ?? | ISender(ClientStub) | - | - | - | - | - |
@@ -116,14 +116,14 @@ Akteur: ApplicationStub-Remote-Objekt \
 Ziel: Vom ServerStub aufgerufen werden können.
 Auslöser: Start der Applikation als NETWORK-Game \
 Vorbedingungen: ServerStub wurde erstellt. \
-Nachbedingungen: Der ServerStub merkt sich das Remote Objekt mit aufrufbaren Methoden (ENUM, zB: DRAW, REGISTER).
+Nachbedingungen: Der ServerStub merkt sich das Remote Objekt mit aufrufbaren Methoden (Ordinal des ENUM, zB: 1 = DRAW, 2 = REGISTER).
 
 
 Standardfall:
 
     1. Das System erstellt ein Remote Object.
     2. Das System registriert das Remote Object beim ServerStub mit den Methoden, die es anbietet.
-    3. Das System speichert das RemoteObject mit ID im ServerStub.
+    3. Das System speichert das RemoteObject mit ENUM im ServerStub (HashMap).
 
 <br/>
 
@@ -154,9 +154,9 @@ Standardfall:
 
 Akteur: Marshaller (ClientStub)
 Ziel: Adresse des gesuchten Services herausfinden
-Auslöser: invoke(...) wurde von einem Caller-Objekt des ApplicationStubs aufgerufen
+Auslöser: invoke(CalleeID, Methodenname, Parameterliste) wurde von einem Caller-Objekt des ApplicationStubs aufgerufen
 Vorbedingungen: NamingServer muss laufen. 
-Nachbedingungen: Der ClientStub kennt die Informationen des Services (IP:Port, ID).
+Nachbedingungen: Der ClientStub kennt die Informationen des Services (IP:Port, CalleeID).
 
 Standardfall:
 
@@ -221,11 +221,12 @@ Akteur: Receiver (ServerStub)
 Ziel: Nachricht verarbeiten.
 Auslöser: Es kommt eine Nachricht rein.
 Vorbedingungen: Receiver lauscht auf Nachrichten.
-Nachbedingungen: Receiver hat die Nachricht weitergegeben zum Verarbeiten.
+Nachbedingungen: Receiver hat die Nachricht weitergegeben zum Verarbeiten. Der Receiver kehrt in den listen-Status zurück.
 
 Standardfall:
 
-    1. 
+    1. Der Receiver liest die Nachricht vom Socket.
+    2. Der Receiver übergibt die ausgelesene Nachricht dem Unmarshaller.
 
 Fehlerfall:
     2.a
@@ -234,86 +235,89 @@ Fehlerfall:
 
 **UC-7: Unmarshalling/Unpack Message**
 
-Akteur: 
-Ziel:
-Auslöser:
-Vorbedingungen:
-Nachbedingungen:
+Akteur: Unmarshaller (ServerStub)
+Ziel: Nachricht in Methodenaufruf umwandeln
+Auslöser: Unmarshaller erhält eine Nachricht vom Receiver
+Vorbedingungen: 
+Nachbedingungen: Der Methodenaufruf wurde an das Remote Objekt gegeben (UC-2 wird ausgeführt)
 
 Standardfall:
 
-    1.
+    1. Der Unmarshaller entpackt die Nachricht vom Receiver in Methodenname und Methodenparameter.
+    2. UC-2: Call Remote Object durchführen.
 
 Fehlerfall:
-    2.a
 
 <br/>
 
 
 **UC-2: Call Remote Object**
 
-Akteur: ServerStub \
+Akteur: Unmarshaller (ServerStub) \
 Ziel: Nachricht in Methode umwandeln
-Auslöser: Nachrichtenempfang im ServerStub
-Vorbedingungen: ServerStub wurde erstellt. ServerStub kann Nachrichten empfangen. Remote-Object muss registriert sein.
+Auslöser: UC-7 wurde durchgeführt.
+Vorbedingungen: Remote-Object muss registriert sein.
 Nachbedingungen: Methode wird aufgerufen auf Remote Object.
 
 
 Standardfall:
 
-    1. System führt UC-4: unmarshaling durch.
-    2. System sucht im Remote-Object-Register nach dem aufzurufenden Remote Object mit dem Methodennamen(z.B. DRAW).
-    3. System übergibt dem Remote-Object alle nötigen Informationen für den Methodenaufruf.
-    4. Das Remote-Object ruft die Methode auf.
+    1. Unmarshaller sucht im Remote-Object-Register nach dem aufzurufenden Remote Object mit dem Methodennamen(z.B. DRAW).
+    2. Unmarshaller übergibt dem Remote-Object alle nötigen Informationen für den Methodenaufruf.
+    3. Das Remote-Object ruft die Methode auf.
 
 Fehlerfall:
-    2.a Remote-Object mit dem Methodennamen gibt es nicht im Register.
+    2.a Remote-Object mit dem Methodennamen(Ordinal des Enums, z.B. DRAW = 1) gibt es nicht im Register.
         2.a.1 Das System ignoriert die Nachricht.
-    4.a Die Parameter sind fehlerhaft.
+    3.a Die Parameter (z.B. Methodenname unbekannt) sind fehlerhaft.
         2.a.1 Das Remote-Object bricht den Aufruf ab.
 
 
 <br/>
 
-**UC-9: Register as Service** //TODO: Wann registern wir? Wer als HOST, wer als PLAYER? Ist jeder HOST und PLAYER? Flag? Ein Host? Was ist dann mit einem zweiten Spiel?
+**UC-9: Register as Service**
 
-Akteur: Applikation-Stub \
-Ziel: Der Applikations-Stub ist beim NamingService registriert.\
-Auslöser: Klicken des Start Button. (Mit erstem invoke)\
-Vorbedingungen: Die Applikation wurde gestartet und der NamingService wurde gestartet.\
+Akteur: ServerStub \
+Ziel: Die Remote Objekte sind beim NamingService registriert.\
+Auslöser: Remote Objekt registriert sich beim ServerStub. 
+Vorbedingungen: Die Applikation wurde gestartet und der NameServer wurde gestartet. NameResolver kennt NameServer (Config).\
 Nachbedingungen: Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID.\
 
 Standardfall:
 
-    1. Das System holt sich aus der Config die IP und den Port des NamingService.
-    2. Das System öffnet einen TCP-Socket mit der IP und dem Port.
-    3. Das System schickt eine Registrierungsnachricht mit der ServiceNameId (HOST, PLAYER -> "ich bin ein Host") und seiner Adresse.
-    4. Der NamingService erhält die Nachricht und erstellt eine Id.
-    5. Der NamingService speichert den Service mit Id und Adresse.
-    6. Der NamingService schickt die im NamingService erstellte Id zurück.
-    7. Das System merkt sich seine Id.
+    1. Der ServerStub schickt einen Registrierungsaufruf an den lokalen NameResolver.
+    2. Der NameResolver öffnet einen TCP-Socket mit der IP und dem Port zum NameServer.
+    3. Der NameResolver schickt eine Registrierungsnachricht mit dem angebotenen Methodennamen (Ordinal des Enums), RemoteID und der Adresse des ServerStubs.
+    4. Der NameServer erhält die Nachricht.
+    5. Der NameServer speichert den Service mit Ordinal, RemoteID und Adresse des ServerStubs.
 
 Fehlerfall:
     4.a Die Nachricht ist falsch kodiert.
-        4.a.1 Der NamingService verwirft die Nachricht.
+        4.a.1 Der NameServer verwirft die Nachricht.
 
 <br/>
 
 
-**UC-10: Unregister as Service**//TODO: Wann unregistern wir uns? Unregistern wir uns überhaupt?
+**UC-10: Unregister as Service**
 
-Akteur: Appliaktion-Stub \
+Akteur: ServerStub \
 Ziel: Der Applikations-Stub ist nicht mehr beim NamingService registriert.
 Auslöser: Die Applikation wird geschlossen.
-Vorbedingungen: Der Applikation-Stub wurde bereits beim NamingService registriert.
-Nachbedingungen: Der ApplicationStub ist nicht mehr beim Naming Service registriert.
+Vorbedingungen: Der NameServer ist erreichbar.
+Nachbedingungen: Die Remote Objekte des ServerStubs sind nicht mehr registriert.
 
 Standardfall:
 
-    1.
+    1. Der ServerStub schickt einen Abmeldungsaufruf an den lokalen NameResolver.
+    2. Der NameResolver öffnet einen TCP-Socket mit der IP und dem Port zum NameServer.
+    3. Der NameResolver schickt eine Abmeldungsnachricht mit der RemoteID an den NameServer.
+    4. Der NameServer erhält die Nachricht.
+    5. Der NameServer entfernt alle Services mit der RemoteID aus seiner Tabelle.
+
 
 Fehlerfall:
-    2.a Das Service-Objekt mit der Id exisitert nicht.
+  5.a Die Nachricht ist falsch kodiert.
+     5.a.1 Der NameServer verwirft die Nachricht.
 
 <br/>
 
