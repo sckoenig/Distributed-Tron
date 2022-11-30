@@ -85,16 +85,6 @@ Details siehe [Use Cases](#use-cases).
 | UC-8 | call(method: MethodCall) : void | IRemoteObject | Remote-Object muss registriert sein | Methode wird aufgerufen auf Remote Object | - | - | - |
 | UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | Die Applikation wurde gestartet und der NameServer wurde gestartet. NameResolver kennt NameServer (Config) | Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID | - | - | - |
 | UC-10 | unregisterService(remoteID: String) : void | INamingService | Der NameServer ist erreichbar | Die Remote Objekte des ServerStubs sind nicht mehr registriert | - | - | - |
-=======
-| UC-3 | lookupService(calleID: long, methodName: int) : Service | INamingService | - | - | - | - | - |
-| UC-4 | marshal(remodeID: String, MethodCall) : byte[] | Marshaller | - | - | - | - | - |
-| UC-5 | send(message: byte[], address: InetAddress) : void | ISender(ClientStub) | - | - | - | - | - |
-| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | - | - | - | - |
-| UC-8 | call(method: MethodCall) : void | IRemoteObject | - | - | - | - | - |
-| UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | - | - | - | - | - |
-| UC-10 | unregisterService(remoteID: String) : void | INamingService | - | - | - | - | - |
->>>>>>> Dokumentation/Middleware/Middleware_Documentation.md
-
 
 # 5. Bausteinsicht
 ## Ebene 1:
