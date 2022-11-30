@@ -74,15 +74,15 @@ Details siehe [Use Cases](#use-cases).
 
 | UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-1 | registerRemoteObject(methodName: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ClientStub wurde erstel | - | - | - | - |
+| UC-1 | registerRemoteObject(methodName: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ServerStub wurde erstellt | Der ServerStub merkt sich das Remote Objekt mit aufrufbaren Methoden (Ordinal des ENUM, zB: 1 = DRAW, 2 = REGISTER) | - | - | - |
 | UC-2 | invoke(remoteID: String, methodName: int, methodParameters: int... (varargs)) : void | IRemoteInvocation(ClientStub) | ClientStub wurde erstellt | Die Methode wird durch ein Remote-Object ausgeführt (Callee) | UC ...  | - | 
-| UC-3 | lookup(calleID: long, methodName: int) : void | INamingService | - | - | - | - | - |
-| UC-4 | marshal(remodeID: String, MethodCall) : byte[] | Marshaller | - | - | - | - | - |
-| UC-5 | send(message: byte[], address: InetAddress) : void | ISender(ClientStub) | - | - | - | - | - |
-| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | - | - | - | - |
-| UC-8 | call(method: MethodCall) : void | IRemoteObject | - | - | - | - | - |
-| UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | - | - | - | - | - |
-| UC-10 | unregisterService(remoteID: String) : void | INamingService | - | - | - | - | - |
+| UC-3 | lookup(calleID: long, methodName: int) : void | INamingService | NamingServer muss laufen | Der ClientStub kennt die Informationen des Services (IP:Port, CalleeID) | - | - | - |
+| UC-4 | marshal(remodeID: String, MethodCall) : byte[] | Marshaller | Der Adressat ist bekannt | Die Nachricht wurde dem Sender übergeben | - | - | - |
+| UC-5 | send(message: byte[], address: InetAddress) : void | ISender(ClientStub) | Der Adressat ist bekannt | Methodenaufruf wurde ans Netzwerk weitergereicht | - | - | - |
+| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | Der Methodenaufruf wurde an das Remote Objekt gegeben (UC-2 wird ausgeführt) | - | - | - |
+| UC-8 | call(method: MethodCall) : void | IRemoteObject | Remote-Object muss registriert sein | Methode wird aufgerufen auf Remote Object | - | - | - |
+| UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | Die Applikation wurde gestartet und der NameServer wurde gestartet. NameResolver kennt NameServer (Config) | Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID | - | - | - |
+| UC-10 | unregisterService(remoteID: String) : void | INamingService | Der NameServer ist erreichbar | Die Remote Objekte des ServerStubs sind nicht mehr registriert | - | - | - |
 
 
 # 5. Bausteinsicht
