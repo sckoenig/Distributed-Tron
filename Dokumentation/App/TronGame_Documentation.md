@@ -80,6 +80,20 @@ Details siehe [Use Cases](#use-cases).
 
 ## 4.2 Funktionale Zerlegung anhand der Use Cases
 Details siehe [Use Cases](#use-cases).
+
+| Objekt | Erklärung |
+| ----------- | ----------- |
+| IConfig | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit. |
+| IGame | Stellt die Spielelogik und startet die Spiel schleife. |
+| IGameManager | Managed die Spieler die mitspielen wollen sowie in welcher Phase sich das Spiel befindet.|
+| IArena | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler. |
+| ICollisionDetector |  |
+| IPlayer |  |
+| ITronModel |  |
+| ITronController |  |
+| MenuOverlay |  |
+
+ 
 ### 4.2.1 Model
 
 <!-- CONFIG -->
