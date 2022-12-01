@@ -98,6 +98,38 @@ Details siehe [Use Cases](#use-cases).
 
 # 8. Querschnittliche Konzepte
 
+## 8.1 RMI-Protokoll
+### 8.1.1 Kodierung
+
+Die Nachrichten im RMI-Verfahren werden in JSON kodiert.
+Jeder Nachricht enthält folgende Punkte: 
+
+| Name      | Beschreibung |
+| ----------- | ----------- |
+| CallerID      | Die RemoteID des Senders. |
+| Nachrichtentyp   | Der Nachrichtentyp ist ein Integer und repräsentiert das Ordinal des Enums MessageType |
+| Length | Länge des Payloads abhängig vom Nachrichtentyp (TEST, ob nötig mit JSONparser) |
+| Counter | Nummerierung der Nachricht zum Sortieren (Nachricht 1 ist vor Nachricht 2 passiert und muss auch so bearbeitet werden)
+
+### 8.1.2 Nachrichtentypen
+Pro Methode, die remote aufgerufen werden soll, gibt es einen Nachrichtentypen. Der Nachrichtentyp entspricht also dem Methodennamen der Methode, die aufgerufen werden soll.
+
+| Typ      | Integer | Payload |  
+| ----------- | ----------- | ----------- |
+| PREPARE | 0 | int: waitingtimer, int: playerCount |
+| REGISTER | 1 | String: remoteID, String: remoteID, int: managedPlayerCount |
+| HANDLE_GAME_STATE | 2 | int: GameState (Ordinal des Enums GameState) |
+| SET_MANAGED_PLAYERS | 3 | int: PlayerID, int: x-Coordinate, int: y-Coordinate |
+| SET_ARENA | 4 | int: rows, int: columns |
+| COUNTDOWN | 5 | Benötigt keinen Payload. |
+| HANDLE_STEER | 6 | int: PlayerID, int: 0 oder 1 (mappt auf Enum DirectionChange) |
+| UPDATE_VIEW | 7 | Map: {color => [x,y,x,y, ... ], ...} |
+| SET_GAME_RESULT | 8 | int: 0-5 (mappt auf Enum TronColor), int: 0 oder 1 (mappt auf Enum GameResult) |
+
+## 8.2 Identifier
+
+Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
+
 # 9. Architekturentscheidungen
 
 # 10. Qualitätsanforderungen
