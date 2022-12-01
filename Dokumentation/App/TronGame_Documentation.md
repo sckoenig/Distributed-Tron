@@ -83,15 +83,19 @@ Details siehe [Use Cases](#use-cases).
 
 | Objekt | Erklärung |
 | ----------- | ----------- |
-| IConfig | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit. |
+| Config | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit. |
 | IGame | Stellt die Spielelogik und startet die Spiel schleife. |
 | IGameManager | Managed die Spieler die mitspielen wollen sowie in welcher Phase sich das Spiel befindet.|
 | IArena | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler. |
-| ICollisionDetector |  |
-| IPlayer |  |
-| ITronModel |  |
-| ITronController |  |
-| MenuOverlay |  |
+| ICollisionDetector | Ist für die Überprüfung ob ein Spieler, mit einem anderen Spieler, dessen Schatten oder einer Arenawand zusammengestoßen ist. |
+| IPlayer | Verwaltet einen einzelnen Spieler, mit den Coordinaten, der Richtung und der Farbe eines Spieler. |
+| ITronModel | Nimmt KeyEvents von dem Controller an und stellt der View die Observables zur Verfügung. |
+| ITronController | Verwaltet die Benutzereingaben. |
+| Steer | Steer ist ein Objekt das eine PlayerId eine dazugehörende Richtung speichert. |
+| StartingOverlay | Ist die Oberfläche wenn sich das Spiel im Zustand Menu befindet. |
+| WaitingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Waiting befindet. |
+| CountingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Countdown befindet. |
+| EndingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Finished befinded. |
 
  
 ### 4.2.1 Model
