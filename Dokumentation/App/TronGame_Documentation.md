@@ -120,7 +120,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `isGameOver() : boolean`                                                           | Game | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
 | UC-3.1 | `handleSteer(steer : Steer ) : void`                                              | IGame | Player muss noch am Leben sein. | Der Player hat eine neue Direction.| Anhand der ausgelesenen Player-ID und Direction eines Steer-Objekts, wird die Fahrtrichtung des Players angepasst. | - |
 | UC-3 | `updateViews() : void `                                                                    | Game | - | - | Für alle registerierten Views werden die Positionen der Spieler auf den Screen gezeichnet. Kollidierte Player werden gehighlightet. Tote Spieler werden in der Hintergrundfärbe gefärbt. | - |
-| UC-3 | `reset() : void `                                                                    | Game | - | - | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde.| - |
+| UC-3 | `reset() : void `                                                                    | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand.  | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde.| - |
 
 <!-- GAMEMANAGER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
