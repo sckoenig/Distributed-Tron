@@ -21,8 +21,19 @@ public class GameManager implements IGameManager, ITronModel {
     private IntegerProperty counter;
     private IntegerProperty playerCount;
     private Map transitions;
+    private ITronView view;
+    private boolean singleView;
 
-    public GameManager(Config config, ITronView view, boolean singleView){
+    public GameManager(boolean singleView){
+        this.singleView = singleView;
+    }
+
+    @Override
+    public void setView(ITronView view){
+        this.view = view;
+    }
+    @Override
+    public void setConfig(Config config){
         this.config = config;
     }
 

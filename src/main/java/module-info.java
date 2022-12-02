@@ -9,4 +9,8 @@ module vsp.trongame {
 
     opens vsp.trongame to javafx.fxml;
     exports vsp.trongame;
+    exports vsp.trongame.app.controller;
+    exports vsp.trongame.app.model;
+    exports vsp.trongame.app.view;
+    exports vsp.trongame.app.view.overlays;
 }

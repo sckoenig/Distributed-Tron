@@ -1,11 +1,8 @@
-package vsp.trongame.app.view.overlays;
+package vsp.trongame.app.view;
 
 import edu.cads.bai5.vsp.tron.view.ITronView;
 import edu.cads.bai5.vsp.tron.view.TronView;
 import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.gamemanager.Config;
-import vsp.trongame.app.model.gamemanager.GameManager;
-import vsp.trongame.app.model.gamemanager.IGameManager;
 
 import java.io.IOException;
 

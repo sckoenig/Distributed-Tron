@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.tron.prototype.view.Menu">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.MenuOverlay">
    <children>
-      <Button fx:id="startGameButton" layoutX="200.0" layoutY="277.0" mnemonicParsing="false" onAction="#handleButtonPress" prefHeight="55.0" prefWidth="200.0" text="PLAY">
+      <Button fx:id="startGameButton" layoutX="200.0" layoutY="277.0" mnemonicParsing="false"  prefHeight="55.0" prefWidth="200.0" text="PLAY">
          <font>
             <Font name="Verdana Bold" size="25.0" />
          </font></Button>

@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.tron.prototype.view.CountDown">
+<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.CountdownOverlay">
    <children>
       <Canvas fx:id="canvas" />
       <Label fx:id="counterLabel" prefHeight="150.0" prefWidth="55.0" text="1" textFill="WHITE">
@@ -13,8 +13,5 @@
             <Font size="96.0" />
          </font>
       </Label>
-      <Label fx:id="label1" layoutX="0" layoutY="0" textFill="WHITE" />
-      <Label fx:id="label2" layoutX="0" layoutY="0" textFill="WHITE" />
-      <Label fx:id="label3" layoutX="0" layoutY="0" textFill="WHITE" />
    </children>
 </AnchorPane>

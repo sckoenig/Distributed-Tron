@@ -33,4 +33,6 @@ public interface ITronController {
      * @return the TronModel which works with the controller
      */
     ITronModel getModel();
+
+    void setModel(ITronModel model);
 }

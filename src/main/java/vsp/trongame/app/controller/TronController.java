@@ -31,4 +31,8 @@ public class TronController implements ITronController {
     public ITronModel getModel(){
         return null;
     }
+
+    public void setModel(ITronModel model){
+        this.model = model;
+    }
 }
