@@ -100,6 +100,7 @@ Details siehe [Use Cases](#use-cases).
  
 ### 4.2.1 Model
 
+### 4.2.1.1 Config
 <!-- CONFIG -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -110,7 +111,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-1 | `getAttribute(key : String) : String`                                              | Config | Es existiert ein Properties-Objekt mit validen Daten. | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
 | UC-3.1 | `getSteer(key : KeyCode) : Steer`                                                  | Config | KeyMappings wurden erfolgreich erstellt. | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
 
-
+### 4.2.1.2 IGame & Game
 <!-- GAME -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -128,7 +129,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `reset() : void `                                                                    | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand.  | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde.| - |
 | UC-3 | `finish() : void `                                                                    | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert.  | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `reset()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
 
-
+### 4.2.1.3 IGameManager & GameManager
 <!-- GAMEMANAGER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -137,7 +138,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setGameResult(result : String, color : Color) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis (Gewinner-Farbe, Ergebnis-Text) wurde gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
 
-
+### 4.2.1.4 Arena
 <!-- ARENA -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -145,12 +146,14 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `deletePlayerPositions(playerIds : List<Integer>) : void`                          | IArena | Liste mit den ID´s darf nicht leer sein.| | Alle koordinaten der übergebenen ID´s werden aus der Arena entfernt. | Wenn die Liste der ID´s leer ist, wird die Methode abgebrochen.|
 | UC-3 | detectWallCollision(coordinate : Coordinate) : boolean                           | IArena | Die Coordinate muss innerhalb des Arena-Arrays sein. Coordinate darf nicht null sein. | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | - |
 
+### 4.2.1.5 ICollisionDetector
 <!-- COLLISION -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
 | UC-3 | `detectHeadColision(players: List<Player>) : boolean`                       | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
 | UC-3 | `detectColision(players: List<Player>, arena : Arena) : void`                       | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
 
+### 4.2.1.6 IPlayer
 <!-- PLAYER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -161,6 +164,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3.1 | `setNextDirectionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - |
 | UC-2,3 | `performDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 
+### 4.2.1.7 ITronModel
 <!-- ITRONMODEL -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -191,15 +195,14 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ![image info](./diagrams/bs_layer1.png)
 ## 5.2 Ebene 2 : Application
 ![image info](./diagrams/bs_layer2_view_controller.png)
-## 5.2 Ebene 2 : ApplicationStub
+## 5.3 Ebene 3 : Application
+![image info](./diagrams/bs_layer3_model_interfaces.png)
+![image info](./diagrams/bs_layer3_model.png)
+## 5.2 Ebene 3 : ApplicationStub
 ![image info](./diagrams/bs_layer3_stub_model_interfaces.png)
 
 Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
 ![image info](./diagrams/bs_layer3_stub_model.png)
-
-## 5.3 Ebene 3 : Application
-![image info](./diagrams/bs_layer3_model_interfaces.png)
-![image info](./diagrams/bs_layer3_model.png)
 
 # 6. Laufzeitsicht
 ## 6.1 Ebene 1
@@ -216,28 +219,26 @@ Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine
 ![image info](./diagrams/sd_mvc_seeResults.png)
 
 ## 6.2 Ebene 2: Model
-### 6.2.1 GameManager States
+### 6.2.1 Model States
 ![image info](./diagrams/GameManager_states.png)
 
 ### 6.2.2 UC-1: Spiel konfigurieren
 ![image info](./diagrams/configure.png)
 
 ### 6.2.3 UC-2: Spiel starten
-![image info](./diagrams/sd_startGame.jpg)
-![image info](./diagrams/sd_startGame_prepare.png)
+![image info](./diagrams/activity_start.png)
 
 ### 6.2.4 UC-3: Spiel spielen
-![image info](./diagrams/sd_playGame.jpg)
+![image info](./diagrams/activity_play.png)
+
+### 6.2.5 UC-4: Spiel beenden & Ergebnisse ansehen
+![image info](./diagrams/activity_end.png)
 
 ### 6.2.5 UC-3.1: Lenken
 ![image info](./diagrams/sd_steerBike.png)
 
 ### 6.2.6 UC-3.1: Lenken-States
 ![image-info](./diagrams/Steer_states.png)
-
-### 6.2.7 UC-4: Ergebnis ansehen
-![image info](./diagrams/sd_seeResults.png)
-
 
 
 
