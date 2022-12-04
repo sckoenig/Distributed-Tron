@@ -9,6 +9,9 @@ public abstract class Overlay {
     public void setController(ITronController controller){
         this.controller = controller;
     }
+    public ITronController getController(){
+        return this.controller;
+    }
 
     public abstract void init();
 

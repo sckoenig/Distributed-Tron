@@ -7,13 +7,15 @@ import javafx.scene.Parent;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
+import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
 import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.gamemanager.*;
+import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.view.ITronViewFactory;
 import vsp.trongame.app.view.overlays.Overlay;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
@@ -21,6 +23,9 @@ import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 public class TronGame extends Application {
 
     public static final String CONFIG_FILE = "tronConfig.properties";
+    Map<ModelState, String> STATE_VIEW_MAPPING = new HashMap<>(Map.of(ModelState.MENU, "menuOverlay.fxml", ModelState.WAITING, "waitingOverlay.fxml",
+            ModelState.COUNTDOWN, "countdownOverlay.fxml",
+            ModelState.ENDING, "endingOverlay.fxml"));
 
     public static void main(String[] args) {
         launch();
@@ -39,13 +44,19 @@ public class TronGame extends Application {
         ITronController tronController = ITronControllerFactory.getTronController(modus);
         ITronModel tronModel = ITronModelFactory.getTronModel(modus);
 
-        loadViewOverlays(tronView, tronController);
-
         /* assemble */
+        if (modus != LOCAL) tronModel.setSingleView(false);
+        else tronModel.setSingleView(true);
+
         tronController.setModel(tronModel);
+        loadViewOverlays(tronView, tronController);
         tronController.initKeyEventHandler(tronView.getScene());
-        tronModel.setView(tronView);
+
         tronModel.setConfig(config);
+
+        tronView.init();
+
+        tronView.showOverlay(ModelState.MENU.toString());
 
         /* open stage */
         stage.setTitle("Tron");
@@ -61,7 +72,7 @@ public class TronGame extends Application {
         Parent root;
         FXMLLoader loader;
 
-        for(Map.Entry<ModelState, String> overlay : ITronModel.MODEL_STATES.entrySet()){
+        for(Map.Entry<ModelState, String> overlay : STATE_VIEW_MAPPING.entrySet()){
 
             String fxml = overlay.getValue();
             ModelState state = overlay.getKey();

@@ -13,7 +13,8 @@ public enum TronColor {
     YELLOW(Color.GOLD),
     GREEN(Color.MEDIUMSEAGREEN),
     VIOLETT(Color.MEDIUMPURPLE),
-    WHITE(Color.LINEN);
+    WHITE(Color.LINEN),
+    DEAD(Color.BLUEVIOLET.darker().darker().darker().desaturate());
 
     private final Color color;
 

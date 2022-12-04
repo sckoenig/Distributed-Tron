@@ -7,21 +7,21 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.MenuOverlay">
    <children>
-      <Button fx:id="startGameButton" layoutX="200.0" layoutY="277.0" mnemonicParsing="false"  prefHeight="55.0" prefWidth="200.0" text="PLAY">
+      <Button fx:id="startGameButton" layoutX="200.0" layoutY="277.0" mnemonicParsing="false" onAction="#handleButtonPress" prefHeight="55.0" prefWidth="200.0" text="PLAY">
          <font>
             <Font name="Verdana Bold" size="25.0" />
          </font></Button>
-      <Label layoutX="286.0" layoutY="167.0" prefHeight="66.0" prefWidth="28.0" text="2">
+      <Label fx:id="playerCountLabel" layoutX="286.0" layoutY="167.0" prefHeight="66.0" prefWidth="28.0" text="2" textFill="WHITE">
          <font>
             <Font name="Verdana" size="45.0" />
          </font>
       </Label>
-      <Button layoutX="359.0" layoutY="179.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="41.0" text="+">
+      <Button fx:id="increasePlayerCountButton" layoutX="359.0" layoutY="179.0" mnemonicParsing="false" onAction="#handleIncrease" prefHeight="42.0" prefWidth="41.0" text="+">
          <font>
             <Font size="18.0" />
          </font>
       </Button>
-      <Button layoutX="200.0" layoutY="179.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="41.0" text="-">
+      <Button fx:id="decreasePlayerCountButton" layoutX="200.0" layoutY="179.0" mnemonicParsing="false" onAction="#handleDecrease" prefHeight="42.0" prefWidth="41.0" text="-">
          <font>
             <Font size="18.0" />
          </font>

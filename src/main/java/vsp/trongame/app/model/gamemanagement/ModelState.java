@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.gamemanager;
+package vsp.trongame.app.model.gamemanagement;
 
 public enum ModelState {
     MENU,

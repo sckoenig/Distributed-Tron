@@ -2,7 +2,7 @@ package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.ITronView;
 import vsp.trongame.app.model.datatypes.Steer;
-import vsp.trongame.app.model.gamemanager.IGameManager;
+import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.List;
 

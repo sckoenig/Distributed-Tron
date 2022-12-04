@@ -1,9 +1,8 @@
 package vsp.trongame.app.controller;
 
-import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
-import vsp.trongame.app.model.gamemanager.ITronModel;
+import vsp.trongame.app.model.ITronModel;
 
 /**
  * Implements the interface ITronController
@@ -18,20 +17,14 @@ public class TronController implements ITronController {
     }
 
     @Override
-    public void startGame(ActionEvent event){
-
+    public void startGame(int playerCount){
+        model.initializeGame(playerCount);
     }
 
     @Override
     public void handleKeyEvent(KeyEvent event){
 
     }
-
-    @Override
-    public ITronModel getModel(){
-        return null;
-    }
-
     public void setModel(ITronModel model){
         this.model = model;
     }

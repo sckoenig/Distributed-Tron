@@ -2,9 +2,10 @@ package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import edu.cads.bai5.vsp.tron.view.ITronView;
+import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.Direction;
 import vsp.trongame.app.model.datatypes.Steer;
-import vsp.trongame.app.model.gamemanager.IGameManager;
+import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.List;
 
@@ -17,9 +18,10 @@ public class Game implements IGame, Runnable{
     private IArena arena;
     private ICollisionDetector collisionDetector;
 
-    public Game(int speed, int rows, int columns){
+    public Game(){
 
     }
+
 
     private void gameLoop(){
 

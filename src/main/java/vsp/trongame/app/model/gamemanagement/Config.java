@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.gamemanager;
+package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;

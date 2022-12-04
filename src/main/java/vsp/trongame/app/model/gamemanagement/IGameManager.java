@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.gamemanager;
+package vsp.trongame.app.model.gamemanagement;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.datatypes.GameState;
@@ -10,17 +10,6 @@ import java.util.Map;
  */
 public interface IGameManager {
 
-    /**
-     * Sets the color of the player who won as the winnerColor.
-     * @param winnerColor the color of the player who won
-     */
-    void setWinnerColor(String winnerColor);
-
-    /**
-     * Sets the game result if someone won or if there was a draw.
-     * @param result of the game either a draw or if there is one winner
-     */
-    void setGameResult(String result);
 
     /**
      * The modelState changes to the next modelState based on the message.
