@@ -21,7 +21,7 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
     private final StringProperty observableResultColor;
     private final StringProperty observableResultText;
     private final IntegerProperty observableCountDownCounter;
-    private final ObservableMap<Color, Set<Coordinate>> observablePlayers;
+    private final ObservableMap<Color, List<Coordinate>> observablePlayers;
     private final ObservableMap<String, Color> observableKeyMappings;
     private final IntegerProperty observableArenaRowCount;
     private final IntegerProperty observableArenaColumnCount;
@@ -68,7 +68,7 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
     public void updatePlayers(Map<TronColor, List<Coordinate>> players) {
         Platform.runLater(() -> {
             for (Map.Entry<TronColor, List<Coordinate>> entry: players.entrySet()){
-                this.observablePlayers.put(entry.getKey().getColor(), new HashSet<>(entry.getValue()));
+                this.observablePlayers.put(entry.getKey().getColor(), new ArrayList<>(entry.getValue())); //new value, so change is triggered
             }
         });
     }
@@ -100,7 +100,7 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
     }
 
     @Override
-    public ObservableMap<Color, Set<Coordinate>> getObservablePlayers() {
+    public ObservableMap<Color, List<Coordinate>> getObservablePlayers() {
         return this.observablePlayers;
     }
 

@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import vsp.trongame.app.model.gamemanagement.Config;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -72,7 +73,7 @@ public interface ITronModel {
          * Returns the Model's Players as an ObservableValue
          * @return game players
          */
-        ObservableMap<Color, Set<Coordinate>> getObservablePlayers();
+        ObservableMap<Color, List<Coordinate>> getObservablePlayers();
 
         /**
          * Returns the Model's current State as an ObservableValue
