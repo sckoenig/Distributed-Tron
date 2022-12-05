@@ -22,9 +22,10 @@ public interface IArena {
     void deletePlayerPositions(List<Integer> playerIds);
 
     /**
-     * Detects if a player crashes with an arena wall.
-     * @param coordinate of the player
-     * @return if the player crashed with the wall
+     * Detects if a player crashes with an arena wall or the shadow of another player.
+     * @param coordinate head coordinate of the player
+     * @return true if the player crashed, false otherwise
      */
-    boolean detectWallCollision(Coordinate coordinate);
+    boolean detectCollision(Coordinate coordinate);
+
 }
