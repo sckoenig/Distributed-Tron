@@ -5,7 +5,6 @@ import javafx.scene.paint.Color;
 /**
  * Represents a Color that a Player Bike can have. Maps to javafx Colors.
  */
-
 public enum TronColor {
 
     BLUE(Color.ROYALBLUE),
@@ -14,7 +13,7 @@ public enum TronColor {
     GREEN(Color.MEDIUMSEAGREEN),
     VIOLETT(Color.MEDIUMPURPLE),
     WHITE(Color.LINEN),
-    DEAD(Color.BLUEVIOLET.darker().darker().darker().desaturate());
+    DEFAULT(Color.BLUEVIOLET.darker().darker().darker().desaturate());
 
     private final Color color;
 
@@ -26,7 +25,7 @@ public enum TronColor {
         return this.color;
     }
 
-    public TronColor getByOrdinal(int ordinal){
+    public static TronColor getByOrdinal(int ordinal){
 
         TronColor[] results = TronColor.values();
         if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");

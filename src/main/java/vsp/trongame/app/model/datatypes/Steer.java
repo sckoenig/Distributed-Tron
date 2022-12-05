@@ -7,4 +7,12 @@ public class Steer {
 
     private int playerId;
     private Direction direction;
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public Direction getDirection() {
+        return direction;
+    }
 }

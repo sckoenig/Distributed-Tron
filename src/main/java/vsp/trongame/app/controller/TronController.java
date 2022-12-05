@@ -22,9 +22,9 @@ public class TronController implements ITronController {
     }
 
     @Override
-    public void handleKeyEvent(KeyEvent event){
+    public void handleKeyEvent(KeyEvent event){}
 
-    }
+    @Override
     public void setModel(ITronModel model){
         this.model = model;
     }

@@ -1,10 +1,8 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
 import vsp.trongame.app.model.datatypes.Steer;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,7 +12,6 @@ import java.util.Properties;
 public class Config {
 
     public Map<String, String> DEFAULTS;
-    public List<Color> COLORS;
     private Properties properties;
     private Map<KeyCode, Steer> keyMappings;
 

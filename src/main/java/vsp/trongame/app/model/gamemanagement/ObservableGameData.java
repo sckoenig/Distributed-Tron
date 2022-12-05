@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -9,78 +10,102 @@ import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.GameResult;
 import vsp.trongame.app.model.datatypes.TronColor;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+
+/**
+ * Represents both the Game's Data and the observable Model.
+ */
 public class ObservableGameData implements IGameData, ITronModel.IObservableTronModel {
 
     private final StringProperty observableResultColor;
-    private final StringProperty observableGameResult;
+    private final StringProperty observableResultText;
     private final IntegerProperty observableCountDownCounter;
-    private final MapProperty<String, Coordinate> observablePlayers;
-    private final ObservableMap<String, Coordinate> players;
+    private final ObservableMap<Color, Set<Coordinate>> observablePlayers;
+    private final ObservableMap<String, Color> observableKeyMappings;
+    private final IntegerProperty observableArenaRowCount;
+    private final IntegerProperty observableArenaColumnCount;
+    private final StringProperty observableModelState;
 
     public ObservableGameData() {
+        this.observableArenaRowCount = new SimpleIntegerProperty();
+        this.observableArenaColumnCount = new SimpleIntegerProperty();
         this.observableCountDownCounter = new SimpleIntegerProperty(4);
-        this.observableGameResult = new SimpleStringProperty();
+        this.observableResultText = new SimpleStringProperty();
         this.observableResultColor = new SimpleStringProperty();
-        this.players = FXCollections.observableHashMap();
-        this.observablePlayers = new SimpleMapProperty<>();
-        this.observablePlayers.set(players);
+        this.observablePlayers = FXCollections.observableHashMap();
+        this.observableKeyMappings = FXCollections.observableHashMap();
+        this.observableModelState = new SimpleStringProperty();
     }
 
     @Override
     public void updateGameResult(TronColor winner, GameResult result) {
-
+        Platform.runLater(() -> {
+            this.observableResultColor.set(winner.getColor().toString());
+            this.observableResultText.set(result.getResultText());
+        });
     }
 
     @Override
-    public void updateKeyMappings(Map<String, Coordinate> mappings) {
+    public void updateCountDownCounter(int value) {
+        Platform.runLater(() -> this.observableCountDownCounter.set(this.observableCountDownCounter.getValue()-value));
+    }
 
+    @Override
+    public void updateKeyMappings(Map<String, TronColor> mappings) {
+        for (Map.Entry<String, TronColor> entry: mappings.entrySet()){
+            this.observableKeyMappings.put(entry.getKey(), entry.getValue().getColor());
+        }
     }
 
     @Override
     public void updateArenaSize(int rows, int columns) {
-
+        this.observableArenaColumnCount.set(columns);
+        this.observableArenaRowCount.set(rows);
     }
 
     @Override
-    public void updatePlayers(Map<Color, List<Coordinate>> players) {
-
+    public void updatePlayers(Map<TronColor, List<Coordinate>> players) {
+        Platform.runLater(() -> {
+            for (Map.Entry<TronColor, List<Coordinate>> entry: players.entrySet()){
+                this.observablePlayers.put(entry.getKey().getColor(), new HashSet<>(entry.getValue()));
+            }
+        });
     }
 
     @Override
     public void updateState(String state) {
-
+        Platform.runLater(() -> this.observableModelState.set(state));
+        if (state.equals("RUNNING")) observableCountDownCounter.set(4);
     }
 
     @Override
     public StringProperty getObservableResultColor() {
-        return null;
+        return this.observableResultColor;
     }
 
     @Override
     public StringProperty getObservableResultText() {
-        return null;
+        return this.observableResultText;
     }
 
     @Override
     public IntegerProperty getObserverableCountDownCounter() {
-        return null;
+        return this.observableCountDownCounter;
     }
 
     @Override
-    public MapProperty<String, Coordinate> getObservableKeyMappings() {
-        return null;
+    public ObservableMap<String, Color> getObservableKeyMappings() {
+        return this.observableKeyMappings;
     }
 
     @Override
-    public MapProperty<Color, List<Coordinate>> getObservablePlayers() {
-        return null;
+    public ObservableMap<Color, Set<Coordinate>> getObservablePlayers() {
+        return this.observablePlayers;
     }
 
     @Override
     public StringProperty getObservableState() {
-        return null;
+        return this.observableModelState;
     }
 }

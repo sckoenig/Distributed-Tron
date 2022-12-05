@@ -2,49 +2,83 @@ package vsp.trongame.app.model;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.MapProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableMap;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import vsp.trongame.app.model.gamemanagement.Config;
 
-import java.util.List;
+import java.util.Set;
 
 /**
- * The model which communicates with the view and the controller.
+ * Represents the Model to the outside of the Model component.
  */
 public interface ITronModel {
 
-    void setSingleView(boolean singleView);
+    /**
+     * Initializes the Model and informs if there is one or several views.
+     * @param singleView true if one view, false for several views.
+     */
+    void init(boolean singleView, Config config);
 
     /**
-     * @param key
+     * Handles a steer event by accepting a KeyCode and processing it.
+     * @param key keyCode of the key that initiated the steer event.
      */
     void handleSteerEvent(KeyCode key);
 
     /**
-     * @param playerNumber
+     * Starts a game in the Model.
+     * @param playerNumber number of Players for the game.
      */
     void initializeGame(int playerNumber);
 
-    void setConfig(Config config);
-
+    /**
+     * Returns the Model as an Observable Model with ObservableValues.
+     * @return observable Model
+     */
     IObservableTronModel getObservableModel();
 
+    /**
+     * Represents the Model with ObservableValues.
+     */
     interface IObservableTronModel {
 
+        /**
+         * Returns the Model's ResultColor as an ObservableValue
+         * @return game result color
+         */
         StringProperty getObservableResultColor();
 
+        /**
+         * Returns the Model's ResultText as an ObservableValue
+         * @return game result text
+         */
         StringProperty getObservableResultText();
 
+        /**
+         * Returns the Model's Countdown Counter as an ObservableValue
+         * @return game countdown counter
+         */
         IntegerProperty getObserverableCountDownCounter();
 
-        MapProperty<String, Coordinate> getObservableKeyMappings();
+        /**
+         * Returns the Model's key mappings as an ObservableValue
+         * @return map of key mappings
+         */
+        ObservableMap<String, Color> getObservableKeyMappings();
 
-        MapProperty<Color, List<Coordinate>> getObservablePlayers();
+        /**
+         * Returns the Model's Players as an ObservableValue
+         * @return game players
+         */
+        ObservableMap<Color, Set<Coordinate>> getObservablePlayers();
 
+        /**
+         * Returns the Model's current State as an ObservableValue
+         * @return model state
+         */
         StringProperty getObservableState();
-
 
     }
 

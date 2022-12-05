@@ -12,18 +12,19 @@ import vsp.trongame.app.model.ITronModelFactory;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.view.ITronViewFactory;
+import vsp.trongame.app.view.overlays.MenuOverlay;
 import vsp.trongame.app.view.overlays.Overlay;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 
 import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 
 public class TronGame extends Application {
 
-    public static final String CONFIG_FILE = "tronConfig.properties";
-    Map<ModelState, String> STATE_VIEW_MAPPING = new HashMap<>(Map.of(ModelState.MENU, "menuOverlay.fxml", ModelState.WAITING, "waitingOverlay.fxml",
+    private static final String CONFIG_FILE = "tronConfig.properties";
+    private static final Map<ModelState, String> STATE_VIEW_MAPPING = new EnumMap<>(Map.of(ModelState.MENU, "menuOverlay.fxml", ModelState.WAITING, "waitingOverlay.fxml",
             ModelState.COUNTDOWN, "countdownOverlay.fxml",
             ModelState.ENDING, "endingOverlay.fxml"));
 
@@ -45,34 +46,35 @@ public class TronGame extends Application {
         ITronModel tronModel = ITronModelFactory.getTronModel(modus);
 
         /* assemble */
-        if (modus != LOCAL) tronModel.setSingleView(false);
-        else tronModel.setSingleView(true);
+        loadViewOverlays(tronView, tronController, tronModel, config);
+        tronView.setObservableState(tronModel.getObservableModel().getObservableState());
+        tronView.setObservablePlayers(tronModel.getObservableModel().getObservablePlayers());
 
         tronController.setModel(tronModel);
-        loadViewOverlays(tronView, tronController);
         tronController.initKeyEventHandler(tronView.getScene());
 
-        tronModel.setConfig(config);
+        boolean singleView;
+        if (modus != LOCAL) singleView = false;
+        else singleView = true;
 
+        /* init */
         tronView.init();
-
-        tronView.showOverlay(ModelState.MENU.toString());
+        tronModel.init(singleView, config);
 
         /* open stage */
         stage.setTitle("Tron");
         stage.setScene(tronView.getScene());
         stage.show();
-
     }
 
-    public void loadViewOverlays(ITronView view, ITronController controller) throws IOException {
+    public void loadViewOverlays(ITronView view, ITronController controller, ITronModel model, Config config) throws IOException {
 
         // TODO: add height & width from config to roots
 
         Parent root;
         FXMLLoader loader;
 
-        for(Map.Entry<ModelState, String> overlay : STATE_VIEW_MAPPING.entrySet()){
+        for (Map.Entry<ModelState, String> overlay : STATE_VIEW_MAPPING.entrySet()) {
 
             String fxml = overlay.getValue();
             ModelState state = overlay.getKey();
@@ -80,10 +82,17 @@ public class TronGame extends Application {
             root = loader.load();
             view.registerOverlay(state.toString(), root);
 
-            Overlay loadedOverlay = loader.getController();
-            loadedOverlay.setController(controller);
-            loadedOverlay.init();
-
+            switch (overlay.getKey()) {
+                case MENU -> {
+                    MenuOverlay menuOverlay = loader.getController();
+                    menuOverlay.setController(controller);
+                    menuOverlay.setDefaultPlayerCount(2); //TODO: default from config
+                }
+                default -> {
+                    Overlay loadedOverlay = loader.getController();
+                    loadedOverlay.init(model.getObservableModel());
+                }
+            }
         }
     }
 }

@@ -1,15 +1,14 @@
 package vsp.trongame.app.model.gamemanagement;
 
-import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.datatypes.GameState;
+import vsp.trongame.app.model.datatypes.TronColor;
 
 import java.util.Map;
 
 /**
- * Manages the player and the state of the game.
+ * Manages the state of the game.
  */
 public interface IGameManager {
-
 
     /**
      * The modelState changes to the next modelState based on the message.
@@ -19,7 +18,7 @@ public interface IGameManager {
 
     /**
      * Sets the players which are managed in the GameManager.
-     * @param managedPlayers the players which need to be managed by the GameManager
+     * @param managedPlayers the ID and Starting Coordinate of the players managed by the GameManager
      */
-    void setManagedPlayers(Map<Integer, Coordinate> managedPlayers);
+    void setManagedPlayers(Map<Integer, TronColor> managedPlayers);
 }

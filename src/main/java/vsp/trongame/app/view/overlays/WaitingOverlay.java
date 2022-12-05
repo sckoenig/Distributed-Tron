@@ -1,11 +1,13 @@
 package vsp.trongame.app.view.overlays;
 
-/**
- * Is show when the game is in the state waiting.
- */
-public class WaitingOverlay extends Overlay {
-    @Override
-    public void init() {
+import vsp.trongame.app.model.ITronModel;
 
+/**
+ * Overlay, that represents a waiting-for-other-players screen.
+ */
+public class WaitingOverlay implements Overlay {
+
+    public void init(ITronModel.IObservableTronModel observableModel) {
+        //nothing to do here right now.
     }
 }

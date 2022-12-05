@@ -8,9 +8,10 @@ import java.util.List;
 public interface ICollisionDetector {
 
     /**
-     * detects if a player is crashed because of a collision with the wall or at least one other Player.
-     * If a player collides with a wall or other player we crash the bike and delete all positions from our
-     * arena.
+     * Detects if a player is crashed because of a collision with the wall or at least one other Player.
+     * If a player collides with a wall or the shadow of another player the player is crashed.
+     * If two or more players collide, they are all crashed.
+     * The positions of any crashed player are removed from the arena.
      * @param alivePlayer list with all players that are still alive
      * @param arena the arena
      */

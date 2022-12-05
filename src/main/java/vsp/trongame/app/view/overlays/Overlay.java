@@ -1,18 +1,16 @@
 package vsp.trongame.app.view.overlays;
 
-import vsp.trongame.app.controller.ITronController;
+import vsp.trongame.app.model.ITronModel;
 
-public abstract class Overlay {
+/**
+ * Represents a generic overlay.
+ */
+public interface Overlay {
 
-    private ITronController controller;
-
-    public void setController(ITronController controller){
-        this.controller = controller;
-    }
-    public ITronController getController(){
-        return this.controller;
-    }
-
-    public abstract void init();
+    /**
+     * Initializes the overlay with the observable Model.
+     * @param model observable model
+     */
+    void init(ITronModel.IObservableTronModel model);
 
 }

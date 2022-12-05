@@ -1,9 +1,9 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import javafx.scene.paint.Color;
 import vsp.trongame.app.model.datatypes.Direction;
 import vsp.trongame.app.model.datatypes.DirectionChange;
+import vsp.trongame.app.model.datatypes.TronColor;
 
 import java.util.List;
 
@@ -24,7 +24,6 @@ public interface IPlayer {
      */
     List<Coordinate> getCoordinates();
 
-
     /**
      * Adds an coordinate to the list of all coordinates.
      * @param coordinate the to be added coordinate
@@ -35,7 +34,7 @@ public interface IPlayer {
      * Gets the color of the player.
      * @return the color
      */
-    Color getColor();
+    TronColor getColor();
 
     /**
      * checks if the player is still alive.
@@ -55,14 +54,20 @@ public interface IPlayer {
     int getId();
 
     /**
-     * Sets the direction which the player wants to go next, if the player presses a new key before the
-     * next round has started the old directionChange will be overwritten.
+     * Sets the DirectionChange which the player wants to perform next. If the player presses a new key before the
+     * DirectionChange is performed the old DirectionChange will be overwritten.
      * @param directionChange the next direction.
      */
     void setNextDirectionChange(DirectionChange directionChange);
 
     /**
-     * Sets the current direction based on the next nextDirectionChange, once every move and changes
+     * Sets the direction of the player.
+     * @param direction the player's new direction.
+     * */
+    void setDirection(Direction direction);
+
+    /**
+     * Sets the current direction based on the current nextDirectionChange and changes
      * the nextDirectionChange to NONE.
      * @return the new direction
      */
