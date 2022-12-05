@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Arena implements IArena{
 
-    private int[][] arena;
+    private int[][] arenaField;
 
     /**
      * Constructor arena where a new Arena is initialized.
@@ -17,7 +17,7 @@ public class Arena implements IArena{
      * @param columns the number of columns
      */
     public Arena(int rows, int columns){
-        this.arena = new int[columns][rows];
+        this.arenaField = new int[columns][rows];
     }
 
     @Override
@@ -31,7 +31,7 @@ public class Arena implements IArena{
     }
 
     @Override
-    public boolean detectWallCollision(Coordinate coordinate) {
+    public boolean detectCollision(Coordinate coordinate) {
         return false;
     }
 }
