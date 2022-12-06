@@ -31,4 +31,4 @@
 - Issue 33: 
     - Marshaller ist gute Idee 
     -> Vorschlag der Screenshot, Nachrichten eingang, übersetzung, dann in Queue, methodenaufrufe
-    
+    ![image-info](Issue33Vorschlag.png)
