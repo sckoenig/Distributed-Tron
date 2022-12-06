@@ -16,6 +16,19 @@
     -> Der Host hat Datenhohheit und bestimmt die länge des Timers, der erste Spieler startet doch nur den Timer (also Signal wird von dem gesetzt zum starten) mit der länge vom Host. Damit wäre es ja schon vereinheitlicht 
 - zu den offenen Issues der Middleware schreibe ich noch ein paar Ideen an die Issues. 
 
+###Fragen 
+- War die Zirkularität nicht vorher schon beständigt, zwischen View und Model -> wenn nicht warum gibt es die jetzt weil Game hatte vorher doch auch eine Schnittstelle zur ITronView 
+    - in wiefern kann die Zirkularität uns beeinträchtigen -> wenn nicht dann für den Vorschlag das die Game und der GameManager die View einfach kennt 
+
 ### Besprochenes:
 - Über calculateFairStartingPosition gesprochen, ob man die seitenpositionen rauszulassen 
     -> ist eventuell doch nicht fair, berücksichtigen das Spieler zu Spieler gleicher Abstand und das Spieler zur Wand gleicher Abstand
+- ToDo Liste (Issues) aktualisieren Issue 21
+- Issue 22: Verantwortlichkeit verändert sich nicht, eine Receiver Klasse reicht um beide Bereich abzudecken 
+    -> wie verhält sich das wenn beide auf dem gleichen Port lauschen? Wie können die differenziert werden? weil Nachricht ist ja erstmal ein Datagram
+    - ist guter Vorschlag mit den InvocationTypes
+- Issue 24: gehört am Donnerstag zum Termin
+- Issue 33: 
+    - Marshaller ist gute Idee 
+    -> Vorschlag der Screenshot, Nachrichten eingang, übersetzung, dann in Queue, methodenaufrufe
+    
