@@ -39,16 +39,10 @@ public interface IGameData {
     void updatePlayers(Map<TronColor, List<Coordinate>> players);
 
     /**
-     * Updates the model's state.
-     * @param state new state
-     */
-    void updateState(String state);
-
-    /**
      * Updates the counter for a countdown by decreasing it.
-     * @param decrease value by which counter is decreased.
+     * @param value value by which counter is decreased.
      */
-    void updateCountDownCounter(int decrease);
+    void updateCountDownCounter(int value);
 
 
 

@@ -11,27 +11,37 @@ import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.game.IGameFactory;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
 
 /**
  * Functions as the Model's Manager.
  */
 public class GameManager implements IGameManager, ITronModel {
 
+    private final ExecutorService executorService;
+    private final ITronView view;
     private final IGame game;
     private final IGameData gameData;
     private final List<Integer> managedPlayers;
     private final Map<ModelState, Map<GameState, ModelState>> transitions;
-
-    private Config config;
-    private boolean singleView;
-    private boolean handleSteerEvents;
+    private final Config config;
+    private final boolean singleView;
 
     private ModelState currentState;
     private int playerCount;
 
-    public GameManager(GameModus gameModus) {
-        this.game = IGameFactory.getGame(gameModus);
-        this.gameData = IGameDataFactory.getGameData(gameModus);
+    public GameManager(GameModus gameModus, ITronView tronView, boolean singleView, Config config) {
+        this.view = tronView;
+        this.singleView = singleView;
+        this.config = config;
+
+        this.executorService = Executors.newSingleThreadExecutor();
+        this.game = IGameFactory.getGame(gameModus, executorService, 2000, 10, 10, 10); //TODO read from config
+        this.gameData = IGameDataFactory.getGameData(gameModus, tronView);
         this.transitions = new EnumMap<>(Map.of(
                 ModelState.MENU, Map.of(GameState.PREPARING, ModelState.WAITING),
                 ModelState.WAITING, Map.of(GameState.COUNTDOWN, ModelState.COUNTDOWN, GameState.INIT, ModelState.MENU),
@@ -41,12 +51,9 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void init(boolean singleView, Config config) {
-        this.singleView = singleView;
-        this.config = config;
+    public void init() {
         this.currentState = ModelState.MENU;
-        this.handleSteerEvents = false;
-        this.gameData.updateState(currentState.toString());
+        updateView();
     }
 
     @Override
@@ -78,7 +85,7 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleSteerEvent(KeyCode key) {
-        if (handleSteerEvents) {
+        if (currentState == ModelState.PLAYING) {
             Steer steer = config.getSteer(key);
             if (managedPlayers.contains(steer.getPlayerId())) game.handleSteer(steer);
         }
@@ -89,14 +96,18 @@ public class GameManager implements IGameManager, ITronModel {
         return (IObservableTronModel) this.gameData;
     }
 
+    @Override
+    public void finishGracefully() {
+        executorService.shutdownNow();
+    }
+
     /**
      * A new state is reached and executed.
      *
-     * @param gameState the game state initiating the transition.
+     * @param newState the game state initiating the transition.
      */
-    private void transition(ModelState gameState) {
-        currentState = gameState;
-        gameData.updateState(currentState.toString());
+    private void transition(ModelState newState) {
+        currentState = newState;
         executeState();
     }
 
@@ -104,30 +115,24 @@ public class GameManager implements IGameManager, ITronModel {
      * Executes the current state.
      */
     private void executeState() {
+        updateView();
 
-        switch (currentState) {
+        if (currentState == ModelState.WAITING) executorService.execute(() -> {
+            game.prepare(playerCount);
+            int managedPlayerCount = singleView ? playerCount : 1;
+            game.register(gameData, this, managedPlayerCount);
+        });
 
-            case WAITING -> {
-                //TODO: int waitingTimer = Integer.parseInt(config.getAttribut("waitingTimer"));
-                Runnable task = () -> {
-                    int waitingTimer = 1000;
-                    game.prepare(waitingTimer, playerCount, 10, 10);
-                    int managedPlayerCount = singleView ? playerCount : 1;
-                    game.register(gameData, this, managedPlayerCount);
-                };
-                new Thread(task).start();
-            }
+        if (currentState == ModelState.ENDING) endingTimer(2000); //TODO read timer from config
+    }
 
-            case PLAYING -> handleSteerEvents = true;
-
-            case ENDING -> {
-                //TODO: int endingTimer = Integer.parseInt(config.getAttribut("endingTimer"));
-                int endingTimer = 1000;
-                startTimer(endingTimer);
-            }
-
-            default -> {} //other states don't have behavior to execute at the moment
-        }
+    /**
+     * Updates the view depending on state.
+     */
+    private void updateView() {
+        view.hideOverlays();
+        if (currentState != ModelState.PLAYING) view.showOverlay(currentState.toString());
+        if (currentState == ModelState.MENU) view.clear();
     }
 
     /**
@@ -136,12 +141,23 @@ public class GameManager implements IGameManager, ITronModel {
     private void finish() {
         managedPlayers.clear();
         currentState = ModelState.MENU;
-        handleSteerEvents = false;
+        updateView();
+        gameData.updateCountDownCounter(0);
     }
 
-    private void startTimer(int milliseconds) {
-        //TODO
+    /**
+     * Timer for ending state.
+     * @param milliseconds time of the ending state.
+     */
+    private void endingTimer(int milliseconds) {
+        executorService.execute(() -> {
+            try{
+                sleep(milliseconds);
+            } catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+            if (!currentThread().isInterrupted()) finish();
+        });
     }
-
 
 }

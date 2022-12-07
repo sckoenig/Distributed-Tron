@@ -32,39 +32,42 @@ public class TronGame extends Application {
         launch();
     }
 
+    private ITronModel model;
+
     @Override
     public void start(Stage stage) throws IOException {
 
         /* BOOT APP */
 
         Config config = new Config();
-        GameModus modus = LOCAL; //TODO change to Config when Config is implemented
+        GameModus modus = LOCAL; //TODO get from Config when Config is implemented
+        boolean singleView = modus == LOCAL? true : false;
 
         /* components */
         ITronView tronView = ITronViewFactory.getTronView(modus, CONFIG_FILE);
         ITronController tronController = ITronControllerFactory.getTronController(modus);
-        ITronModel tronModel = ITronModelFactory.getTronModel(modus);
+        ITronModel tronModel = ITronModelFactory.getTronModel(modus, tronView, singleView, config);
 
         /* assemble */
         loadViewOverlays(tronView, tronController, tronModel, config);
-        tronView.setObservableState(tronModel.getObservableModel().getObservableState());
-        tronView.setObservablePlayers(tronModel.getObservableModel().getObservablePlayers());
-
         tronController.setModel(tronModel);
         tronController.initKeyEventHandler(tronView.getScene());
 
-        boolean singleView;
-        if (modus != LOCAL) singleView = false;
-        else singleView = true;
-
         /* init */
         tronView.init();
-        tronModel.init(singleView, config);
+        tronModel.init();
+        this.model = tronModel; //has Threads, that need to be shutdown on close
 
         /* open stage */
         stage.setTitle("Tron");
         stage.setScene(tronView.getScene());
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        model.finishGracefully();
     }
 
     public void loadViewOverlays(ITronView view, ITronController controller, ITronModel model, Config config) throws IOException {

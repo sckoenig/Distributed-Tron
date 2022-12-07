@@ -20,9 +20,11 @@ public class CountdownOverlay implements Overlay {
 
     @Override
     public void init(ITronModel.IObservableTronModel observableModel) {
+        counterLabel.setVisible(false);
         observableModel.getObserverableCountDownCounter().addListener((observableValue, s, t1) -> {
             counterLabel.setText(String.valueOf(t1));
-            if (t1.equals(1)) reset();
+            counterLabel.setVisible(true);
+            if (t1.equals(0)) reset();
         });
         observableModel.getObservableKeyMappings().addListener((MapChangeListener<String, Color>) change -> paintOnCanvas());
     }
@@ -33,6 +35,7 @@ public class CountdownOverlay implements Overlay {
 
     private void reset(){
         this.canvas.getGraphicsContext2D().clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+        counterLabel.setVisible(false);
     }
 
 }

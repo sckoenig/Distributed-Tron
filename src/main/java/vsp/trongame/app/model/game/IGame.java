@@ -11,12 +11,9 @@ public interface IGame {
 
     /**
      * Prepares the game to start, sets a timer for the countdown and creates an arena.
-     * @param waitingTimer the time of the timer
      * @param playerCount the accepted playerCount
-     * @param arenaRows the number of rows for the arena
-     * @param arenaColumns the number of arenas for the arena
      */
-    void prepare(int waitingTimer, int playerCount, int arenaRows, int arenaColumns);
+    void prepare(int playerCount);
 
     /**
      * The game saves which observers are informing the game and creates the sum of players.

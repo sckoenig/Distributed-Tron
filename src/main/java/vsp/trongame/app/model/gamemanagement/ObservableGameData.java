@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import edu.cads.bai5.vsp.tron.view.ITronView;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -12,7 +13,6 @@ import vsp.trongame.app.model.datatypes.TronColor;
 
 import java.util.*;
 
-
 /**
  * Represents both the Game's Data and the observable Model.
  */
@@ -21,21 +21,15 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
     private final StringProperty observableResultColor;
     private final StringProperty observableResultText;
     private final IntegerProperty observableCountDownCounter;
-    private final ObservableMap<Color, List<Coordinate>> observablePlayers;
     private final ObservableMap<String, Color> observableKeyMappings;
-    private final IntegerProperty observableArenaRowCount;
-    private final IntegerProperty observableArenaColumnCount;
-    private final StringProperty observableModelState;
+    private final ITronView view;
 
-    public ObservableGameData() {
-        this.observableArenaRowCount = new SimpleIntegerProperty();
-        this.observableArenaColumnCount = new SimpleIntegerProperty();
-        this.observableCountDownCounter = new SimpleIntegerProperty(4);
+    public ObservableGameData(ITronView view) {
+        this.view = view;
+        this.observableCountDownCounter = new SimpleIntegerProperty(0);
         this.observableResultText = new SimpleStringProperty();
         this.observableResultColor = new SimpleStringProperty();
-        this.observablePlayers = FXCollections.observableHashMap();
         this.observableKeyMappings = FXCollections.observableHashMap();
-        this.observableModelState = new SimpleStringProperty();
     }
 
     @Override
@@ -48,7 +42,7 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
 
     @Override
     public void updateCountDownCounter(int value) {
-        Platform.runLater(() -> this.observableCountDownCounter.set(this.observableCountDownCounter.getValue()-value));
+        Platform.runLater(() -> this.observableCountDownCounter.set(value));
     }
 
     @Override
@@ -60,23 +54,15 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
 
     @Override
     public void updateArenaSize(int rows, int columns) {
-        this.observableArenaColumnCount.set(columns);
-        this.observableArenaRowCount.set(rows);
+        view.setColumns(columns);
+        view.setRows(rows);
     }
 
     @Override
     public void updatePlayers(Map<TronColor, List<Coordinate>> players) {
-        Platform.runLater(() -> {
-            for (Map.Entry<TronColor, List<Coordinate>> entry: players.entrySet()){
-                this.observablePlayers.put(entry.getKey().getColor(), new ArrayList<>(entry.getValue())); //new value, so change is triggered
-            }
-        });
-    }
-
-    @Override
-    public void updateState(String state) {
-        Platform.runLater(() -> this.observableModelState.set(state));
-        if (state.equals("RUNNING")) observableCountDownCounter.set(4);
+        for (Map.Entry<TronColor, List<Coordinate>> player: players.entrySet()) {
+            view.draw(player.getValue(), player.getKey().getColor());
+        }
     }
 
     @Override
@@ -99,13 +85,4 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
         return this.observableKeyMappings;
     }
 
-    @Override
-    public ObservableMap<Color, List<Coordinate>> getObservablePlayers() {
-        return this.observablePlayers;
-    }
-
-    @Override
-    public StringProperty getObservableState() {
-        return this.observableModelState;
-    }
 }

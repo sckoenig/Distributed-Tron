@@ -6,40 +6,51 @@ import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
 
-import static java.lang.Thread.sleep;
+import static java.lang.Thread.*;
 
 /**
  * Implements IGame and performs the gameLoop
  */
-public class Game implements IGame, Runnable {
+public class Game implements IGame {
 
+    private final Map<GameState, GameState> transitions;
+    private final ExecutorService executorService;
     private final List<IPlayer> players;
-    private final Map<TronColor, List<Coordinate>> mappedPlayers; //for IGameData update
+    private final Map<TronColor, List<Coordinate>> mappedPlayers; //for gameLoop update
     private final List<IGameManager> stateListener;
     private final List<IGameData> dataListener;
     private final ICollisionDetector collisionDetector;
+    private final int speed;
+    private final int preparationTime;
+    private final IArena arena;
 
-    private IArena arena;
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
 
-    public Game() {
+    public Game(ExecutorService executorService, int waitingTimer, int rows, int columns, int speed) {
+        this.speed = speed;
+        this.preparationTime = waitingTimer;
+        this.arena = new Arena(rows, columns);
+        this.executorService = executorService;
         this.players = new ArrayList<>();
         this.stateListener = new ArrayList<>();
         this.dataListener = new ArrayList<>();
         this.mappedPlayers = new HashMap<>();
         this.collisionDetector = new CollisionDetector();
         this.currentState = GameState.INIT;
+        this.transitions = new EnumMap<>(Map.of(GameState.INIT, GameState.PREPARING,
+                GameState.PREPARING, GameState.COUNTDOWN, GameState.COUNTDOWN, GameState.RUNNING,
+                GameState.RUNNING, GameState.FINISHED, GameState.FINISHED, GameState.INIT));
     }
 
     @Override
-    public void prepare(int waitingTimer, int playerCount, int arenaRows, int arenaColumns) {
-        this.arena = new Arena(arenaRows, arenaColumns);
+    public void prepare(int playerCount) {
         this.currentState = GameState.PREPARING;
         this.playerCount = playerCount;
-        //TODO: startTimer
+        preparationTimer();
     }
 
     @Override
@@ -61,33 +72,58 @@ public class Game implements IGame, Runnable {
         //TODO
     }
 
-    @Override
-    public void run() {
-        try {
-            //TODO
-            countDown();
-            mockLoop();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        finish();
-    }
+    /**
+     * Transitions to the next state and informs stateListeners.
+     */
+    private void transitionState() {
+        currentState = transitions.get(currentState);
 
-    private void countDown() throws InterruptedException {
-
-        currentState = GameState.COUNTDOWN;
         for (IGameManager stateListenerEntry : stateListener) {
             stateListenerEntry.handleGameState(currentState);
         }
+    }
 
-        for (IGameData dataListenerEntry : dataListener) {
-            dataListenerEntry.updateCountDownCounter(1);
-            sleep(1000);
-            dataListenerEntry.updateCountDownCounter(1);
-            sleep(1000);
-            dataListenerEntry.updateCountDownCounter(1);
-            sleep(1000);
-        }
+    private void preparationTimer(){
+        executorService.execute(() -> {
+            executorService.execute(() -> {
+                try{
+                    sleep(preparationTime);
+                } catch (InterruptedException e){
+                    Thread.currentThread().interrupt();
+                }
+                if (!currentThread().isInterrupted()) handleTimeOut();
+            });
+        });
+    }
+
+    private void handleTimeOut() {
+        if (isGameReady()) start();
+        else currentState = GameState.INIT;
+    }
+
+    /**
+     * Checks if enough players are registered to start the game after preperation time is over.
+     * @return true, if enough players are registered, false otherwise.
+     */
+    private boolean isGameReady() {
+        return currentState == GameState.PREPARING && registeredPlayerCount > 2;
+    }
+
+    /**
+     * Checks if the desired player count was reached.
+     * @return true, if the playerCount players are registered, false otherwise.
+     */
+    private boolean isGameFull() {
+        return this.registeredPlayerCount == playerCount;
+    }
+
+    /**
+     * Checks if a registration is allowed.
+     * @param playerCountToRegister the amount of players that are to be registered.
+     * @return true, if registration is allowed, false otherwise.
+     */
+    private boolean isRegistrationAllowed(int playerCountToRegister) {
+        return currentState == GameState.PREPARING && this.playerCount - this.registeredPlayerCount <= playerCountToRegister;
     }
 
     /**
@@ -112,26 +148,10 @@ public class Game implements IGame, Runnable {
     }
 
     /**
-     * Checks if a registration is allowed.
-     * @param playerCountToRegister the amount of players that are to be registered.
-     * @return true, if registration is allowed, false otherwise.
-     */
-    private boolean isRegistrationAllowed(int playerCountToRegister) {
-        return currentState == GameState.PREPARING && this.playerCount - this.registeredPlayerCount <= playerCountToRegister;
-    }
-
-    /**
-     * Checks if the desired player count was reached.
-     * @return true, if the playerCount players are registered, false otherwise.
-     */
-    private boolean isGameFull() {
-        return this.registeredPlayerCount == playerCount;
-    }
-
-    /**
      * Makes necessary preparation for game start, then starts the game.
      */
     private void start() {
+        transitionState();
 
         for (IGameData dataListenerEntry : dataListener) {
             dataListenerEntry.updateArenaSize(100, 100);
@@ -145,15 +165,43 @@ public class Game implements IGame, Runnable {
             player.addCoordinate(coordinate);
             player.setDirection(calculateStartingDirection(coordinate));
         }*/
+        try{
+            countDown();
+            executorService.execute(() -> {
+                try {
+                    mockLoop();
+                    //gameLoop()
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                if (!interrupted()) finish();
+            });
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+    }
 
-        new Thread(this).start();
+    private void countDown() throws InterruptedException {
+
+        for (IGameData dataListenerEntry : dataListener) {
+            dataListenerEntry.updateCountDownCounter(3);
+            sleep(1000);
+            dataListenerEntry.updateCountDownCounter(2);
+            sleep(1000);
+            dataListenerEntry.updateCountDownCounter(1);
+            sleep(1000);
+        }
     }
 
     /**
      * Performs the game's main loop.
      */
-    private void gameLoop() {
+    private void gameLoop() throws InterruptedException {
         //TODO
+        while (!isGameOver() && !Thread.interrupted()){
+            //do loop...
+            sleep(0); //tick rate here
+        }
     }
 
     /**
@@ -204,7 +252,7 @@ public class Game implements IGame, Runnable {
         IPlayer winner = players.stream().filter(IPlayer::isAlive).reduce((a, b) -> {
             throw new IllegalStateException("More than one Player is alive!");
         }).orElse(null);
-        GameResult result =  winner == null? GameResult.DRAW : GameResult.WON;
+        GameResult result = winner == null? GameResult.DRAW : GameResult.WON;
         TronColor resultColor = winner == null? TronColor.DEFAULT : winner.getColor();
 
         //inform
@@ -228,7 +276,6 @@ public class Game implements IGame, Runnable {
         playerCount = registeredPlayerCount = 0;
         stateListener.clear();
         dataListener.clear();
-        arena = null;
         players.clear();
     }
 
