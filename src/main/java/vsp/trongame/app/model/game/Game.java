@@ -25,6 +25,10 @@ public class Game implements IGame {
     private final int speed;
     private final int preparationTime;
     private final IArena arena;
+    private final int rows;
+    private final int columns;
+
+
 
     private int playerCount;
     private int registeredPlayerCount;
@@ -34,6 +38,8 @@ public class Game implements IGame {
         this.speed = speed;
         this.preparationTime = waitingTimer;
         this.arena = new Arena(rows, columns);
+        this.rows = rows;
+        this.columns = columns;
         this.executorService = executorService;
         this.players = new ArrayList<>();
         this.stateListener = new ArrayList<>();
@@ -211,7 +217,49 @@ public class Game implements IGame {
      * @return the list of calculated starting coordinates
      */
     private List<Coordinate> calculateFairStartingCoordinates(int playerCount) {
-        return new ArrayList<>();
+        List<Coordinate> fairPositions = new ArrayList<>();
+        switch (playerCount) {
+            case 2 -> {
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+            }
+            case 3 -> {
+                fairPositions.add(new Coordinate(rows / 2, 0));
+                fairPositions.add(new Coordinate(0, columns / 2));
+                fairPositions.add(new Coordinate(rows, columns / 2));
+            }
+            case 4 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+            }
+            case 5 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns / 2));
+            }
+            case 6 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+
+                if (rows > columns) {
+                    fairPositions.add(new Coordinate(rows / 2, 0));
+                    fairPositions.add(new Coordinate(rows / 2, columns));
+                } else {
+                    fairPositions.add(new Coordinate(0, columns / 2));
+                    fairPositions.add(new Coordinate(rows, columns / 2));
+                }
+
+            }
+            default -> {
+            }
+        }
+        return fairPositions;
     }
 
     /**
