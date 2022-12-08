@@ -3,6 +3,7 @@ package vsp.trongame.app.model.gamemanagement;
 import javafx.scene.input.KeyCode;
 import vsp.trongame.app.model.datatypes.Steer;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -11,7 +12,7 @@ import java.util.Properties;
  */
 public class Config {
 
-    public Map<String, String> DEFAULTS;
+    public static final Map<String, String> DEFAULTS = new HashMap<>();
     private Properties properties;
     private Map<KeyCode, Steer> keyMappings;
 
