@@ -224,9 +224,9 @@ public class Game implements IGame {
                 fairPositions.add(new Coordinate(rows, columns));
             }
             case 3 -> {
-                fairPositions.add(new Coordinate(rows / 2, 0));
-                fairPositions.add(new Coordinate(0, columns / 2));
-                fairPositions.add(new Coordinate(rows, columns / 2));
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(rows, 0));
             }
             case 4 -> {
                 fairPositions.add(new Coordinate(0, 0));
