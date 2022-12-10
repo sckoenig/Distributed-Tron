@@ -22,16 +22,27 @@ public class Arena implements IArena{
 
     @Override
     public void addPlayerPosition(int playerId, Coordinate coordinate) {
-
+        arenaField[coordinate.y][coordinate.x] = playerId;
     }
 
     @Override
-    public void deletePlayerPositions(List<Integer> playerIds) {
-
+    public void deletePlayerPositions(List<IPlayer> crashedPlayer) {
+        for (int columns = 0; columns < arenaField.length; columns++) {
+            for (int row = 0; row < arenaField[columns].length; row++) {
+                if (arenaField[columns][row] !=0) {
+                    for (IPlayer player: crashedPlayer) {
+                        if(arenaField[columns][row] == player.getId()){
+                            arenaField[columns][row] = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean detectCollision(Coordinate coordinate) {
-        return false;
+        return (arenaField.length == coordinate.x + 1 || arenaField[0].length == coordinate.y + 1) || arenaField[coordinate.y][coordinate.x] != 0;
     }
 }

@@ -17,9 +17,9 @@ public interface IArena {
 
     /**
      * Deletes all occurrences of all the player in the List, in the arena.
-     * @param playerIds all the player ids to the players which crashed.
+     * @param crashedPlayers all the player which crashed.
      */
-    void deletePlayerPositions(List<Integer> playerIds);
+    void deletePlayerPositions(List<IPlayer> crashedPlayers);
 
     /**
      * Detects if a player crashes with an arena wall or the shadow of another player.
