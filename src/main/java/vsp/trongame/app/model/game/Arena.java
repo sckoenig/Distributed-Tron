@@ -43,6 +43,6 @@ public class Arena implements IArena{
 
     @Override
     public boolean detectCollision(Coordinate coordinate) {
-        return (arenaField.length == coordinate.x + 1 || arenaField[0].length == coordinate.y + 1) || arenaField[coordinate.y][coordinate.x] != 0;
+        return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0;
     }
 }
