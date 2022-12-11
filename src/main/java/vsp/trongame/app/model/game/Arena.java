@@ -26,12 +26,12 @@ public class Arena implements IArena{
     }
 
     @Override
-    public void deletePlayerPositions(List<IPlayer> crashedPlayer) {
+    public void deletePlayerPositions(List<Integer> crashedPlayer) {
         for (int columns = 0; columns < arenaField.length; columns++) {
             for (int row = 0; row < arenaField[columns].length; row++) {
                 if (arenaField[columns][row] !=0) {
-                    for (IPlayer player: crashedPlayer) {
-                        if(arenaField[columns][row] == player.getId()){
+                    for (Integer playerId: crashedPlayer) {
+                        if(arenaField[columns][row] == playerId){
                             arenaField[columns][row] = 0;
                             break;
                         }
@@ -43,6 +43,7 @@ public class Arena implements IArena{
 
     @Override
     public boolean detectCollision(Coordinate coordinate) {
-        return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0;
+        return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0
+                || coordinate.x < 0 || coordinate.y < 0;
     }
 }
