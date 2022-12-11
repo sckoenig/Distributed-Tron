@@ -73,9 +73,17 @@ public class Game implements IGame {
         if (isGameFull()) start();
     }
 
+    //brauchen eventuell ein getPlayerById
     @Override
     public void handleSteer(Steer steer) {
-        //TODO
+        int playerId = steer.getPlayerId();
+        DirectionChange directionChange = steer.getDirectionChange();
+        for (IPlayer player: players) {
+            if(player.getId() == playerId){
+                player.setNextDirectionChange(directionChange);
+                break;
+            }
+        }
     }
 
     /**
@@ -176,7 +184,7 @@ public class Game implements IGame {
             executorService.execute(() -> {
                 try {
                     mockLoop();
-                    //gameLoop()
+                    //gameLoop();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

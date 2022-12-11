@@ -1,6 +1,7 @@
 package vsp.trongame.app.controller;
 
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import vsp.trongame.app.model.ITronModel;
 
@@ -22,7 +23,9 @@ public class TronController implements ITronController {
     }
 
     @Override
-    public void handleKeyEvent(KeyEvent event){}
+    public void handleKeyEvent(KeyEvent event){
+        model.handleSteerEvent(KeyCode.getKeyCode(event.toString()));
+    }
 
     @Override
     public void setModel(ITronModel model){
