@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import edu.cads.bai5.vsp.tron.view.ITronView;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
