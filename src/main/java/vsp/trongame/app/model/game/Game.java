@@ -254,15 +254,8 @@ public class Game implements IGame {
                 fairPositions.add(new Coordinate(rows, columns));
                 fairPositions.add(new Coordinate(0, columns));
                 fairPositions.add(new Coordinate(rows, 0));
-
-                if (rows > columns) {
-                    fairPositions.add(new Coordinate(rows / 2, 0));
-                    fairPositions.add(new Coordinate(rows / 2, columns));
-                } else {
-                    fairPositions.add(new Coordinate(0, columns / 2));
-                    fairPositions.add(new Coordinate(rows, columns / 2));
-                }
-
+                fairPositions.add(new Coordinate(rows / 2, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns));
             }
             default -> {
             }
