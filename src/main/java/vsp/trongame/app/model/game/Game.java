@@ -203,9 +203,16 @@ public class Game implements IGame {
      * Performs the game's main loop.
      */
     private void gameLoop() throws InterruptedException {
-        //TODO
         while (!isGameOver() && !Thread.interrupted()){
-            //do loop...
+            players.forEach(p -> {
+                if(p.isAlive()){
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
+                    p.addCoordinate(nextCoordinate);
+                    arena.addPlayerPosition(p.getId(), nextCoordinate);
+                }
+            });
+            collisionDetector.detectCollision(players, arena);
+            //update views
             sleep(0); //tick rate here
         }
     }
@@ -269,7 +276,13 @@ public class Game implements IGame {
      * @return the starting direction
      */
     private Direction calculateStartingDirection(Coordinate coordinate) {
-        return null;
+        if(coordinate.x == 0){
+            return Direction.RIGHT;
+        }else if(coordinate.x == rows){
+            return Direction.LEFT;
+        } else{
+            return Direction.DOWN;
+        }
     }
 
     /**
