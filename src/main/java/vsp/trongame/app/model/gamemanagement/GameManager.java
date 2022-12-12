@@ -12,7 +12,6 @@ import vsp.trongame.app.model.game.IGameFactory;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
@@ -22,37 +21,39 @@ import static java.lang.Thread.sleep;
  */
 public class GameManager implements IGameManager, ITronModel {
 
-    private final ExecutorService executorService;
-    private final ITronView view;
-    private final IGame game;
-    private final IGameData gameData;
-    private final List<Integer> managedPlayers;
     private final Map<ModelState, Map<GameState, ModelState>> transitions;
-    private final Config config;
-    private final boolean singleView;
+    private final List<Integer> managedPlayers;
+
+    private ExecutorService executorService;
+    private ITronView view;
+    private IGame game;
+    private IGameData gameData;
+    private Config config;
+    private boolean singleView;
 
     private ModelState currentState;
     private int playerCount;
 
-    public GameManager(GameModus gameModus, ITronView tronView, boolean singleView, Config config) {
-        this.view = tronView;
-        this.singleView = singleView;
-        this.config = config;
-
-        this.executorService = Executors.newSingleThreadExecutor();
-        this.game = IGameFactory.getGame(gameModus, executorService, 2000, 10, 10, 10); //TODO read from config
-        this.gameData = IGameDataFactory.getGameData(gameModus, tronView);
+    public GameManager(GameModus gameModus) {
         this.transitions = new EnumMap<>(Map.of(
                 ModelState.MENU, Map.of(GameState.PREPARING, ModelState.WAITING),
                 ModelState.WAITING, Map.of(GameState.COUNTDOWN, ModelState.COUNTDOWN, GameState.INIT, ModelState.MENU),
                 ModelState.COUNTDOWN, Map.of(GameState.RUNNING, ModelState.PLAYING, GameState.COUNTDOWN, ModelState.COUNTDOWN),
                 ModelState.PLAYING, Map.of(GameState.FINISHED, ModelState.ENDING)));
         this.managedPlayers = new ArrayList<>();
+        this.gameData = IGameDataFactory.getGameData(gameModus);
     }
 
     @Override
-    public void init() {
+    public void init(GameModus modus, ExecutorService executor, ITronView tronView, boolean singleView, Config config) {
+        this.executorService = executor;
+        this.view = tronView;
+        this.singleView = singleView;
+        this.config = config;
         this.currentState = ModelState.MENU;
+        this.game = IGameFactory.getGame(modus);
+        game.init(executor, 2000,10, 10, 10);
+
         updateView();
     }
 
@@ -94,11 +95,6 @@ public class GameManager implements IGameManager, ITronModel {
     @Override
     public IObservableTronModel getObservableModel() {
         return (IObservableTronModel) this.gameData;
-    }
-
-    @Override
-    public void finishGracefully() {
-        executorService.shutdownNow();
     }
 
     /**

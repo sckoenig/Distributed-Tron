@@ -10,9 +10,9 @@ public class IGameDataFactory {
      * @param modus the modus of the game.
      * @return game data
      */
-    public static IGameData getGameData(GameModus modus, ITronView view){
+    public static IGameData getGameData(GameModus modus){
         return switch (modus){
-            case LOCAL -> new ObservableGameData(view);
+            case LOCAL -> new ObservableGameData();
             case NETWORK -> null;
         };
     }

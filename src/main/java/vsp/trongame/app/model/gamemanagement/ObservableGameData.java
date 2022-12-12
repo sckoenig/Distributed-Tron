@@ -22,10 +22,9 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
     private final StringProperty observableResultText;
     private final IntegerProperty observableCountDownCounter;
     private final ObservableMap<String, Color> observableKeyMappings;
-    private final ITronView view;
+    private ITronView view;
 
-    public ObservableGameData(ITronView view) {
-        this.view = view;
+    public ObservableGameData() {
         this.observableCountDownCounter = new SimpleIntegerProperty(0);
         this.observableResultText = new SimpleStringProperty();
         this.observableResultColor = new SimpleStringProperty();
@@ -63,6 +62,11 @@ public class ObservableGameData implements IGameData, ITronModel.IObservableTron
         for (Map.Entry<TronColor, List<Coordinate>> player: players.entrySet()) {
             view.draw(player.getValue(), player.getKey().getColor());
         }
+    }
+
+    @Override
+    public void registerView(ITronView view) {
+        this.view = view;
     }
 
     @Override

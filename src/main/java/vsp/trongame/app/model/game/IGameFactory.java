@@ -11,9 +11,9 @@ public class IGameFactory {
      * @param modus the modus of the game
      * @return game instance
      */
-    public static IGame getGame(GameModus modus, ExecutorService executorService, int waitingTimer, int rows, int columns, int speed){
+    public static IGame getGame(GameModus modus){
         return switch (modus){
-            case LOCAL -> new Game(executorService, waitingTimer, rows, columns, speed);
+            case LOCAL -> new Game();
             case NETWORK -> null;
         };
     }

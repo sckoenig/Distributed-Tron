@@ -18,6 +18,8 @@ import vsp.trongame.app.view.overlays.Overlay;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 
@@ -32,13 +34,13 @@ public class TronGame extends Application {
         launch();
     }
 
-    private ITronModel model;
+    private ExecutorService modelExecutor;
 
     @Override
     public void start(Stage stage) throws IOException {
 
         /* BOOT APP */
-
+        this.modelExecutor = Executors.newSingleThreadExecutor();
         Config config = new Config();
         GameModus modus = LOCAL; //TODO get from Config when Config is implemented
         boolean singleView = modus == LOCAL? true : false;
@@ -46,7 +48,7 @@ public class TronGame extends Application {
         /* components */
         ITronView tronView = ITronViewFactory.getTronView(modus, CONFIG_FILE);
         ITronController tronController = ITronControllerFactory.getTronController(modus);
-        ITronModel tronModel = ITronModelFactory.getTronModel(modus, tronView, singleView, config);
+        ITronModel tronModel = ITronModelFactory.getTronModel(modus);
 
         /* assemble */
         loadViewOverlays(tronView, tronController, tronModel, config);
@@ -55,8 +57,8 @@ public class TronGame extends Application {
 
         /* init */
         tronView.init();
-        tronModel.init();
-        this.model = tronModel; //has Threads, that need to be shutdown on close
+        tronModel.getObservableModel().registerView(tronView);
+        tronModel.init(modus, modelExecutor, tronView, singleView, config);
 
         /* open stage */
         stage.setTitle("Tron");
@@ -67,7 +69,7 @@ public class TronGame extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        model.finishGracefully();
+        this.modelExecutor.shutdownNow(); //stop threads
     }
 
     public void loadViewOverlays(ITronView view, ITronController controller, ITronModel model, Config config) throws IOException {

@@ -1,26 +1,32 @@
 package vsp.trongame.app.model;
 
+import edu.cads.bai5.vsp.tron.view.ITronView;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableMap;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.gamemanagement.Config;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * Represents the Model to the outside of the Model component.
  */
 public interface ITronModel {
 
-    /**
-     * Initializes the Model and informs if there is one or several views.
-     */
-    void init();
 
     /**
      * Handles a steer event by accepting a KeyCode and processing it.
      * @param key keyCode of the key that initiated the steer event.
      */
     void handleSteerEvent(KeyCode key);
+
+    /**
+     * Initializes the Model with necessary dependencies.
+     */
+    void init(GameModus modus, ExecutorService executor, ITronView tronView, boolean singleView, Config config);
 
     /**
      * Starts a game in the Model.
@@ -34,12 +40,16 @@ public interface ITronModel {
      */
     IObservableTronModel getObservableModel();
 
-    void finishGracefully();
-
     /**
      * Represents the Model with ObservableValues.
      */
     interface IObservableTronModel {
+
+        /**
+         * Sets the view to be updated.
+         * @param view the view
+         */
+        void registerView(ITronView view);
 
         /**
          * Returns the Model's ResultColor as an ObservableValue
