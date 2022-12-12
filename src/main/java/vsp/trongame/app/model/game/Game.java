@@ -31,6 +31,7 @@ public class Game implements IGame {
 
 
 
+
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
@@ -209,11 +210,10 @@ public class Game implements IGame {
                 if(p.isAlive()){
                     Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
                     p.addCoordinate(nextCoordinate);
-                    arena.addPlayerPosition(p.getId(), nextCoordinate);
                 }
             });
             collisionDetector.detectCollision(players, arena);
-            //update views
+            dataListener.forEach(dl -> dl.updatePlayers(mappedPlayers));
             sleep(0); //tick rate here
         }
     }
@@ -279,7 +279,7 @@ public class Game implements IGame {
     private Direction calculateStartingDirection(Coordinate coordinate) {
         if(coordinate.x == 0){
             return Direction.RIGHT;
-        }else if(coordinate.x == rows){
+        }else if(coordinate.x == columns){
             return Direction.LEFT;
         } else{
             return Direction.DOWN;
