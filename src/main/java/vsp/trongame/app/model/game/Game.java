@@ -20,26 +20,16 @@ public class Game implements IGame {
     private final List<IGameManager> gameManagerList;
     private final List<IGameData> gameDataList;
     private final ICollisionDetector collisionDetector;
-    private final int speed;
-    private final int preparationTime;
-    private final IArena arena;
-    private final int rows;
-    private final int columns;
-
-
-
-
+    private ExecutorService gameExecutor;
+    private int speed;
+    private int preparationTime;
+    private IArena arena;
+    private int rows;
+    private int columns;
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
 
-    public Game(ExecutorService executorService, int waitingTimer, int rows, int columns, int speed) {
-        this.speed = speed;
-        this.preparationTime = waitingTimer;
-        this.arena = new Arena(rows, columns);
-        this.rows = rows;
-        this.columns = columns;
-        this.executorService = executorService;
     public Game() {
         this.players = new ArrayList<>();
         this.gameManagerList = new ArrayList<>();
@@ -51,7 +41,9 @@ public class Game implements IGame {
 
     @Override
     public void init(ExecutorService executorService, int waitingTimer, int rows, int columns, int speed) {
-        this.executorService = executorService;
+        this.gameExecutor = executorService;
+        this.rows = rows;
+        this.columns = columns;
         this.speed = speed;
         this.preparationTime = waitingTimer;
         this.arena = new Arena(rows, columns);
@@ -95,11 +87,11 @@ public class Game implements IGame {
     }
 
     private void preparationTimer(){
-            executorService.execute(() -> {
+            gameExecutor.execute(() -> {
                 try{
                     sleep(preparationTime);
                 } catch (InterruptedException e){
-                    Thread.currentThread().interrupt();
+                    currentThread().interrupt();
                 }
                 if (!currentThread().isInterrupted()) handleTimeOut();
             });
@@ -152,7 +144,6 @@ public class Game implements IGame {
             newPlayers.put(registeredPlayerCount, color);
             registeredPlayerCount++;
         }
-        */
         return newPlayers;
     }
 
@@ -165,18 +156,18 @@ public class Game implements IGame {
         for (IGameData dataListenerEntry : gameDataList) {
             dataListenerEntry.updateArenaSize(100, 100);
         }
-        //TODO: comment in when methods are ready.
-        /*
+
         List<Coordinate> startingCoordinates = calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
             IPlayer player = players.get(i);
             player.addCoordinate(coordinate);
             player.setDirection(calculateStartingDirection(coordinate));
-        }*/
-        try{
+        }
+
+        try {
             countDown();
-            executorService.execute(() -> {
+            gameExecutor.execute(() -> {
                 try {
                     mockLoop();
                     //gameLoop()
@@ -214,7 +205,7 @@ public class Game implements IGame {
                 }
             });
             collisionDetector.detectCollision(players, arena);
-            dataListener.forEach(dl -> dl.updatePlayers(mappedPlayers));
+            gameDataList.forEach(dl -> dl.updatePlayers(mappedPlayers));
             sleep(0); //tick rate here
         }
     }
