@@ -26,7 +26,9 @@ public class CollisionDetector implements ICollisionDetector{
                 if (i + 1 != alivePlayer.size()) { //wenn i nicht der letzte Spieler in der Liste ist
                     crashedPlayers.addAll(headCollision(alivePlayer, i));
                 }
-                arena.addPlayerPosition(currentPlayer.getId(), currentPlayer.getHeadPosition());
+                if(currentPlayer.isAlive()){
+                    arena.addPlayerPosition(currentPlayer.getId(), currentPlayer.getHeadPosition());
+                }
             }
         }
         arena.deletePlayerPositions(crashedPlayers);
