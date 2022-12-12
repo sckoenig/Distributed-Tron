@@ -16,16 +16,17 @@ public class CollisionDetector implements ICollisionDetector{
         List<Integer> crashedPlayers = new ArrayList<>();
 
         for (int i = 0; i < alivePlayer.size(); i++) {
-            if(alivePlayer.get(i).isAlive()){
-                Coordinate coordinate = alivePlayer.get(i).getHeadPosition();
+            IPlayer currentPlayer = alivePlayer.get(i);
+            if(currentPlayer.isAlive()){
+                Coordinate coordinate = currentPlayer.getHeadPosition();
                 if(arena.detectCollision(coordinate)){
-                    crashedPlayers.add(alivePlayer.get(i).getId());
-                    alivePlayer.get(i).crash();
+                    crashedPlayers.add(currentPlayer.getId());
+                    currentPlayer.crash();
                 }
                 if (i + 1 != alivePlayer.size()) { //wenn i nicht der letzte Spieler in der Liste ist
                     crashedPlayers.addAll(headCollision(alivePlayer, i));
                 }
-                arena.addPlayerPosition(alivePlayer.get(i).getId(), alivePlayer.get(i).getHeadPosition());
+                arena.addPlayerPosition(currentPlayer.getId(), currentPlayer.getHeadPosition());
             }
         }
         arena.deletePlayerPositions(crashedPlayers);
