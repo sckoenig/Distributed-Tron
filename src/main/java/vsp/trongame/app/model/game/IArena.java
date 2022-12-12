@@ -16,10 +16,10 @@ public interface IArena {
     void addPlayerPosition(int playerId, Coordinate coordinate);
 
     /**
-     * Deletes all occurrences of all the player in the List, in the arena.
-     * @param playerIds all the player ids to the players which crashed.
+     * Deletes all occurrences of all the playerIds in the List, in the arena.
+     * @param crashedPlayerIds all the playerIds of the players which crashed.
      */
-    void deletePlayerPositions(List<Integer> playerIds);
+    void deletePlayerPositions(List<Integer> crashedPlayerIds);
 
     /**
      * Detects if a player crashes with an arena wall or the shadow of another player.

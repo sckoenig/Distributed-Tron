@@ -20,14 +20,26 @@ public class Game implements IGame {
     private final List<IGameManager> gameManagerList;
     private final List<IGameData> gameDataList;
     private final ICollisionDetector collisionDetector;
-    private ExecutorService executorService;
-    private int speed;
-    private int preparationTime;
-    private IArena arena;
+    private final int speed;
+    private final int preparationTime;
+    private final IArena arena;
+    private final int rows;
+    private final int columns;
+
+
+
+
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
 
+    public Game(ExecutorService executorService, int waitingTimer, int rows, int columns, int speed) {
+        this.speed = speed;
+        this.preparationTime = waitingTimer;
+        this.arena = new Arena(rows, columns);
+        this.rows = rows;
+        this.columns = columns;
+        this.executorService = executorService;
     public Game() {
         this.players = new ArrayList<>();
         this.gameManagerList = new ArrayList<>();
@@ -131,7 +143,6 @@ public class Game implements IGame {
     private Map<Integer, TronColor> createPlayers(int count) {
         Map<Integer, TronColor> newPlayers = new HashMap<>();
 
-        /*
         for (int i = 0; i < count; i++) {
             TronColor color = TronColor.getByOrdinal(registeredPlayerCount);
             IPlayer newPlayer = new Player(color, registeredPlayerCount);
@@ -195,9 +206,15 @@ public class Game implements IGame {
      * Performs the game's main loop.
      */
     private void gameLoop() throws InterruptedException {
-        //TODO
         while (!isGameOver() && !Thread.interrupted()){
-            //do loop...
+            players.forEach(p -> {
+                if(p.isAlive()){
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
+                    p.addCoordinate(nextCoordinate);
+                }
+            });
+            collisionDetector.detectCollision(players, arena);
+            dataListener.forEach(dl -> dl.updatePlayers(mappedPlayers));
             sleep(0); //tick rate here
         }
     }
@@ -209,7 +226,42 @@ public class Game implements IGame {
      * @return the list of calculated starting coordinates
      */
     private List<Coordinate> calculateFairStartingCoordinates(int playerCount) {
-        return new ArrayList<>();
+        List<Coordinate> fairPositions = new ArrayList<>();
+        switch (playerCount) {
+            case 2 -> {
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+            }
+            case 3 -> {
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+            }
+            case 4 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+            }
+            case 5 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns / 2));
+            }
+            case 6 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(rows / 2, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns));
+            }
+            default -> {
+            }
+        }
+        return fairPositions;
     }
 
     /**
@@ -219,7 +271,13 @@ public class Game implements IGame {
      * @return the starting direction
      */
     private Direction calculateStartingDirection(Coordinate coordinate) {
-        return null;
+        if(coordinate.x == 0){
+            return Direction.RIGHT;
+        }else if(coordinate.x == columns){
+            return Direction.LEFT;
+        } else{
+            return Direction.DOWN;
+        }
     }
 
     /**
