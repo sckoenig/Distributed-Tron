@@ -35,8 +35,7 @@ public class Player implements IPlayer {
 
     @Override
     public Coordinate getHeadPosition() {
-        //TODO
-        return null;
+        return this.coordinates.get(this.coordinates.size()-1);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class Player implements IPlayer {
 
     @Override
     public void addCoordinate(Coordinate coordinate) {
-        //TODO
+        this.coordinates.add(coordinate);
     }
 
     @Override
@@ -71,17 +70,27 @@ public class Player implements IPlayer {
 
     @Override
     public void setNextDirectionChange(DirectionChange directionChange) {
-        //TODO
+        this.nextAction = directionChange;
     }
 
     @Override
     public void setDirection(Direction direction) {
-        //TODO
+        this.direction = direction;
     }
 
     @Override
     public Direction performDirectionChange() {
-        return null;
+       switch (this.nextAction){
+           case LEFT -> {
+               this.direction = Direction.LEFT;
+               this.nextAction = DirectionChange.NONE;
+           }
+           case RIGHT -> {
+               this.direction = Direction.RIGHT;
+               this.nextAction = DirectionChange.NONE;
+           }
+       }
+       return this.direction;
     }
 
 }
