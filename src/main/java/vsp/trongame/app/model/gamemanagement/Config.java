@@ -1,7 +1,6 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.datatypes.Direction;
 import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
@@ -166,6 +165,6 @@ public class Config {
      * @return the steer object
      */
     public Steer getSteer(KeyCode key){
-        return null;
+        return keyMappings.get(key);
     }
 }
