@@ -14,7 +14,7 @@ public class TronController implements ITronController {
 
     @Override
     public void initKeyEventHandler(Scene scene) {
-
+        scene.setOnKeyPressed((KeyEvent event) -> model.handleSteerEvent(event.getCode()));
     }
 
     @Override
