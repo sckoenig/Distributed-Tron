@@ -37,6 +37,7 @@ Die Middleware bildet eine Zwischenschicht zwischen der Applikation und dem Betr
 | ----------- | ----------- |
 | Java in der Version 17 | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.65 passen. Es wird Java in der Version 17 verwendet, da es sich um die neueste LTS-Version handelt.|
 | Kommunikation | Die Kommunikation der Middleware erfolgt transient über RPC- und/oder ReST-Schnittstelle. |
+| MTU | Es kann sich auf eine MTU von 1500 Byte verlassen werden. |
 
 | Konventionen | Beschreibung |
 | ----------- | ----------- |
@@ -65,26 +66,27 @@ Details siehe [Use Cases](#use-cases).
 | Objekt | Erklärung |
 | ----------- | ----------- |
 | Receiver (ServerStub) | Lauscht auf einem Port und nimmt Nachrichten entgegen, die an den Unmarshaller weitergereicht werden. |
-| IUnmarshaller (ServerStub) | Nimmt Nachrichten entgegen und entpackt sie zu MethodenCalls. Kennt Remote Objekte und führt MethodenCall auf ihnen auf. |
+| IUnmarshaller (ServerStub) | Nimmt Nachrichten entgegen und entpackt sie zu MethodCalls. Kennt Remote Objekte und ruft MethodCall auf ihnen auf. |
 | Marshaller (ClientStub) | Nimmt Invoke-Aufrufe vom ApplikationStub an und verpackt sie in Nachrichten. Führt LookUps am NamingService durch. |
 | ISender (ClientStub) | Nimmt Nachrichten vom Marshaller entgegen und schickt sie ins Netzwerk. |
 | INamingService | Verwaltet Namen und dazugehörige Adressen. Ermöglicht Registrierung und LookUp von Services. |
-| IRemoteObject |  Remote Objekte können einen MethodenCall entgegen nehmen und ausführen. Sie sind dem Unmarshaller bekannt. |
+| IRemoteObject |  Remote Objekte können einen MethodCall entgegen nehmen und ausführen. Sie sind dem Unmarshaller bekannt. |
 | MethodCall | Verpackt den Methodenaufruf in ein Objekt, das Methodenname und Methodenparameter als Liste von Integern enthält.
 | Service | Verpackt Service Informationen in ein Objekt, das remoteID, IP-Adresse und Port des Services enthält.
 
 
 | UC | Funktion                                                                         | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-1 | registerRemoteObject(methodName: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ServerStub wurde erstellt | Der ServerStub merkt sich das Remote Objekt mit aufrufbaren Methoden (Ordinal des ENUM, zB: 1 = DRAW, 2 = REGISTER) | - | - | - |
-| UC-2 | invoke(remoteID: String, methodName: int, methodParameters: int... (varargs)) : void | IRemoteInvocation(ClientStub) | ClientStub wurde erstellt | Die Methode wird durch ein Remote-Object ausgeführt (Callee) | UC ...  | - | 
-| UC-3 | lookup(calleID: long, methodName: int) : Service | INamingService | NamingServer muss laufen | Der ClientStub kennt die Informationen des Services (IP:Port, CalleeID) | - | - | - |
-| UC-4 | marshal(remodeID: String, MethodCall) : byte[] | Marshaller | Der Adressat ist bekannt | Die Nachricht wurde dem Sender übergeben | - | - | - |
-| UC-5 | send(message: byte[], address: InetAddress) : void | ISender(ClientStub) | Der Adressat ist bekannt | Methodenaufruf wurde ans Netzwerk weitergereicht | - | - | - |
-| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | Der Methodenaufruf wurde an das Remote Objekt gegeben (UC-2 wird ausgeführt) | - | - | - |
-| UC-8 | call(method: MethodCall) : void | IRemoteObject | Remote-Object muss registriert sein | Methode wird aufgerufen auf Remote Object | - | - | - |
-| UC-9 | registerService(remoteID: String, methodName: int, address: InetAddress) : void | INamingService | Die Applikation wurde gestartet und der NameServer wurde gestartet. NameResolver kennt NameServer (Config) | Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID | - | - | - |
-| UC-10 | unregisterService(remoteID: String) : void | INamingService | Der NameServer ist erreichbar | Die Remote Objekte des ServerStubs sind nicht mehr registriert | - | - | - |
+| UC-1 | registerRemoteObject(serviceId: int, remoteObject : IRemoteObject) : void | Unmarshaller(ServerStub) | ServerStub wurde erstellt | Der ServerStub merkt sich das Remote Objekt mit der Service ID | Registeriert ein Remote Object beim ServerStub, damit es von diesem aufgerufen werden kann. | - |
+| UC-2 | invoke(remoteId: String, serviceId: int, parameters: int... (varargs), type: InvocationType) : void | IRemoteInvocation(ClientStub) | ClientStub wurde erstellt | Die Methode wird durch ein Remote-Object ausgeführt (Callee) | Ruft eine Methode auf einem einem Remote-Object auf (UC-3, UC-4, UC-5, UC-6, UC-7 und UC-8.) | - | 
+| UC-3 | lookUpService(remoteId: long, serviceId: int) : Service | INamingService | NamingServer muss laufen | Der ClientStub kennt die Informationen des Services (IP:Port, remoteId) | Gibt die Adresse und Id eines Services zurück. | - |
+| UC-4 | marshal(invocation: MethodCall) : byte[] | Marshaller | - | Die Nachricht wurde verpackt | Der MethodCall wird in eine versendbare Nachricht verpackt. | - | 
+| UC-5 | send(message: byte[], address: InetAddress, protocol: Protocol) : void | ISender(ClientStub) | Der Adressat ist bekannt | Methodenaufruf wurde ans Netzwerk weitergereicht | Der Sender öffnet einen Socket an den angebenen Adressaten und schickt die Nachricht über den Socket. | Wenn der Adressat nicht bekannt ist, wird die Nachricht verworfen. | - |
+| UC-7 | unmarshal(message : byte[]) : MethodCall | Unmarshaller | - | Die Nachricht wurde zu einem MethodCall entpackt. | Die angekommene Nachricht wird entpackt. | - | 
+| UC-8 | lookUpRemoteObject(serviceId: int) : IRemoteObject | Unmarshaller | Das gesuchte Remote Object ist registriert | - | Sucht ein Remote Object anhand der Id des Services, den es anbietet. | - |
+| UC-8 | call(serviceId, parameters: int...(varargs)) : void | IRemoteObject | Remote-Object muss registriert sein | Methode wurde vom Remote Object ausgeführt | Ein MethodCall wird auf einem Remote Object aufgerufen. | Sind die Parameter fehlerhaft oder die Service ID unbekannt, bricht das Remote-Object den Aufruf ab. | - |
+| UC-9 | registerService(remoteID: String, serviceId: int, address: InetAddress) : void | INamingService | Die Applikation wurde gestartet und der NameServer ist erreichbar. NameResolver kennt NameServer (Config) | Service ist beim NamingService unter remoteId und ServiceId aufzufinden | Ein Service wird beim Naming Service mit seiner remoteId und Id des angebotenen Service registriert.| Fehlerhafte Registrierungsanfragen werden verworfen. | - |
+| UC-10 | unregisterService(remoteID: String) : void | INamingService | Der NameServer ist erreichbar | Die Services mit der übergebenen remoteId ist nicht mehr registriert | Die Services mit der übergebenen remoteID werden aus dem Naming Service entfernt. | Fehlerhafte Abmeldungsanfragen werden verworfen. | 
 
 # 5. Bausteinsicht
 ## Ebene 1:
@@ -111,6 +113,7 @@ Jeder Nachricht enthält folgende Punkte:
 | Length | Länge des Payloads abhängig vom Nachrichtentyp (TEST, ob nötig mit JSONparser) |
 | Counter | Nummerierung der Nachricht zum Sortieren (Nachricht 1 ist vor Nachricht 2 passiert und muss auch so bearbeitet werden)
 
+
 ### 8.1.2 Nachrichtentypen
 Pro Methode, die remote aufgerufen werden soll, gibt es einen Nachrichtentypen. Der Nachrichtentyp entspricht also dem Methodennamen der Methode, die aufgerufen werden soll.
 
@@ -128,7 +131,8 @@ Pro Methode, die remote aufgerufen werden soll, gibt es einen Nachrichtentypen. 
 
 ## 8.2 Identifier
 
-Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
+Es wird ein hierarchischer Namensraum verwendet. Jeder Service erhält eine ID (serviceId). Jeder Service kann von mehreren Remote Objekten angeboten werden. Diese werden anhand ihrer remoteId identifiziert. 
+Zur Namensauflösung wird ein zentraler Name Server verwendet, dessen Adresse allen Nodes bekannt sein muss. 
 
 # 9. Architekturentscheidungen
 
@@ -171,19 +175,37 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 **Standardfall**:
 
     1. Das Caller-Remote-Objekt ruft die invoke(...) Methode des ClientStubs 
-       mit der CalleeID, dem Methodennamen und den Methodenparametern auf. 
-    2. Der ClientStub führt einen Lookup nach der CalleeID und Methodennamen durch (UC-3: Lookup Service)
-    3. Der ClientStub verpackt den Methodenaufruf in eine Nachricht (UC-4: Marshalling)
-    4. Der ClientStub versendet die Nachricht aus dem Marshalling an den Service aus Schritt 2 (UC-5: Send over Network)
-    5. Der angesprochene ServerStub erhält die Nachricht und liest sie aus (UC-6: Receive over Network)
-    6. Der ServerStub entpackt die Nachricht (UC-7: Unmarshalling)
-    7. Der ServerStub sucht in seiner Liste nach dem angesprochenen Remote Object
-    8. Der ServerStub führt einen MethodenCall auf dem angesprochenen Remote Object durch (US-8: Call Remote Object)
+       mit der remoteId, der serviceId, den Parametern und dem InvocationType auf.
+    2. Der ClientStub verpackt den Methodenaufruf in eine Nachricht (UC-4: Marshalling).
+    3. Der ClientStub übersetzt den InvocationType aus der invoke-Methode in das zu verwendene Protokoll.
+    4. Der ClientStub führt einen Lookup nach der remoteId und ServiceId durch (UC-3: Lookup Service).
+    5. Der ClientStub versendet die Nachricht aus dem Marshalling an den Service aus Schritt 4 
+       und dem Protokoll aus Schritt 3 (UC-5: Send over Network).
+    6. Der angesprochene ServerStub erhält die Nachricht und liest sie aus (UC-6: Receive over Network)
+    7. Der ServerStub entpackt die Nachricht (UC-7: Unmarshalling)
+    8. Der ServerStub sucht in seiner Liste nach dem angesprochenen Remote Object
+    9. Der ServerStub führt einen MethodenCall auf dem angesprochenen Remote Object durch (US-8: Call Remote Object)
+
+<br/>
+
+**UC-3: Marshalling/Pack Message**
+
+**Akteur**: Marshaller (ClientStub)\
+**Ziel**: Methodenaufruf in Nachricht verpacken\
+**Auslöser**: invoke(...) wurde von einem Caller-Objekt des ApplicationStubs aufgerufen\
+**Vorbedingungen**: Der Adressat ist bekannt.\
+**Nachbedingungen**: Die Nachricht wurde dem Sender übergeben.
+
+**Standardfall**:
+
+    1. Der Marshaller verpackt die Informationen der invoke(...) Methode in einen MethodCall.
+    2. Der Marshaller verpackt den MethodCall ins JSON-Format.
+    3. Der Marshaller erzeugt aus dem JSON ein byte-Array.
 
 <br/>
 
 
-**UC-3: Lookup Service**
+**UC-4: Lookup Service**
 
 **Akteur**: Marshaller (ClientStub)\
 **Ziel**: Adresse des gesuchten Services herausfinden\
@@ -209,33 +231,17 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 <br/>
 
 
-**UC-4: Marshalling/Pack Message**
-
-**Akteur**: Marshaller (ClientStub)\
-**Ziel**: Methodenaufruf in Nachricht verpacken\
-**Auslöser**: invoke(...) wurde von einem Caller-Objekt des ApplicationStubs aufgerufen\
-**Vorbedingungen**: Der Adressat ist bekannt.\
-**Nachbedingungen**: Die Nachricht wurde dem Sender übergeben.
-
-**Standardfall**:
-
-    1. Der Marshaller verpackt die Informationen der invoke(...) Methode nach Regeln des RMI-Protokolls 
-       (siehe Abschnitt 8.1).
-    2. Der Marshaller übergibt dem Sender die verpackte Nachricht und den Adressaten.
-
-<br/>
-
 **UC-5: Send over Network**
 
 **Akteur**: Sender (ClientStub)\
-**Ziel**: Ein Methodenaufruf über das Netzwerk schicken.\
+**Ziel**: Nachricht über das Netzwerk schicken.\
 **Auslöser**: Der Marshaller hat eine Nachricht verpackt und dem Sender übergeben\
-**Vorbedingungen**: Adressat ist bekannt.\
-**Nachbedingungen**: Methodenaufruf wurde ans Netzwerk weitergereicht.
+**Vorbedingungen**: Der Adressat ist bekannt.\
+**Nachbedingungen**: Nachricht wurde ans Netzwerk weitergereicht.
 
 **Standardfall**:
 
-    1. Der Sender öffnet einen Socket an den angebenen Adressaten.
+    1. Der Sender öffnet einen Socket an den angebenen Adressaten mit dem übergebenen Protokoll.
     2. Der Sender schickt die Nachricht über den Socket.
 
 **Fehlerfall**:
@@ -252,13 +258,13 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 **Ziel**: Nachricht verarbeiten. \
 **Auslöser**: Es kommt eine Nachricht rein. \
 **Vorbedingungen**: Receiver lauscht auf Nachrichten.\
-**Nachbedingungen**: Receiver hat die Nachricht weitergegeben zum Verarbeiten. Der Receiver kehrt in den listen-Status zurück.
+**Nachbedingungen**: Receiver hat die Nachricht weitergegeben zum Verarbeiten. Der Receiver befindet sich wieder im listen-Status.
 
 **Standardfall**:
 
     1. Der Receiver liest die Nachricht vom Socket.
     2. Der Receiver übergibt die ausgelesene Nachricht dem Unmarshaller.
-
+    3. Der Receiver kehrt in den listen-Status zurück.
 
 <br/>
 
@@ -267,22 +273,21 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 **Akteur**: Unmarshaller (ServerStub) \
 **Ziel**: Nachricht in Methodenaufruf umwandeln \
 **Auslöser**: Unmarshaller erhält eine Nachricht vom Receiver \
-**Vorbedingungen**: \
-**Nachbedingungen**: Der Methodenaufruf wurde an das Remote Objekt gegeben (UC-2 wird ausgeführt) 
+**Vorbedingungen**: Der Receiver lauscht auf Nachrichten.
+**Nachbedingungen**: UC-8 wird ausgeführt
 
 **Standardfall**:
 
-    1. Der Unmarshaller entpackt die Nachricht vom Receiver in Methodenname und Methodenparameter.
+    1. Der Unmarshaller entpackt die Nachricht vom Receiver in serviceId und Parameter.
     2. UC-2: Call Remote Object durchführen.
-
 
 <br/>
 
 
-**UC-2: Call Remote Object**
+**UC-8: Call Remote Object**
 
 **Akteur**: Unmarshaller (ServerStub) \
-**Ziel**: Nachricht in Methode umwandeln \
+**Ziel**: Methode aufrufen \
 **Auslöser**: UC-7 wurde durchgeführt. \
 **Vorbedingungen**: Remote-Object muss registriert sein. \
 **Nachbedingungen**: Methode wird aufgerufen auf Remote Object. 
@@ -290,15 +295,15 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 
 **Standardfall**:
 
-    1. Unmarshaller sucht im Remote-Object-Register nach dem aufzurufenden Remote Object mit dem Methodennamen(z.B. DRAW).
+    1. Unmarshaller sucht im Remote-Object-Register nach dem aufzurufenden Remote Object mit der gesuchten serviceId.
     2. Unmarshaller übergibt dem Remote-Object alle nötigen Informationen für den Methodenaufruf.
     3. Das Remote-Object ruft die Methode auf.
 
 **Fehlerfall**:
 
-    2.a Remote-Object mit dem Methodennamen(Ordinal des Enums, z.B. DRAW = 1) gibt es nicht im Register.
-        2.a.1 Das System ignoriert die Nachricht.
-    3.a Die Parameter (z.B. Methodenname unbekannt) sind fehlerhaft.
+    2.a Remote-Object mit der serviceId gibt es nicht im Register.
+        2.a.1 Der Unmarshaller verwirft die Nachricht.
+    3.a Die Parameter (z.B. serviceId unbekannt) sind fehlerhaft.
         2.a.1 Das Remote-Object bricht den Aufruf ab.
 
 
@@ -307,19 +312,19 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 **UC-9: Register as Service**
 
 **Akteur**: ServerStub \
-**Ziel**: Die Remote Objekte sind beim NamingService registriert.\
+**Ziel**: Das Remote Objekt sind beim NamingService registriert.\
 **Auslöser**: Remote Objekt registriert sich beim ServerStub. \
 **Vorbedingungen**: Die Applikation wurde gestartet und der NameServer wurde gestartet. NameResolver kennt NameServer (Config).\
-**Nachbedingungen**: Der Applikations-Stub ist beim NamingService unter einer ID aufzufinden und der ApplikationStub kennt seine ID.
+**Nachbedingungen**: Das Remote Objekt ist beim NamingService unter seiner remoteId und serviceId aufzufinden
 
 **Standardfall**:
 
     1. Der ServerStub schickt einen Registrierungsaufruf an den lokalen NameResolver.
     2. Der NameResolver öffnet einen TCP-Socket mit der IP und dem Port zum NameServer.
-    3. Der NameResolver schickt eine Registrierungsnachricht mit dem angebotenen Methodennamen 
-       (Ordinal des Enums), RemoteID und der Adresse des ServerStubs.
+    3. Der NameResolver schickt eine Registrierungsnachricht mit der serviceId (Ordinal des Enums der angebotenen Methode) 
+       , seiner remoteID und der Adresse des ServerStubs.
     4. Der NameServer erhält die Nachricht.
-    5. Der NameServer speichert den Service mit Ordinal, RemoteID und Adresse des ServerStubs.
+    5. Der NameServer speichert den Service mit serviceId, remoteId und Adresse des ServerStubs.
 
 **Fehlerfall**:
 
@@ -332,14 +337,14 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 **UC-10: Unregister as Service**
 
 **Akteur**: ServerStub \
-**Ziel**: Der Applikations-Stub ist nicht mehr beim NamingService registriert.\
+**Ziel**: Die Remote Objekte sind nicht mehr beim NamingService registriert.\
 **Auslöser**: Die Applikation wird geschlossen. \
 **Vorbedingungen**: Der NameServer ist erreichbar. \
 **Nachbedingungen**: Die Remote Objekte des ServerStubs sind nicht mehr registriert. 
 
 **Standardfall**:
 
-    1. Der ServerStub schickt einen Abmeldungsaufruf an den lokalen NameResolver.
+    1. Der ServerStub schickt einen unregister-Aufruf an den lokalen NameResolver.
     2. Der NameResolver öffnet einen TCP-Socket mit der IP und dem Port zum NameServer.
     3. Der NameResolver schickt eine Abmeldungsnachricht mit der RemoteID an den NameServer.
     4. Der NameServer erhält die Nachricht.
@@ -348,8 +353,8 @@ Jeder ApplicationStub erhält eine eindeutige ID (remoteID).
 
 **Fehlerfall**:
 
-  5.a Die Nachricht ist falsch kodiert.
-     5.a.1 Der NameServer verwirft die Nachricht.
+    5.a Die Nachricht ist falsch kodiert.
+        5.a.1 Der NameServer verwirft die Nachricht.
 
 <br/>
 
