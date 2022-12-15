@@ -1,6 +1,19 @@
-*Abstimmung*
+##Abstimmung
 1. wir lassen bis GameManager alle key durch werden mit update dann geholt.
 2. Umbenennen von Left und Right in DirectionChange
     - bei DirectionChange zu left right steer
     - Direction in himmelsrichtungen
     - *DirectionChange zu leftSteer und rightSteer*
+3. clock oder keine
+    - *keine*
+
+## Udp 
+- 1500 unsere nachrichten könnten die größe sprengen bei draw()
+- deswegen schicken wir nur die letzten 4 koordinaten mit
+
+## RPC
+- NameServer was steht dadrin RemoteID ist ein String
+- in RPC-Issue
+
+## Refactoring in Draw.io
+
