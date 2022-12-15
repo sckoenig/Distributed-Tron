@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import edu.cads.bai5.vsp.tron.view.ITronView;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
@@ -27,6 +28,7 @@ public class Game implements IGame {
     private final IArena arena;
     private final int rows;
     private final int columns;
+
 
 
 
@@ -211,9 +213,15 @@ public class Game implements IGame {
      * Performs the game's main loop.
      */
     private void gameLoop() throws InterruptedException {
-        //TODO
         while (!isGameOver() && !Thread.interrupted()){
-            //do loop...
+            players.forEach(p -> {
+                if(p.isAlive()){
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
+                    p.addCoordinate(nextCoordinate);
+                }
+            });
+            collisionDetector.detectCollision(players, arena);
+            dataListener.forEach(dl -> dl.updatePlayers(mappedPlayers));
             sleep(0); //tick rate here
         }
     }
@@ -254,15 +262,8 @@ public class Game implements IGame {
                 fairPositions.add(new Coordinate(rows, columns));
                 fairPositions.add(new Coordinate(0, columns));
                 fairPositions.add(new Coordinate(rows, 0));
-
-                if (rows > columns) {
-                    fairPositions.add(new Coordinate(rows / 2, 0));
-                    fairPositions.add(new Coordinate(rows / 2, columns));
-                } else {
-                    fairPositions.add(new Coordinate(0, columns / 2));
-                    fairPositions.add(new Coordinate(rows, columns / 2));
-                }
-
+                fairPositions.add(new Coordinate(rows / 2, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns));
             }
             default -> {
             }
@@ -277,7 +278,13 @@ public class Game implements IGame {
      * @return the starting direction
      */
     private Direction calculateStartingDirection(Coordinate coordinate) {
-        return null;
+        if(coordinate.x == 0){
+            return Direction.RIGHT;
+        }else if(coordinate.x == columns){
+            return Direction.LEFT;
+        } else{
+            return Direction.DOWN;
+        }
     }
 
     /**
