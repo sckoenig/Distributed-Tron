@@ -40,7 +40,7 @@ public class TronGame extends Application {
         /* BOOT APP */
 
         Config config = new Config();
-        GameModus modus = LOCAL; //TODO get from Config when Config is implemented
+        GameModus modus = GameModus.valueOf(config.getAttribut("gameMode"));
         boolean singleView = modus == LOCAL? true : false;
 
         /* components */
@@ -76,6 +76,8 @@ public class TronGame extends Application {
 
         Parent root;
         FXMLLoader loader;
+        int height = Integer.parseInt(config.getAttribut("height"));
+        int width = Integer.parseInt(config.getAttribut("width"));
 
         for (Map.Entry<ModelState, String> overlay : STATE_VIEW_MAPPING.entrySet()) {
 
@@ -89,7 +91,7 @@ public class TronGame extends Application {
                 case MENU -> {
                     MenuOverlay menuOverlay = loader.getController();
                     menuOverlay.setController(controller);
-                    menuOverlay.setDefaultPlayerCount(2); //TODO: default from config
+                    menuOverlay.setDefaultPlayerCount(Integer.parseInt(config.getAttribut("defaultPlayerNumber")));
                 }
                 default -> {
                     Overlay loadedOverlay = loader.getController();
