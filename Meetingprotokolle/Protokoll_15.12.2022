@@ -1,0 +1,6 @@
+*Abstimmung*
+1. wir lassen bis GameManager alle key durch werden mit update dann geholt.
+2. Umbenennen von Left und Right in DirectionChange
+    - bei DirectionChange zu left right steer
+    - Direction in himmelsrichtungen
+    - *DirectionChange zu leftSteer und rightSteer*
