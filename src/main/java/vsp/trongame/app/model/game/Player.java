@@ -80,14 +80,42 @@ public class Player implements IPlayer {
 
     @Override
     public Direction performDirectionChange() {
-       switch (this.nextAction){
+       switch (this.direction){
            case LEFT -> {
-               this.direction = Direction.LEFT;
-               this.nextAction = DirectionChange.NONE;
+               if(this.nextAction == DirectionChange.LEFT_STEER){
+                   this.direction = Direction.DOWN;
+                   this.nextAction = DirectionChange.NONE;
+               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+                   this.direction = Direction.UP;
+                   this.nextAction = DirectionChange.NONE;
+               }
            }
            case RIGHT -> {
-               this.direction = Direction.RIGHT;
-               this.nextAction = DirectionChange.NONE;
+               if(this.nextAction == DirectionChange.LEFT_STEER){
+                   this.direction = Direction.UP;
+                   this.nextAction = DirectionChange.NONE;
+               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+                   this.direction = Direction.DOWN;
+                   this.nextAction = DirectionChange.NONE;
+               }
+           }
+           case DOWN -> {
+               if(this.nextAction == DirectionChange.LEFT_STEER){
+                   this.direction = Direction.RIGHT;
+                   this.nextAction = DirectionChange.NONE;
+               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+                   this.direction = Direction.LEFT;
+                   this.nextAction = DirectionChange.NONE;
+               }
+           }
+           case UP -> {
+               if(this.nextAction == DirectionChange.LEFT_STEER){
+                   this.direction = Direction.LEFT;
+                   this.nextAction = DirectionChange.NONE;
+               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+                   this.direction = Direction.RIGHT;
+                   this.nextAction = DirectionChange.NONE;
+               }
            }
        }
        return this.direction;
