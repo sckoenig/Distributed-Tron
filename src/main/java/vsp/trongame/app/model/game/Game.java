@@ -164,15 +164,13 @@ public class Game implements IGame {
         for (IGameData dataListenerEntry : dataListener) {
             dataListenerEntry.updateArenaSize(100, 100);
         }
-        //TODO: comment in when methods are ready.
-        /*
         List<Coordinate> startingCoordinates = calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
             IPlayer player = players.get(i);
             player.addCoordinate(coordinate);
             player.setDirection(calculateStartingDirection(coordinate));
-        }*/
+        }
         try{
             countDown();
             executorService.execute(() -> {
@@ -208,7 +206,7 @@ public class Game implements IGame {
         while (!isGameOver() && !Thread.interrupted()){
             players.forEach(p -> {
                 if(p.isAlive()){
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
                     p.addCoordinate(nextCoordinate);
                 }
             });
@@ -285,8 +283,24 @@ public class Game implements IGame {
      * @param direction the current direction of the player
      * @return the new coordinate
      */
-    private Coordinate calculateNextCoordinate(Direction direction) {
-        return null;
+    private Coordinate calculateNextCoordinate(Coordinate coordinate, Direction direction) {
+        switch (direction){
+            case DOWN -> {
+                return new Coordinate(coordinate.x, coordinate.y+1);
+            }
+            case UP -> {
+                return new Coordinate(coordinate.x, coordinate.y-1);
+            }
+            case LEFT -> {
+                return new Coordinate(coordinate.x-1, coordinate.y);
+            }
+            case RIGHT -> {
+                return new Coordinate(coordinate.x+1, coordinate.y);
+            }
+            default -> {
+                return coordinate;
+            }
+        }
     }
 
     /**

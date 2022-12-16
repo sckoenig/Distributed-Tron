@@ -5,6 +5,6 @@ package vsp.trongame.app.model.datatypes;
  */
 public enum DirectionChange {
     NONE,
-    LEFT,
-    RIGHT
+    LEFT_STEER,
+    RIGHT_STEER
 }
