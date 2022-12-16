@@ -1,8 +1,9 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.ITronModel;
+import edu.cads.bai5.vsp.tron.view.ITronView;
 import vsp.trongame.app.model.datatypes.*;
+import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.*;
@@ -118,7 +119,6 @@ public class Game implements IGame {
 
     /**
      * Checks if enough players are registered to start the game after preperation time is over.
-     *
      * @return true, if enough players are registered, false otherwise.
      */
     private boolean isGameReady() {
@@ -127,7 +127,6 @@ public class Game implements IGame {
 
     /**
      * Checks if the desired player count was reached.
-     *
      * @return true, if the playerCount players are registered, false otherwise.
      */
     private boolean isGameFull() {
@@ -136,7 +135,6 @@ public class Game implements IGame {
 
     /**
      * Checks if a registration is allowed.
-     *
      * @param playerCountToRegister the amount of players that are to be registered.
      * @return true, if registration is allowed, false otherwise.
      */
@@ -146,7 +144,6 @@ public class Game implements IGame {
 
     /**
      * Creates and saves the given number of players and maps their ID and Color.
-     *
      * @param count number of players to be created.
      * @return a map of the player's ID and Color.
      */
@@ -160,6 +157,7 @@ public class Game implements IGame {
             this.players.add(newPlayer);
             this.mappedPlayers.put(color.getColor(), newPlayer.getCoordinates());
             newPlayers.put(registeredPlayerCount, color);
+
             registeredPlayerCount++;
         }
         return newPlayers;
@@ -217,11 +215,10 @@ public class Game implements IGame {
     }
 
     private void gameLoop() throws InterruptedException {
-
-        while (!isGameOver() && !Thread.interrupted()) {
+        while (!isGameOver() && !Thread.interrupted()){
             players.forEach(p -> {
-                if (p.isAlive()) {
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange(), p.getHeadPosition());
+                if(p.isAlive()){
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
                     p.addCoordinate(nextCoordinate);
                 }
             });
@@ -288,11 +285,11 @@ public class Game implements IGame {
      * @return the starting direction
      */
     private Direction calculateStartingDirection(Coordinate coordinate) {
-        if (coordinate.x == 0) {
+        if(coordinate.x == 0){
             return Direction.RIGHT;
-        } else if (coordinate.x == columns) {
+        }else if(coordinate.x == columns){
             return Direction.LEFT;
-        } else {
+        } else{
             return Direction.DOWN;
         }
     }
@@ -303,8 +300,24 @@ public class Game implements IGame {
      * @param direction the current direction of the player
      * @return the new coordinate
      */
-    private Coordinate calculateNextCoordinate(Direction direction, Coordinate currentCoordinate) {
-        return null;
+    private Coordinate calculateNextCoordinate(Coordinate coordinate, Direction direction) {
+        switch (direction){
+            case DOWN -> {
+                return new Coordinate(coordinate.x, coordinate.y+1);
+            }
+            case UP -> {
+                return new Coordinate(coordinate.x, coordinate.y-1);
+            }
+            case LEFT -> {
+                return new Coordinate(coordinate.x-1, coordinate.y);
+            }
+            case RIGHT -> {
+                return new Coordinate(coordinate.x+1, coordinate.y);
+            }
+            default -> {
+                return coordinate;
+            }
+        }
     }
 
     /**
