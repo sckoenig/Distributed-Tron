@@ -28,4 +28,6 @@ public interface IArena {
      */
     boolean detectCollision(Coordinate coordinate);
 
+
+
 }

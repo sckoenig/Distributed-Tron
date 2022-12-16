@@ -11,14 +11,21 @@ import java.util.Map;
 public interface IGameManager {
 
     /**
-     * The modelState changes to the next modelState based on the message.
+     * Informs the GameManager about the Game's {@link GameState}.
      * @param gameState the next modelState
      */
     void handleGameState(GameState gameState);
 
     /**
-     * Sets the players which are managed in the GameManager.
-     * @param managedPlayers the ID and Starting Coordinate of the players managed by the GameManager
+     * Informs the GameManager about the players it should manage.
+     * @param id registration id
+     * @param managedPlayers the ID and color of the players managed by the GameManager
      */
-    void setManagedPlayers(Map<Integer, TronColor> managedPlayers);
+    void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers);
+
+    /**
+     * Informs the GameManager about a game tick.
+     * @param tickCount number of current tick.
+     */
+    void handleGameTick(int tickCount);
 }

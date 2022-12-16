@@ -11,7 +11,7 @@ public class IGameManagerFactory {
      */
     public static IGameManager getGameManager(GameModus modus){
         return switch (modus){
-            case LOCAL -> new GameManager(modus);
+            case LOCAL -> new GameManager();
             case NETWORK -> null;
         };
     }

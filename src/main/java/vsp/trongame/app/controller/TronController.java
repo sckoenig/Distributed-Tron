@@ -12,20 +12,16 @@ public class TronController implements ITronController {
     private ITronModel model;
 
     @Override
-    public void initKeyEventHandler(Scene scene) {
-
+    public void playGame(int id, int playerCount){
+        model.playGame(id, playerCount);
     }
 
     @Override
-    public void startGame(int playerCount){
-        model.initializeGame(playerCount);
+    public void handleKeyEvent(int id, KeyEvent event){
     }
 
     @Override
-    public void handleKeyEvent(KeyEvent event){}
-
-    @Override
-    public void setModel(ITronModel model){
+    public void initialize(ITronModel model){
         this.model = model;
     }
 }

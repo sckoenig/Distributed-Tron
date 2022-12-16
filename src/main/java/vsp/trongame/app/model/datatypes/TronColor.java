@@ -7,21 +7,21 @@ import javafx.scene.paint.Color;
  */
 public enum TronColor {
 
-    BLUE(Color.ROYALBLUE),
-    RED(Color.SALMON),
-    YELLOW(Color.GOLD),
-    GREEN(Color.MEDIUMSEAGREEN),
-    VIOLETT(Color.MEDIUMPURPLE),
-    WHITE(Color.LINEN),
-    DEFAULT(Color.BLUEVIOLET.darker().darker().darker().desaturate());
+    BLUE("#7ca7eb"),
+    RED("#d97777"),
+    YELLOW("#d9b277"),
+    GREEN("#b7d977"),
+    VIOLETT("#ce91ed"),
+    WHITE("#f2eee1"),
+    DEFAULT("#2e2f30");
 
-    private final Color color;
+    private final String color;
 
-    TronColor(Color color){
+    TronColor(String color){
         this.color = color;
     }
 
-    public Color getColor(){
+    public String getColor(){
         return this.color;
     }
 

@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.CountdownOverlay">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.CountdownOverlay">
    <children>
-      <Canvas fx:id="canvas" />
-      <Label fx:id="counterLabel" prefHeight="150.0" prefWidth="55.0" text="1" textFill="WHITE">
+      <Label fx:id="counterLabel" layoutX="348.0" layoutY="225.0" prefHeight="150.0" prefWidth="55.0" text="1" textFill="WHITE">
          <font>
             <Font size="96.0" />
          </font>
