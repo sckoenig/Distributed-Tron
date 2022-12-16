@@ -11,6 +11,8 @@ import java.util.Map;
  */
 public class CountdownOverlay {
 
+    public static final String IDENTIFIER = "COUNTDOWN";
+
     @FXML
     private Node root;
 

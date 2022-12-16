@@ -9,10 +9,13 @@ import vsp.trongame.app.view.overlays.EndingOverlay;
 import vsp.trongame.app.view.overlays.MenuOverlay;
 import vsp.trongame.app.view.overlays.WaitingOverlay;
 
+import java.io.IOException;
+import java.util.Map;
+
 
 public interface IViewWrapper {
 
-   void initialize(MenuOverlay menuOverlay, WaitingOverlay waitingOverlay, CountdownOverlay countdownOverlay, EndingOverlay endingOverlay, ITronModel model, ITronController controller, int defaultPlayerCount);
+   void initialize(ITronModel model, ITronController controller, int defaultPlayerCount, Map<String, String> idOverlayMapping) throws IOException;
 
     Scene getScene();
 

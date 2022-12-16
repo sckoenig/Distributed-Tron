@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Arena implements IArena{
 
-    private int[][] arenaField;
+    private final int[][] arenaField;
 
     /**
      * Constructor arena where a new Arena is initialized.

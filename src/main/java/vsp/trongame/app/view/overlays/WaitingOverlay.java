@@ -5,4 +5,6 @@ package vsp.trongame.app.view.overlays;
  */
 public class WaitingOverlay {
 
+    public static final String IDENTIFIER = "WAITING";
+
 }

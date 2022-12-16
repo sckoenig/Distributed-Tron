@@ -1,6 +1,5 @@
 package vsp.trongame.app.controller;
 
-import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import vsp.trongame.app.model.ITronModel;
 

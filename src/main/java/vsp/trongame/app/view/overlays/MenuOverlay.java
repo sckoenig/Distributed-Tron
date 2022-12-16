@@ -9,6 +9,8 @@ import vsp.trongame.app.controller.ITronController;
  * Overlay, that represents a menu.
  */
 public class MenuOverlay  {
+
+    public static final String IDENTIFIER = "MENU";
     public static final int MAX_PLAYER = 6;
     public static final int MIN_PLAYER = 2;
 

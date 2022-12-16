@@ -12,6 +12,8 @@ import vsp.trongame.app.model.ITronModel;
  */
 public class EndingOverlay {
 
+    public static final String IDENTIFIER = "ENDING";
+
     @FXML
     public Label gameResultLabel;
     @FXML
