@@ -69,11 +69,6 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public void setNextDirectionChange(DirectionChange directionChange) {
-        this.nextAction = directionChange;
-    }
-
-    @Override
     public void setDirection(Direction direction) {
         this.direction = direction;
     }

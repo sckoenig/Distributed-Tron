@@ -67,20 +67,20 @@ public class GameManager implements IGameManager, ITronModel {
         executorService.execute(() -> {
             int managedPlayerCount = singleView ? playerCount : 1;
             game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount);
-    });
+        });
     }
 
     @Override
     public void registerListener(IUpdateListener listener) {
-            int nextID = listenersMap.size();
-            listenersMap.put(nextID, listener);
-            listenersToPlayersMap.put(nextID, new ArrayList<>());
-            listener.updateOnRegistration(nextID);
-            listener.updateOnState(currentState.toString());
+        int nextID = listenersMap.size();
+        listenersMap.put(nextID, listener);
+        listenersToPlayersMap.put(nextID, new ArrayList<>());
+        listener.updateOnRegistration(nextID);
+        listener.updateOnState(currentState.toString());
     }
 
     @Override
-    public void handleGameTick(int tickCounter){
+    public void handleGameTick(int tickCounter) {
         game.handleSteers(managedPlayers.values().stream().filter(Objects::nonNull).collect(Collectors.toList()));
     }
 

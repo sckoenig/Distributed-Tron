@@ -1,9 +1,8 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import edu.cads.bai5.vsp.tron.view.ITronView;
+import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
-import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.*;
@@ -233,6 +232,8 @@ public class Game implements IGame {
         }
     }
 
+    //TODO move to arena
+
     /**
      * Calculates in relation to the playerCount, fair starting positions for every player.
      *
@@ -277,6 +278,8 @@ public class Game implements IGame {
         }
         return fairPositions;
     }
+
+    //TODO move to arena
 
     /**
      * Calculates for every coordinate a direction to start.
