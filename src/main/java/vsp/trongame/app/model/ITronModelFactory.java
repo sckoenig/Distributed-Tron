@@ -12,9 +12,9 @@ public class ITronModelFactory {
      * @param modus the modus of the game.
      * @return model instance.
      */
-    public static ITronModel getTronModel(GameModus modus, ITronView tronView, boolean singleView, Config config){
+    public static ITronModel getTronModel(GameModus modus){
         return switch (modus){
-            case LOCAL -> (ITronModel) IGameManagerFactory.getGameManager(GameModus.LOCAL, tronView, singleView, config);
+            case LOCAL -> (ITronModel) IGameManagerFactory.getGameManager(GameModus.LOCAL);
             case NETWORK -> null;
         };
     }

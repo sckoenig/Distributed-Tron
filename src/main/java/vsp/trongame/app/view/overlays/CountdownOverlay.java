@@ -1,40 +1,37 @@
 package vsp.trongame.app.view.overlays;
 
-import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
-import vsp.trongame.app.model.ITronModel;
+
+import java.util.Map;
 
 /**
  * Overlay, that shows a countdown and key controls.
  */
-public class CountdownOverlay implements Overlay {
+public class CountdownOverlay {
+
+    public static final String IDENTIFIER = "COUNTDOWN";
+
+    @FXML
+    private Node root;
 
     @FXML
     public Label counterLabel;
 
-    @FXML
-    public Canvas canvas;
+    public void setKeyMappings(Map<String, String> mappings){
 
-    @Override
-    public void init(ITronModel.IObservableTronModel observableModel) {
-        counterLabel.setVisible(false);
-        observableModel.getObserverableCountDownCounter().addListener((observableValue, s, t1) -> {
-            counterLabel.setText(String.valueOf(t1));
-            counterLabel.setVisible(true);
-            if (t1.equals(0)) reset();
-        });
-        observableModel.getObservableKeyMappings().addListener((MapChangeListener<String, Color>) change -> paintOnCanvas());
+        //TODO
+
     }
 
-    private void paintOnCanvas(){
-        //TODO
+    public void setCounterLabel(int value){
+        counterLabel.setText(String.valueOf(value));
+        counterLabel.setVisible(true);
+        if (value == 0) reset();
     }
 
     private void reset(){
-        this.canvas.getGraphicsContext2D().clearRect(0,0, canvas.getWidth(), canvas.getHeight());
         counterLabel.setVisible(false);
     }
 

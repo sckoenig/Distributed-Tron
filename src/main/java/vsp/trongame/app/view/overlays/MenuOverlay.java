@@ -9,10 +9,13 @@ import vsp.trongame.app.controller.ITronController;
  * Overlay, that represents a menu.
  */
 public class MenuOverlay  {
+
+    public static final String IDENTIFIER = "MENU";
     public static final int MAX_PLAYER = 6;
     public static final int MIN_PLAYER = 2;
 
     private ITronController controller;
+    private int registrationId;
 
     @FXML
     public Button startGameButton;
@@ -24,7 +27,7 @@ public class MenuOverlay  {
     public Button increasePlayerCountButton;
 
     public void handleButtonPress() {
-        this.controller.startGame(Integer.parseInt(playerCountLabel.getText()));
+        this.controller.playGame(registrationId, Integer.parseInt(playerCountLabel.getText()));
     }
 
     public void handleDecrease(){
@@ -36,11 +39,13 @@ public class MenuOverlay  {
         if (value < MAX_PLAYER) playerCountLabel.setText(String.valueOf(value+1));
     }
 
-    public void setController(ITronController controller){
+    public void initialize(ITronController controller, int defaultPlayerCount){
         this.controller = controller;
+        this.playerCountLabel.setText(String.valueOf(defaultPlayerCount));
     }
 
-    public void setDefaultPlayerCount(int playerCount){
-        this.playerCountLabel.setText(String.valueOf(playerCount));
+    public void setId(int id){
+        this.registrationId = id;
     }
+
 }

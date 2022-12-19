@@ -1,9 +1,8 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import edu.cads.bai5.vsp.tron.view.ITronView;
+import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
-import vsp.trongame.app.model.gamemanagement.IGameData;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.*;
@@ -16,97 +15,105 @@ import static java.lang.Thread.*;
  */
 public class Game implements IGame {
 
-    private final Map<GameState, GameState> transitions;
-    private final ExecutorService executorService;
     private final List<IPlayer> players;
-    private final Map<TronColor, List<Coordinate>> mappedPlayers; //for gameLoop update
-    private final List<IGameManager> stateListener;
-    private final List<IGameData> dataListener;
+    private final Map<String, List<Coordinate>> mappedPlayers; //for gameLoop update
+    private final Set<IGameManager> gameManagers; //listeners be related to the same manager
+    private final List<ITronModel.IUpdateListener> gameListeners;
     private final ICollisionDetector collisionDetector;
-    private final int speed;
-    private final int preparationTime;
-    private final IArena arena;
-    private final int rows;
-    private final int columns;
-
-
-
-
+    private ExecutorService gameExecutor;
+    private int speed;
+    private int preparationTime;
+    private int endingTime;
+    private IArena arena;
+    private int rows;
+    private int columns;
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
+    private int tickCount;
 
-    public Game(ExecutorService executorService, int waitingTimer, int rows, int columns, int speed) {
-        this.speed = speed;
-        this.preparationTime = waitingTimer;
-        this.arena = new Arena(rows, columns);
-        this.rows = rows;
-        this.columns = columns;
-        this.executorService = executorService;
+    public Game() {
         this.players = new ArrayList<>();
-        this.stateListener = new ArrayList<>();
-        this.dataListener = new ArrayList<>();
+        this.gameManagers= new HashSet<>();
+        this.gameListeners = new ArrayList<>();
         this.mappedPlayers = new HashMap<>();
         this.collisionDetector = new CollisionDetector();
         this.currentState = GameState.INIT;
-        this.transitions = new EnumMap<>(Map.of(GameState.INIT, GameState.PREPARING,
-                GameState.PREPARING, GameState.COUNTDOWN, GameState.COUNTDOWN, GameState.RUNNING,
-                GameState.RUNNING, GameState.FINISHED, GameState.FINISHED, GameState.INIT));
+    }
+
+    @Override
+    public void initialize(ExecutorService executorService, int waitingTimer, int endingTime, int rows, int columns, int speed) {
+        this.gameExecutor = executorService;
+        this.rows = rows;
+        this.columns = columns;
+        this.speed = speed;
+        this.preparationTime = waitingTimer;
+        this.endingTime = endingTime;
+        this.arena = new Arena(rows, columns);
     }
 
     @Override
     public void prepare(int playerCount) {
-        this.currentState = GameState.PREPARING;
         this.playerCount = playerCount;
-        preparationTimer();
+        transitionState(GameState.PREPARING);
     }
 
     @Override
-    public void register(IGameData dataListener, IGameManager stateListener, int managedPlayerCount) {
+    public void register(IGameManager gameManager, ITronModel.IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
 
         if (isRegistrationAllowed(managedPlayerCount)) {
-            this.dataListener.add(dataListener);
-
-            this.stateListener.add(stateListener);
-            Map<Integer, TronColor> managedPlayers = createPlayers(managedPlayerCount);
-            stateListener.setManagedPlayers(managedPlayers);
+            this.gameListeners.add(gameListener);
+            this.gameManagers.add(gameManager);
+            gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
         }
 
-        if (isGameFull()) start();
+        if (isGameFull()) transitionState(GameState.COUNTDOWN);
+
     }
 
     @Override
-    public void handleSteer(Steer steer) {
+    public void handleSteers(List<Steer> steers) {
         //TODO
     }
 
     /**
      * Transitions to the next state and informs stateListeners.
      */
-    private void transitionState() {
-        currentState = transitions.get(currentState);
+    private void transitionState(GameState newState) {
+        currentState = newState;
+        executeState();
+    }
 
-        for (IGameManager stateListenerEntry : stateListener) {
-            stateListenerEntry.handleGameState(currentState);
+    private void executeState() {
+
+        gameManagers.forEach(gm -> gm.handleGameState(currentState));
+
+        switch (currentState) {
+            case INIT -> reset();
+            case PREPARING -> startTimer(preparationTime);
+            case COUNTDOWN -> start();
+            case RUNNING -> play();
+            case FINISHED -> finish();
         }
     }
 
-    private void preparationTimer(){
-        executorService.execute(() -> {
-            executorService.execute(() -> {
-                try{
-                    sleep(preparationTime);
-                } catch (InterruptedException e){
-                    Thread.currentThread().interrupt();
-                }
-                if (!currentThread().isInterrupted()) handleTimeOut();
-            });
+    private void startTimer(int waitingTime) {
+        gameExecutor.execute(() -> {
+            try {
+                sleep(waitingTime);
+            } catch (InterruptedException e) {
+                currentThread().interrupt();
+            }
+            if (!currentThread().isInterrupted()) handleTimeOut();
         });
     }
 
     private void handleTimeOut() {
-        if (isGameReady()) start();
-        else currentState = GameState.INIT;
+        if (currentState == GameState.FINISHED) transitionState(GameState.INIT);
+        if (currentState == GameState.PREPARING) {
+            if (isGameReady()) transitionState(GameState.COUNTDOWN);
+            else transitionState(GameState.INIT);
+        }
     }
 
     /**
@@ -147,7 +154,7 @@ public class Game implements IGame {
             IPlayer newPlayer = new Player(color, registeredPlayerCount);
 
             this.players.add(newPlayer);
-            this.mappedPlayers.put(color, newPlayer.getCoordinates());
+            this.mappedPlayers.put(color.getColor(), newPlayer.getCoordinates());
             newPlayers.put(registeredPlayerCount, color);
 
             registeredPlayerCount++;
@@ -159,64 +166,73 @@ public class Game implements IGame {
      * Makes necessary preparation for game start, then starts the game.
      */
     private void start() {
-        transitionState();
 
-        for (IGameData dataListenerEntry : dataListener) {
-            dataListenerEntry.updateArenaSize(100, 100);
-        }
-        //TODO: comment in when methods are ready.
-        /*
+        gameListeners.forEach(gl -> gl.updateOnArena(100,100));
+
         List<Coordinate> startingCoordinates = calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
             IPlayer player = players.get(i);
             player.addCoordinate(coordinate);
             player.setDirection(calculateStartingDirection(coordinate));
-        }*/
-        try{
+        }
+
+        try {
             countDown();
-            executorService.execute(() -> {
-                try {
-                    mockLoop();
-                    //gameLoop()
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-                if (!interrupted()) finish();
-            });
-        } catch (InterruptedException e){
+        } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        if (!Thread.interrupted()) transitionState(GameState.RUNNING);
     }
 
     private void countDown() throws InterruptedException {
 
-        for (IGameData dataListenerEntry : dataListener) {
-            dataListenerEntry.updateCountDownCounter(3);
-            sleep(1000);
-            dataListenerEntry.updateCountDownCounter(2);
-            sleep(1000);
-            dataListenerEntry.updateCountDownCounter(1);
-            sleep(1000);
+        for (ITronModel.IUpdateListener gl : gameListeners) {
+            for (int i = 3; i > 0; i--) {
+                gl.updateOnCountDown(i);
+                sleep(1000);
+            }
         }
+        gameListeners.forEach(ITronModel.IUpdateListener::updateOnGameStart);
+
     }
 
     /**
      * Performs the game's main loop.
      */
+
+    private void play() {
+        gameExecutor.execute(() -> {
+            try {
+                //gameLoop();
+                mockLoop();
+            } catch (InterruptedException e){
+                Thread.currentThread().interrupt();
+            }
+            if (!interrupted()) transitionState(GameState.FINISHED);
+        });
+    }
+
     private void gameLoop() throws InterruptedException {
         while (!isGameOver() && !Thread.interrupted()){
             players.forEach(p -> {
                 if(p.isAlive()){
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.performDirectionChange());
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
                     p.addCoordinate(nextCoordinate);
                 }
             });
             collisionDetector.detectCollision(players, arena);
-            dataListener.forEach(dl -> dl.updatePlayers(mappedPlayers));
-            sleep(0); //tick rate here
+
+            tickCount++;
+            gameListeners.forEach(dl -> dl.updateOnField(mappedPlayers));
+            gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
+
+            // noinspection BusyWait: tickrate here
+            sleep(0);
         }
     }
+
+    //TODO move to arena
 
     /**
      * Calculates in relation to the playerCount, fair starting positions for every player.
@@ -263,6 +279,8 @@ public class Game implements IGame {
         return fairPositions;
     }
 
+    //TODO move to arena
+
     /**
      * Calculates for every coordinate a direction to start.
      *
@@ -285,8 +303,24 @@ public class Game implements IGame {
      * @param direction the current direction of the player
      * @return the new coordinate
      */
-    private Coordinate calculateNextCoordinate(Direction direction) {
-        return null;
+    private Coordinate calculateNextCoordinate(Coordinate coordinate, Direction direction) {
+        switch (direction){
+            case DOWN -> {
+                return new Coordinate(coordinate.x, coordinate.y+1);
+            }
+            case UP -> {
+                return new Coordinate(coordinate.x, coordinate.y-1);
+            }
+            case LEFT -> {
+                return new Coordinate(coordinate.x-1, coordinate.y);
+            }
+            case RIGHT -> {
+                return new Coordinate(coordinate.x+1, coordinate.y);
+            }
+            default -> {
+                return coordinate;
+            }
+        }
     }
 
     /**
@@ -307,30 +341,23 @@ public class Game implements IGame {
         IPlayer winner = players.stream().filter(IPlayer::isAlive).reduce((a, b) -> {
             throw new IllegalStateException("More than one Player is alive!");
         }).orElse(null);
-        GameResult result = winner == null? GameResult.DRAW : GameResult.WON;
-        TronColor resultColor = winner == null? TronColor.DEFAULT : winner.getColor();
+        GameResult result = winner == null ? GameResult.DRAW : GameResult.WON;
+        TronColor resultColor = winner == null ? TronColor.DEFAULT : winner.getColor();
 
         //inform
-        for (IGameData dataListenerEntry : dataListener) {
-            dataListenerEntry.updateGameResult(resultColor, result);
-        }
+        gameListeners.forEach(gameData -> gameData.updateOnGameResult(resultColor.getColor(), result.getResultText()));
 
-        currentState = GameState.FINISHED;
-        for (IGameManager stateListenerEntry : this.stateListener) {
-            stateListenerEntry.handleGameState(currentState);
-        }
-
-        reset();
+        startTimer(endingTime);
     }
 
     /**
      * Resets the current game to its initial state.
      */
     private void reset() {
-        currentState = GameState.INIT;
-        playerCount = registeredPlayerCount = 0;
-        stateListener.clear();
-        dataListener.clear();
+        playerCount = registeredPlayerCount = tickCount = 0;
+        gameManagers.clear();
+        gameListeners.clear();
+        mappedPlayers.clear();
         players.clear();
     }
 
@@ -339,38 +366,31 @@ public class Game implements IGame {
         //startingCoordinates
         players.get(0).getCoordinates().add(new Coordinate(1, 2));
         players.get(1).getCoordinates().add(new Coordinate(5, 5));
-        dataListener.get(0).updatePlayers(mappedPlayers);
-
-        // countdown
-
-        this.currentState = GameState.RUNNING;
-        for (IGameManager stateListenerEntry : stateListener) {
-            stateListenerEntry.handleGameState(currentState);
-        }
+        gameListeners.get(0).updateOnField(mappedPlayers);
 
         //gameloop
         sleep(500);
 
         players.get(0).getCoordinates().add(new Coordinate(1, 3));
         players.get(1).getCoordinates().add(new Coordinate(4, 5));
-        dataListener.get(0).updatePlayers(mappedPlayers);
+        gameListeners.get(0).updateOnField(mappedPlayers);
 
         sleep(500);
 
         players.get(0).getCoordinates().add(new Coordinate(1, 4));
         players.get(1).getCoordinates().add(new Coordinate(3, 5));
-        dataListener.get(0).updatePlayers(mappedPlayers);
+        gameListeners.get(0).updateOnField(mappedPlayers);
 
         sleep(500);
 
         players.get(0).getCoordinates().add(new Coordinate(1, 5));
         players.get(1).getCoordinates().add(new Coordinate(2, 5));
-        dataListener.get(0).updatePlayers(mappedPlayers);
+        gameListeners.get(0).updateOnField(mappedPlayers);
 
         sleep(500);
 
         players.get(0).getCoordinates().add(new Coordinate(1, 6));
-        dataListener.get(0).updatePlayers(mappedPlayers);
+        gameListeners.get(0).updateOnField(mappedPlayers);
 
         players.get(1).crash();
     }
