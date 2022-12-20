@@ -43,7 +43,7 @@ public class TronGame extends Application {
         /* BOOT APP */
         this.modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         Config config = new Config();
-        GameModus modus = LOCAL; //TODO get from Config when Config is implemented
+        GameModus modus = GameModus.valueOf(config.getAttribut("gameMode"));
         boolean singleView = modus == LOCAL? true : false;
 
         /* components */
