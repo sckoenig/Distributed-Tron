@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import vsp.trongame.app.model.datatypes.Direction;
 
 import java.util.List;
 
@@ -28,6 +29,19 @@ public interface IArena {
      */
     boolean detectCollision(Coordinate coordinate);
 
+    /**
+     * Calculates in relation to the playerCount, fair starting positions for every player.
+     *
+     * @param playerCount how many players are playing
+     * @return the list of calculated starting coordinates
+     */
+    List<Coordinate> calculateFairStartingCoordinates(int playerCount);
 
-
+    /**
+     * Calculates for every coordinate a direction to start.
+     *
+     * @param coordinate is the starting coordinate of a player
+     * @return the starting direction
+     */
+    Direction calculateStartingDirection(Coordinate coordinate);
 }
