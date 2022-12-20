@@ -146,21 +146,31 @@ public class Config {
      * @return if steer is valid
      */
     private boolean isSteerValid(String steer){
-        String regex = "a-zA-Z1-9";
+        if(steer.length() < 3 || !steer.contains(",")){
+            return false;
+        }
         String[] tempStringArray = steer.split(",");
-        if(!(tempStringArray[0].equalsIgnoreCase("Right") ||
-                tempStringArray[0].equalsIgnoreCase("Left") ||
-                tempStringArray[0].equalsIgnoreCase("Up") ||
-                tempStringArray[0].equalsIgnoreCase("Down"))){
-            if(!tempStringArray[0].matches(regex)){
+        if(!isValidKey(tempStringArray, 0) || !isValidKey(tempStringArray, 1)){
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the string is only [a-zA-Z1-9] or the arrow keys.
+     * @param tempStringArray which we want to validate
+     * @param index on which positions we want to check the String
+     * @return if string is valid
+     */
+    private boolean isValidKey(String[] tempStringArray, int index){
+        String regex = "a-zA-Z1-9";
+        if(!(tempStringArray[index].equalsIgnoreCase("Right") ||
+                tempStringArray[index].equalsIgnoreCase("Left") ||
+                tempStringArray[index].equalsIgnoreCase("Up") ||
+                tempStringArray[index].equalsIgnoreCase("Down"))){
+            if(!tempStringArray[index].matches(regex)){
                 return false;
             }
-        }
-        if(!(tempStringArray[1].equalsIgnoreCase("Right") ||
-                tempStringArray[1].equalsIgnoreCase("Left") ||
-                tempStringArray[1].equalsIgnoreCase("Up") ||
-                tempStringArray[1].equalsIgnoreCase("Down"))){
-            return tempStringArray[1].matches(regex);
         }
         return true;
     }
