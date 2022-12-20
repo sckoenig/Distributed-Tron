@@ -3,13 +3,20 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.CountdownOverlay">
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vsp.trongame.app.view.overlays.CountdownOverlay">
    <children>
+      <VBox alignment="CENTER" spacing="15">
       <Label fx:id="counterLabel"  prefHeight="150.0" prefWidth="55.0" text="1" textFill="WHITE">
          <font>
             <Font size="96.0" />
          </font>
       </Label>
+         <HBox fx:id="mainHBox" alignment="CENTER" spacing="15"/>
+      </VBox>
    </children>
 </AnchorPane>

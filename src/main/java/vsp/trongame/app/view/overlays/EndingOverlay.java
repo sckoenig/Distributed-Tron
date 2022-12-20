@@ -2,10 +2,8 @@ package vsp.trongame.app.view.overlays;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
-import vsp.trongame.app.model.ITronModel;
 
 /**
  * Overlay, that shows a game's result.
@@ -13,7 +11,6 @@ import vsp.trongame.app.model.ITronModel;
 public class EndingOverlay {
 
     public static final String IDENTIFIER = "ENDING";
-
     @FXML
     public Label gameResultLabel;
     @FXML

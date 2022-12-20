@@ -13,10 +13,6 @@ public class MenuOverlay  {
     public static final String IDENTIFIER = "MENU";
     public static final int MAX_PLAYER = 6;
     public static final int MIN_PLAYER = 2;
-
-    private ITronController controller;
-    private int registrationId;
-
     @FXML
     public Button startGameButton;
     @FXML
@@ -25,6 +21,9 @@ public class MenuOverlay  {
     public Button decreasePlayerCountButton;
     @FXML
     public Button increasePlayerCountButton;
+
+    private ITronController controller;
+    private int registrationId;
 
     public void handleButtonPress() {
         this.controller.playGame(registrationId, Integer.parseInt(playerCountLabel.getText()));

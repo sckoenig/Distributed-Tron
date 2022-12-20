@@ -4,27 +4,39 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="vsp.trongame.app.view.overlays.MenuOverlay">
-   <children>
-      <Button fx:id="startGameButton" layoutX="200.0" layoutY="277.0" mnemonicParsing="false" onAction="#handleButtonPress" prefHeight="55.0" prefWidth="200.0" text="PLAY">
-         <font>
-            <Font name="Verdana Bold" size="25.0" />
-         </font></Button>
-      <Label fx:id="playerCountLabel" layoutX="286.0" layoutY="167.0" prefHeight="66.0" prefWidth="28.0" text="2" textFill="WHITE">
-         <font>
-            <Font name="Verdana" size="45.0" />
-         </font>
-      </Label>
-      <Button fx:id="increasePlayerCountButton" layoutX="359.0" layoutY="179.0" mnemonicParsing="false" onAction="#handleIncrease" prefHeight="42.0" prefWidth="41.0" text="+">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Button>
-      <Button fx:id="decreasePlayerCountButton" layoutX="200.0" layoutY="179.0" mnemonicParsing="false" onAction="#handleDecrease" prefHeight="42.0" prefWidth="41.0" text="-">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Button>
-   </children>
+<AnchorPane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="vsp.trongame.app.view.overlays.MenuOverlay">
+    <children>
+        <VBox alignment="CENTER" spacing="40">
+            <HBox alignment="CENTER" spacing="15">
+                <Button fx:id="decreasePlayerCountButton" mnemonicParsing="false" onAction="#handleDecrease"
+                        prefHeight="42.0" prefWidth="41.0" text="-">
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Button>
+                <Label fx:id="playerCountLabel" prefHeight="66.0" prefWidth="28.0" text="2" textFill="WHITE">
+                    <font>
+                        <Font name="Verdana" size="45.0"/>
+                    </font>
+                </Label>
+                <Button fx:id="increasePlayerCountButton" mnemonicParsing="false" onAction="#handleIncrease"
+                        prefHeight="42.0" prefWidth="41.0" text="+">
+                    <font>
+                        <Font size="18.0"/>
+                    </font>
+                </Button>
+            </HBox>
+            <Button fx:id="startGameButton" mnemonicParsing="false" onAction="#handleButtonPress" prefHeight="55.0"
+                    prefWidth="200.0" text="PLAY">
+                <font>
+                    <Font name="Verdana Bold" size="25.0"/>
+                </font>
+            </Button>
+        </VBox>
+    </children>
 </AnchorPane>

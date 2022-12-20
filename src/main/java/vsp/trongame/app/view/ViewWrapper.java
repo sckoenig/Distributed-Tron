@@ -35,6 +35,8 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
     public void initialize(ITronModel model, ITronController mainController, int defaultPlayerCount, Map<String, String> mapping) throws IOException {
 
+        this.mainController = mainController;
+
         Parent root;
         FXMLLoader loader;
         for (Map.Entry<String, String> overlay : mapping.entrySet()) {
@@ -76,7 +78,6 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     @Override
     public void updateOnKeyMappings(Map<String, String> mappings) {
         countdownOverlay.setKeyMappings(mappings);
-        System.out.println("KY MAPPING IN VIEW");
     }
 
     @Override

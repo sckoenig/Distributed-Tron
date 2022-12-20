@@ -4,11 +4,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 
@@ -23,59 +21,38 @@ public class CountdownOverlay {
 
     @FXML
     public AnchorPane pane;
-
-    @FXML
-    private Node root;
-
     @FXML
     public Label counterLabel;
-    //public List<Circle> circles = new ArrayList<>();
-    public VBox box = new VBox();
-    public HBox mainHBox = new HBox();
-
     @FXML
-    public void initialize() {
-
-        box = new VBox();
-        box.setAlignment(Pos.CENTER);
-        box.getChildren().add(counterLabel);
-        box.getChildren().add(mainHBox);
-        this.pane.getChildren().add(box);
-    }
+    public HBox mainHBox;
 
     public void setKeyMappings(Map<String, String> mappings) {
         Platform.runLater(() -> {
             mainHBox.getChildren().clear();
             for (Map.Entry<String, String> entry : mappings.entrySet()) {
                 HBox hBox = new HBox();
+                hBox.setSpacing(10);
+                hBox.setAlignment(Pos.CENTER);
+                hBox.setPadding(new Insets(0, 15, 0, 0));
+
                 Label label = new Label();
                 label.setText(entry.getKey());
                 label.setTextFill(Paint.valueOf(entry.getValue()));
+
                 Circle circle = new Circle();
                 circle.setFill(Paint.valueOf(entry.getValue()));
                 circle.setRadius(8);
-                hBox.setSpacing(10);
 
-                hBox.setAlignment(Pos.CENTER);
                 hBox.getChildren().add(circle);
                 hBox.getChildren().add(label);
-                hBox.setPadding(new Insets(0, 15, 0, 0));
 
                 mainHBox.getChildren().add(hBox);
-
             }
         });
-
     }
 
     public void setCounterLabel(int value) {
         counterLabel.setText(String.valueOf(value));
-        counterLabel.setVisible(true);
-        if (value == 0) reset();
-    }
-
-    private void reset() {
-
     }
 
 }
