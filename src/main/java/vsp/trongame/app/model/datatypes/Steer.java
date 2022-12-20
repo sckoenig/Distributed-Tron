@@ -1,18 +1,18 @@
 package vsp.trongame.app.model.datatypes;
 
 /**
- * Represents a steer Object, which contains a playerID and a directtion.
+ * Represents a steer Object, which contains a playerID and a DirecttionChange.
  */
 public class Steer {
 
     private int playerId;
-    private Direction direction;
+    private DirectionChange directionChange;
 
     public int getPlayerId() {
         return playerId;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public DirectionChange getDirectionChange() {
+        return directionChange;
     }
 }

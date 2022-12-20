@@ -59,6 +59,13 @@ public interface IPlayer {
      * */
     void setDirection(Direction direction);
 
+
+    /**
+     * Gets the Direction of the player.
+     * @return the direction
+     */
+    Direction getDirection();
+
     /**
      * Sets the current direction based on the current nextDirectionChange and changes
      * the nextDirectionChange to NONE.
