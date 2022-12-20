@@ -1,7 +1,9 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import vsp.trongame.app.model.datatypes.Direction;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,6 +12,8 @@ import java.util.List;
 public class Arena implements IArena{
 
     private final int[][] arenaField;
+    private int rows;
+    private int columns;
 
     /**
      * Constructor arena where a new Arena is initialized.
@@ -17,6 +21,8 @@ public class Arena implements IArena{
      * @param columns the number of columns
      */
     public Arena(int rows, int columns){
+        this.rows = rows;
+        this.columns = columns;
         this.arenaField = new int[columns][rows];
     }
 
@@ -45,5 +51,56 @@ public class Arena implements IArena{
     public boolean detectCollision(Coordinate coordinate) {
         return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0
                 || coordinate.x < 0 || coordinate.y < 0;
+    }
+
+    @Override
+    public List<Coordinate> calculateFairStartingCoordinates(int playerCount) {
+        List<Coordinate> fairPositions = new ArrayList<>();
+        switch (playerCount) {
+            case 2 -> {
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+            }
+            case 3 -> {
+                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+            }
+            case 4 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+            }
+            case 5 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns / 2));
+            }
+            case 6 -> {
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, columns));
+                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(rows / 2, 0));
+                fairPositions.add(new Coordinate(rows / 2, columns));
+            }
+            default -> {
+            }
+        }
+        return fairPositions;
+    }
+
+    @Override
+    public Direction calculateStartingDirection(Coordinate coordinate) {
+        if(coordinate.x == 0){
+            return Direction.RIGHT;
+        }else if(coordinate.x == columns){
+            return Direction.LEFT;
+        } else{
+            return Direction.DOWN;
+        }
     }
 }

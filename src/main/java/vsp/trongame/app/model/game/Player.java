@@ -18,7 +18,6 @@ public class Player implements IPlayer {
     private List<Coordinate> coordinates;
     private TronColor color;
     private Direction direction;
-    private DirectionChange nextAction;
 
     /**
      * Constructor player, where a player with a color and an id ist created.
@@ -74,42 +73,39 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public Direction performDirectionChange() {
+    public Direction getDirection() {
+        return this.direction;
+    }
+
+    @Override
+    public Direction performDirectionChange(DirectionChange directionChange) {
        switch (this.direction){
            case LEFT -> {
-               if(this.nextAction == DirectionChange.LEFT_STEER){
+               if(directionChange == DirectionChange.LEFT_STEER){
                    this.direction = Direction.DOWN;
-                   this.nextAction = DirectionChange.NONE;
-               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+               } else if (directionChange == DirectionChange.RIGHT_STEER) {
                    this.direction = Direction.UP;
-                   this.nextAction = DirectionChange.NONE;
                }
            }
            case RIGHT -> {
-               if(this.nextAction == DirectionChange.LEFT_STEER){
+               if(directionChange == DirectionChange.LEFT_STEER){
                    this.direction = Direction.UP;
-                   this.nextAction = DirectionChange.NONE;
-               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+               } else if (directionChange == DirectionChange.RIGHT_STEER) {
                    this.direction = Direction.DOWN;
-                   this.nextAction = DirectionChange.NONE;
                }
            }
            case DOWN -> {
-               if(this.nextAction == DirectionChange.LEFT_STEER){
+               if(directionChange == DirectionChange.LEFT_STEER){
                    this.direction = Direction.RIGHT;
-                   this.nextAction = DirectionChange.NONE;
-               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+               } else if (directionChange == DirectionChange.RIGHT_STEER) {
                    this.direction = Direction.LEFT;
-                   this.nextAction = DirectionChange.NONE;
                }
            }
            case UP -> {
-               if(this.nextAction == DirectionChange.LEFT_STEER){
+               if(directionChange == DirectionChange.LEFT_STEER){
                    this.direction = Direction.LEFT;
-                   this.nextAction = DirectionChange.NONE;
-               } else if (this.nextAction == DirectionChange.RIGHT_STEER) {
+               } else if (directionChange == DirectionChange.RIGHT_STEER) {
                    this.direction = Direction.RIGHT;
-                   this.nextAction = DirectionChange.NONE;
                }
            }
        }

@@ -81,7 +81,7 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameTick(int tickCounter) {
-        game.handleSteers(managedPlayers.values().stream().filter(Objects::nonNull).collect(Collectors.toList()));
+        game.handleSteers(managedPlayers.values().stream().filter(Objects::nonNull).collect(Collectors.toList()), tickCounter);
     }
 
     @Override
