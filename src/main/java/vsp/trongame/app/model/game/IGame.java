@@ -36,5 +36,5 @@ public interface IGame {
      * Based on the player id and the direction in the steer objects the players' directions are changed.
      * @param steers a list of the player's steer events
      */
-    void handleSteers(List<Steer> steers);
+    void handleSteers(int tickCount, List<Steer> steers);
 }

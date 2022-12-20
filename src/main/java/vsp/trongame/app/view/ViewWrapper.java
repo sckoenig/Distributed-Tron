@@ -50,9 +50,10 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
             switch (overlay.getKey()) {
                 case MenuOverlay.IDENTIFIER -> menuOverlay = loader.getController();
                 case WaitingOverlay.IDENTIFIER -> waitingOverlay = loader.getController();
-                case CountdownOverlay.IDENTIFIER ->  countdownOverlay = loader.getController();
+                case CountdownOverlay.IDENTIFIER -> countdownOverlay = loader.getController();
                 case EndingOverlay.IDENTIFIER -> endingOverlay = loader.getController();
-                default -> {}
+                default -> {
+                }
             }
         }
 
@@ -75,6 +76,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     @Override
     public void updateOnKeyMappings(Map<String, String> mappings) {
         countdownOverlay.setKeyMappings(mappings);
+        System.out.println("KY MAPPING IN VIEW");
     }
 
     @Override
@@ -103,8 +105,10 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
     @Override
     public void updateOnGameResult(String color, String result) {
-        Platform.runLater(() -> endingOverlay.setResult(result, color));
-        mainView.clear();
+        Platform.runLater(() -> {
+            endingOverlay.setResult(result, color);
+            mainView.clear();
+        });
     }
 
     @Override
@@ -115,7 +119,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     @Override
     public void updateOnField(Map<String, List<Coordinate>> field) {
         for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
-            mainView.draw(entry.getValue(), Color.valueOf(entry.getKey()));
+            Platform.runLater(() -> mainView.draw(entry.getValue(), Color.valueOf(entry.getKey())));
         }
     }
 }

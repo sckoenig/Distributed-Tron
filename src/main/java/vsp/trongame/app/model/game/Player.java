@@ -74,8 +74,8 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public Direction performDirectionChange() {
-       switch (this.direction){
+    public Direction performDirectionChange(DirectionChange change) {
+       /*switch (this.direction){
            case LEFT -> {
                if(this.nextAction == DirectionChange.LEFT_STEER){
                    this.direction = Direction.DOWN;
@@ -113,6 +113,8 @@ public class Player implements IPlayer {
                }
            }
        }
+
+        */
        return this.direction;
     }
 

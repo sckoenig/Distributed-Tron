@@ -47,7 +47,7 @@ public class GameManager implements IGameManager, ITronModel {
         this.singleView = singleView;
         this.config = config;
         this.game = IGameFactory.getGame(modus);
-        game.initialize(executor, 2000, 2000, 10, 10, 10); //TODO from config
+        game.initialize(executor, 2000, 2000, 10, 100, 100); //TODO from config
 
         updateListeners();
     }
@@ -81,7 +81,8 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameTick(int tickCounter) {
-        game.handleSteers(managedPlayers.values().stream().filter(Objects::nonNull).collect(Collectors.toList()));
+        game.handleSteers(tickCounter, managedPlayers.values().stream().filter(Objects::nonNull).toList());
+        managedPlayers.replaceAll((k,v) -> null);
     }
 
     @Override

@@ -72,7 +72,7 @@ public class Game implements IGame {
     }
 
     @Override
-    public void handleSteers(List<Steer> steers) {
+    public void handleSteers(int tickCounter, List<Steer> steers) {
         //TODO
     }
 
@@ -169,6 +169,7 @@ public class Game implements IGame {
 
         gameListeners.forEach(gl -> gl.updateOnArena(100,100));
 
+        /*
         List<Coordinate> startingCoordinates = calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
@@ -176,6 +177,8 @@ public class Game implements IGame {
             player.addCoordinate(coordinate);
             player.setDirection(calculateStartingDirection(coordinate));
         }
+
+         */
 
         try {
             countDown();
@@ -217,8 +220,8 @@ public class Game implements IGame {
         while (!isGameOver() && !Thread.interrupted()){
             players.forEach(p -> {
                 if(p.isAlive()){
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
-                    p.addCoordinate(nextCoordinate);
+                    //Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
+                    //p.addCoordinate(nextCoordinate);
                 }
             });
             collisionDetector.detectCollision(players, arena);
@@ -244,7 +247,7 @@ public class Game implements IGame {
         List<Coordinate> fairPositions = new ArrayList<>();
         switch (playerCount) {
             case 2 -> {
-                fairPositions.add(new Coordinate(0, rows));
+                fairPositions.add(new Coordinate(0,0));
                 fairPositions.add(new Coordinate(rows, columns));
             }
             case 3 -> {
