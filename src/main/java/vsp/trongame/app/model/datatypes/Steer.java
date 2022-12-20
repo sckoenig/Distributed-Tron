@@ -6,13 +6,17 @@ package vsp.trongame.app.model.datatypes;
 public class Steer {
 
     private int playerId;
-    private Direction direction;
+    private DirectionChange directionChange;
 
+    public Steer(int playerId, DirectionChange directionChange){
+        this.playerId = playerId;
+        this.directionChange = directionChange;
+    }
     public int getPlayerId() {
         return playerId;
     }
 
-    public Direction getDirection() {
-        return direction;
+    public DirectionChange getDirectionChange() {
+        return directionChange;
     }
 }

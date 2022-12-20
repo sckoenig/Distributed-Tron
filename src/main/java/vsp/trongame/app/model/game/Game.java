@@ -72,8 +72,19 @@ public class Game implements IGame {
     }
 
     @Override
-    public void handleSteers(int tickCounter, List<Steer> steers) {
-        //TODO
+    public void handleSteers(List<Steer> steers, int tickCount) {
+        if(tickCount == this.tickCount){
+            steers.forEach(steer -> {
+                int playerId = steer.getPlayerId();
+                DirectionChange directionChange = steer.getDirectionChange();
+                for (IPlayer player: players) {
+                    if(player.getId() == playerId){
+                        player.performDirectionChange(directionChange);
+                        break;
+                    }
+                }
+            });
+        }
     }
 
     /**
@@ -169,16 +180,13 @@ public class Game implements IGame {
 
         gameListeners.forEach(gl -> gl.updateOnArena(100,100));
 
-        /*
-        List<Coordinate> startingCoordinates = calculateFairStartingCoordinates(registeredPlayerCount);
+        List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
             IPlayer player = players.get(i);
             player.addCoordinate(coordinate);
-            player.setDirection(calculateStartingDirection(coordinate));
+            player.setDirection(arena.calculateStartingDirection(coordinate));
         }
-
-         */
 
         try {
             countDown();
@@ -207,8 +215,8 @@ public class Game implements IGame {
     private void play() {
         gameExecutor.execute(() -> {
             try {
-                //gameLoop();
-                mockLoop();
+                gameLoop();
+                //mockLoop();
             } catch (InterruptedException e){
                 Thread.currentThread().interrupt();
             }
@@ -218,10 +226,11 @@ public class Game implements IGame {
 
     private void gameLoop() throws InterruptedException {
         while (!isGameOver() && !Thread.interrupted()){
+            long whileStart = System.currentTimeMillis();
             players.forEach(p -> {
                 if(p.isAlive()){
-                    //Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
-                    //p.addCoordinate(nextCoordinate);
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
+                    p.addCoordinate(nextCoordinate);
                 }
             });
             collisionDetector.detectCollision(players, arena);
@@ -230,75 +239,13 @@ public class Game implements IGame {
             gameListeners.forEach(dl -> dl.updateOnField(mappedPlayers));
             gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
 
+            long whileEnd = System.currentTimeMillis();
+            long timeDiff = whileEnd - whileStart;
             // noinspection BusyWait: tickrate here
-            sleep(0);
+            sleep(speed - timeDiff);
         }
     }
 
-    //TODO move to arena
-
-    /**
-     * Calculates in relation to the playerCount, fair starting positions for every player.
-     *
-     * @param playerCount how many players are playing
-     * @return the list of calculated starting coordinates
-     */
-    private List<Coordinate> calculateFairStartingCoordinates(int playerCount) {
-        List<Coordinate> fairPositions = new ArrayList<>();
-        switch (playerCount) {
-            case 2 -> {
-                fairPositions.add(new Coordinate(0,0));
-                fairPositions.add(new Coordinate(rows, columns));
-            }
-            case 3 -> {
-                fairPositions.add(new Coordinate(0, rows));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-            }
-            case 4 -> {
-                fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-            }
-            case 5 -> {
-                fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-                fairPositions.add(new Coordinate(rows / 2, columns / 2));
-            }
-            case 6 -> {
-                fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-                fairPositions.add(new Coordinate(rows / 2, 0));
-                fairPositions.add(new Coordinate(rows / 2, columns));
-            }
-            default -> {
-            }
-        }
-        return fairPositions;
-    }
-
-    //TODO move to arena
-
-    /**
-     * Calculates for every coordinate a direction to start.
-     *
-     * @param coordinate is the starting coordinate of a player
-     * @return the starting direction
-     */
-    private Direction calculateStartingDirection(Coordinate coordinate) {
-        if(coordinate.x == 0){
-            return Direction.RIGHT;
-        }else if(coordinate.x == columns){
-            return Direction.LEFT;
-        } else{
-            return Direction.DOWN;
-        }
-    }
 
     /**
      * Calculates the next coordinate based on the given direction.
