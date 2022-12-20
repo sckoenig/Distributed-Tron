@@ -1,6 +1,5 @@
 package vsp.trongame;
 
-import edu.cads.bai5.vsp.tron.view.ITronView;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,52 +10,52 @@ import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.gamemanagement.*;
-import vsp.trongame.app.view.ITronViewFactory;
-import vsp.trongame.app.view.overlays.MenuOverlay;
-import vsp.trongame.app.view.overlays.Overlay;
+import vsp.trongame.app.view.IViewWrapper;
+import vsp.trongame.app.view.IViewWrapperFactory;
+import vsp.trongame.app.view.overlays.*;
 
 import java.io.IOException;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 
 public class TronGame extends Application {
 
-    private static final String CONFIG_FILE = "tronConfig.properties";
-    private static final Map<ModelState, String> STATE_VIEW_MAPPING = new EnumMap<>(Map.of(ModelState.MENU, "menuOverlay.fxml", ModelState.WAITING, "waitingOverlay.fxml",
-            ModelState.COUNTDOWN, "countdownOverlay.fxml",
-            ModelState.ENDING, "endingOverlay.fxml"));
+    private static final Map<String, String> STATE_VIEW_MAPPING = new HashMap<>(Map.of(
+            ModelState.MENU.toString(), "menuOverlay.fxml",
+            ModelState.WAITING.toString(), "waitingOverlay.fxml",
+            ModelState.COUNTDOWN.toString(), "countdownOverlay.fxml",
+            ModelState.ENDING.toString(), "endingOverlay.fxml"));
+
+    private static final int MODEL_THREAD_COUNT = 2; // model has max two tasks simultaneously
+    private ExecutorService modelExecutor; // reference for shutting down on application stop
 
     public static void main(String[] args) {
         launch();
     }
 
-    private ITronModel model;
-
     @Override
     public void start(Stage stage) throws IOException {
 
         /* BOOT APP */
-
+        this.modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         Config config = new Config();
         GameModus modus = LOCAL; //TODO get from Config when Config is implemented
         boolean singleView = modus == LOCAL? true : false;
 
         /* components */
-        ITronView tronView = ITronViewFactory.getTronView(modus, CONFIG_FILE);
+        IViewWrapper tronView = IViewWrapperFactory.getViewWrapper(modus);
         ITronController tronController = ITronControllerFactory.getTronController(modus);
-        ITronModel tronModel = ITronModelFactory.getTronModel(modus, tronView, singleView, config);
+        ITronModel tronModel = ITronModelFactory.getTronModel(modus);
 
         /* assemble */
-        loadViewOverlays(tronView, tronController, tronModel, config);
-        tronController.setModel(tronModel);
-        tronController.initKeyEventHandler(tronView.getScene());
-
-        /* init */
-        tronView.init();
-        tronModel.init();
-        this.model = tronModel; //has Threads, that need to be shutdown on close
+        tronController.initialize(tronModel);
+        tronModel.initialize(modus, modelExecutor, singleView, config);
+        tronView.initialize(tronModel, tronController, 2, STATE_VIEW_MAPPING);
+        //initializeViewWithFxml(tronView, tronController, tronModel, config);
 
         /* open stage */
         stage.setTitle("Tron");
@@ -64,38 +63,13 @@ public class TronGame extends Application {
         stage.show();
     }
 
+    /**
+     * Executed on pressing close-Button.
+     */
     @Override
     public void stop() throws Exception {
         super.stop();
-        model.finishGracefully();
+        this.modelExecutor.shutdownNow(); //stop threads
     }
 
-    public void loadViewOverlays(ITronView view, ITronController controller, ITronModel model, Config config) throws IOException {
-
-        // TODO: add height & width from config to roots
-
-        Parent root;
-        FXMLLoader loader;
-
-        for (Map.Entry<ModelState, String> overlay : STATE_VIEW_MAPPING.entrySet()) {
-
-            String fxml = overlay.getValue();
-            ModelState state = overlay.getKey();
-            loader = new FXMLLoader(getClass().getResource(fxml));
-            root = loader.load();
-            view.registerOverlay(state.toString(), root);
-
-            switch (overlay.getKey()) {
-                case MENU -> {
-                    MenuOverlay menuOverlay = loader.getController();
-                    menuOverlay.setController(controller);
-                    menuOverlay.setDefaultPlayerCount(2); //TODO: default from config
-                }
-                default -> {
-                    Overlay loadedOverlay = loader.getController();
-                    loadedOverlay.init(model.getObservableModel());
-                }
-            }
-        }
-    }
 }

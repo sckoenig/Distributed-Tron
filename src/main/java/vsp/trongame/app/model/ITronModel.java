@@ -1,71 +1,64 @@
 package vsp.trongame.app.model;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableMap;
+import edu.cads.bai5.vsp.tron.view.Coordinate;
 import javafx.scene.input.KeyCode;
-import javafx.scene.paint.Color;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.gamemanagement.Config;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Represents the Model to the outside of the Model component.
  */
 public interface ITronModel {
 
-    /**
-     * Initializes the Model and informs if there is one or several views.
-     */
-    void init();
 
     /**
      * Handles a steer event by accepting a KeyCode and processing it.
+     *
+     * @param id the initiator's registration id
      * @param key keyCode of the key that initiated the steer event.
      */
-    void handleSteerEvent(KeyCode key);
+    void handleSteerEvent(int id, KeyCode key);
 
     /**
-     * Starts a game in the Model.
+     * Initializes the Model with necessary dependencies.
+     */
+    void initialize(GameModus modus, ExecutorService executor, boolean singleView, Config config);
+
+    /**
+     * Registers the initiator at the game.
+     *
+     * @param id the initiator's registration id
      * @param playerNumber number of Players for the game.
      */
-    void initializeGame(int playerNumber);
+    void playGame(int id, int playerNumber);
 
-    /**
-     * Returns the Model as an Observable Model with ObservableValues.
-     * @return observable Model
-     */
-    IObservableTronModel getObservableModel();
+    void registerListener(IUpdateListener listener);
 
-    void finishGracefully();
+    interface IUpdateListener {
 
-    /**
-     * Represents the Model with ObservableValues.
-     */
-    interface IObservableTronModel {
 
-        /**
-         * Returns the Model's ResultColor as an ObservableValue
-         * @return game result color
-         */
-        StringProperty getObservableResultColor();
+        void updateOnRegistration(int id);
 
-        /**
-         * Returns the Model's ResultText as an ObservableValue
-         * @return game result text
-         */
-        StringProperty getObservableResultText();
+        void updateOnKeyMappings(Map<String, String> mappings);
 
-        /**
-         * Returns the Model's Countdown Counter as an ObservableValue
-         * @return game countdown counter
-         */
-        IntegerProperty getObserverableCountDownCounter();
+        void updateOnArena(int rows, int columns);
 
-        /**
-         * Returns the Model's key mappings as an ObservableValue
-         * @return map of key mappings
-         */
-        ObservableMap<String, Color> getObservableKeyMappings();
+        void updateOnState(String state);
 
+        void updateOnGameStart();
+
+        void updateOnGameResult(String color, String result);
+
+        void updateOnCountDown(int value);
+
+        void updateOnField(Map<String, List<Coordinate>> field);
 
     }
+
+
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
  */
 public class Arena implements IArena{
 
-    private int[][] arenaField;
+    private final int[][] arenaField;
 
     /**
      * Constructor arena where a new Arena is initialized.
@@ -22,16 +22,28 @@ public class Arena implements IArena{
 
     @Override
     public void addPlayerPosition(int playerId, Coordinate coordinate) {
-
+        arenaField[coordinate.y][coordinate.x] = playerId;
     }
 
     @Override
-    public void deletePlayerPositions(List<Integer> playerIds) {
-
+    public void deletePlayerPositions(List<Integer> crashedPlayer) {
+        for (int columns = 0; columns < arenaField.length; columns++) {
+            for (int row = 0; row < arenaField[columns].length; row++) {
+                if (arenaField[columns][row] !=0) {
+                    for (Integer playerId: crashedPlayer) {
+                        if(arenaField[columns][row] == playerId){
+                            arenaField[columns][row] = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
     public boolean detectCollision(Coordinate coordinate) {
-        return false;
+        return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0
+                || coordinate.x < 0 || coordinate.y < 0;
     }
 }

@@ -54,13 +54,6 @@ public interface IPlayer {
     int getId();
 
     /**
-     * Sets the DirectionChange which the player wants to perform next. If the player presses a new key before the
-     * DirectionChange is performed the old DirectionChange will be overwritten.
-     * @param directionChange the next direction.
-     */
-    void setNextDirectionChange(DirectionChange directionChange);
-
-    /**
      * Sets the direction of the player.
      * @param direction the player's new direction.
      * */
@@ -69,7 +62,8 @@ public interface IPlayer {
     /**
      * Sets the current direction based on the current nextDirectionChange and changes
      * the nextDirectionChange to NONE.
+     * @param directionChange the direction of change in a steer event.
      * @return the new direction
      */
-    Direction performDirectionChange();
+    Direction performDirectionChange(DirectionChange directionChange);
 }
