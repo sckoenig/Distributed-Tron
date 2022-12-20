@@ -9,31 +9,50 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Manages all adjustable parameters and prepares the properties files,
  */
 public class Config {
 
+    public static final String WIDTH = "width";
+    public static final String HEIGHT = "height";
+    public static final String ROWS = "rows";
+    public static final String COLUMNS = "columns";
+    public static final String WAITING_TIMER = "waitingTimer";
+    public static final String ENDING_TIMER = "endingTimer";
+    public static final String DEFAULT_PLAYER_NUMBER = "defaultPlayerNumber";
+    public static final String SPEED = "speed";
+    public static final String P_EINS = "p1";
+    public static final String P_ZWEI = "p2";
+    public static final String P_DREI = "p3";
+    public static final String P_VIER = "p4";
+    public static final String P_FUENF = "p5";
+    public static final String P_SECHS = "p6";
+    public static final String GAME_MODE = "gameMode";
+    public static final String NAME_SERVER = "nameServer";
+
+
     public static final Map<String, String> DEFAULTS;
     static{
         DEFAULTS = new HashMap<>();
-        DEFAULTS.put("width","750");
-        DEFAULTS.put("height", "60");
-        DEFAULTS.put("rows", "30");
-        DEFAULTS.put("columns", "50");
-        DEFAULTS.put("waitingTimer", "5000");
-        DEFAULTS.put("endingTimer", "5000");
-        DEFAULTS.put("defaultPlayerNumber", "2");
-        DEFAULTS.put("speed", "50");
-        DEFAULTS.put("p1", "Q,W");
-        DEFAULTS.put("p2", "C,V");
-        DEFAULTS.put("p3", "D,F");
-        DEFAULTS.put("p4", "O,P");
-        DEFAULTS.put("p5", "M,N");
-        DEFAULTS.put("p6", "Z,U");
-        DEFAULTS.put("gameMode", "LOCAL");
-        DEFAULTS.put("nameServer", "127.0.0.1:5555");
+        DEFAULTS.put(WIDTH,"750");
+        DEFAULTS.put(HEIGHT, "600");
+        DEFAULTS.put(ROWS, "30");
+        DEFAULTS.put(COLUMNS, "50");
+        DEFAULTS.put(WAITING_TIMER, "5000");
+        DEFAULTS.put(ENDING_TIMER, "5000");
+        DEFAULTS.put(DEFAULT_PLAYER_NUMBER, "2");
+        DEFAULTS.put(SPEED, "50");
+        DEFAULTS.put(P_EINS, "Q,W");
+        DEFAULTS.put(P_ZWEI, "C,V");
+        DEFAULTS.put(P_DREI, "D,F");
+        DEFAULTS.put(P_VIER, "O,P");
+        DEFAULTS.put(P_FUENF, "M,N");
+        DEFAULTS.put(P_SECHS, "Z,U");
+        DEFAULTS.put(GAME_MODE, "LOCAL");
+        DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
     }
     private Properties properties;
     private Map<KeyCode, Steer> keyMappings;
@@ -58,47 +77,47 @@ public class Config {
      */
     private boolean isConfigValid(){
 
-        if(!properties.containsKey("width") || !isNumber(properties.getProperty("width"))){
+        if(!properties.containsKey(WIDTH) || !isNumber(properties.getProperty(WIDTH))){
             return false;
-        } else if (!properties.containsKey("height") || !isNumber((properties.getProperty("height")))) {
+        } else if (!properties.containsKey(HEIGHT) || !isNumber((properties.getProperty(HEIGHT)))) {
             return false;
-        } else if (!properties.containsKey("rows") || !isNumber(properties.getProperty("rows")) ||
-                Integer.parseInt(properties.getProperty("rows")) < 10) {
+        } else if (!properties.containsKey(ROWS) || !isNumber(properties.getProperty(ROWS)) ||
+                Integer.parseInt(properties.getProperty(ROWS)) < 10) {
             return false;
-        } else if (!properties.containsKey("columns") || !isNumber(properties.getProperty("columns")) ||
-                Integer.parseInt(properties.getProperty("columns")) < 1) {
+        } else if (!properties.containsKey(COLUMNS) || !isNumber(properties.getProperty(COLUMNS)) ||
+                Integer.parseInt(properties.getProperty(COLUMNS)) < 10) {
             return false;
-        } else if (!properties.containsKey("waitingTimer") || !isNumber(properties.getProperty("waitingTimer"))) {
+        } else if (!properties.containsKey(WAITING_TIMER) || !isNumber(properties.getProperty(WAITING_TIMER))) {
 
             return false;
-        } else if (!properties.containsKey("endingTimer") || !isNumber(properties.getProperty("endingTimer"))) {
+        } else if (!properties.containsKey(ENDING_TIMER) || !isNumber(properties.getProperty(ENDING_TIMER))) {
             return false;
-        } else if (!properties.containsKey("defaultPlayerNumber") || !isNumber(properties.getProperty("defaultPlayerNumber"))
-                    || 2 > Integer.parseInt(properties.getProperty("defaultPlayerNumber"))
-                    || Integer.parseInt(properties.getProperty("defaultPlayerNumber")) > 6) {
+        } else if (!properties.containsKey(DEFAULT_PLAYER_NUMBER) || !isNumber(properties.getProperty(DEFAULT_PLAYER_NUMBER))
+                    || 2 > Integer.parseInt(properties.getProperty(DEFAULT_PLAYER_NUMBER))
+                    || Integer.parseInt(properties.getProperty(DEFAULT_PLAYER_NUMBER)) > 6) {
             return false;
-        } else if (!properties.containsKey("speed") || !isNumber(properties.getProperty("speed")) ||
-                    1 > Integer.parseInt(properties.getProperty("speed")) || Integer.parseInt(properties.getProperty("speed")) > 100){
+        } else if (!properties.containsKey(SPEED) || !isNumber(properties.getProperty(SPEED)) ||
+                    1 > Integer.parseInt(properties.getProperty(SPEED)) || Integer.parseInt(properties.getProperty(SPEED)) > 100){
             return false;
         }
-        else if (!properties.containsKey("p1") || isSteerValid(properties.getProperty("p1"))) {
+        else if (!properties.containsKey(P_EINS) || isSteerValid(properties.getProperty(P_EINS))) {
             return false;
-        } else if (!properties.containsKey("p2") || isSteerValid(properties.getProperty("p2"))) {
+        } else if (!properties.containsKey(P_ZWEI) || isSteerValid(properties.getProperty(P_ZWEI))) {
             return false;
-        } else if (!properties.containsKey("p3") || isSteerValid(properties.getProperty("p3"))) {
+        } else if (!properties.containsKey(P_DREI) || isSteerValid(properties.getProperty(P_DREI))) {
             return false;
-        } else if (!properties.containsKey("p4") || isSteerValid(properties.getProperty("p4"))) {
+        } else if (!properties.containsKey(P_VIER) || isSteerValid(properties.getProperty(P_VIER))) {
             return false;
-        } else if (!properties.containsKey("p5") || isSteerValid(properties.getProperty("p5"))) {
+        } else if (!properties.containsKey(P_FUENF) || isSteerValid(properties.getProperty(P_FUENF))) {
             return false;
-        } else if (!properties.containsKey("p6") || isSteerValid(properties.getProperty("p6"))) {
+        } else if (!properties.containsKey(P_SECHS) || isSteerValid(properties.getProperty(P_SECHS))) {
             return false;
-        } else if(!properties.containsKey("gameMode") ||
-                properties.getProperty("gameMode").equalsIgnoreCase(GameModus.LOCAL.name())){
-            if (properties.getProperty("gameMode").equalsIgnoreCase(GameModus.NETWORK.name())) {
+        } else if(!properties.containsKey(GAME_MODE) ||
+                properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.LOCAL.name())){
+            if (properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.NETWORK.name())) {
                 return false;
             }
-        } else if (!properties.containsKey("nameServer") || properties.getProperty("nameServer").equalsIgnoreCase("127.0.0.1:5555")) {
+        } else if (!properties.containsKey(NAME_SERVER) || properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555")) {
             return false;
         }
         return true;
@@ -156,22 +175,11 @@ public class Config {
 
         Properties prop = new Properties();
 
-        prop.setProperty("width", DEFAULTS.get("width"));
-        prop.setProperty("height", DEFAULTS.get("height"));
-        prop.setProperty("rows", DEFAULTS.get("rows"));
-        prop.setProperty("columns", DEFAULTS.get("columns"));
-        prop.setProperty("waitingTimer", DEFAULTS.get("waitingTimer"));
-        prop.setProperty("endingTimer", DEFAULTS.get("endingTimer"));
-        prop.setProperty("defaultPlayerNumber", DEFAULTS.get("defaultPlayerNumber"));
-        prop.setProperty("speed", DEFAULTS.get("speed"));
-        prop.setProperty("p1", DEFAULTS.get("p1"));
-        prop.setProperty("p2", DEFAULTS.get("p2"));
-        prop.setProperty("p3", DEFAULTS.get("p3"));
-        prop.setProperty("p4", DEFAULTS.get("p4"));
-        prop.setProperty("p5", DEFAULTS.get("p5"));
-        prop.setProperty("p6", DEFAULTS.get("p6"));
-        prop.setProperty("gameMode", DEFAULTS.get("gameMode"));
-        prop.setProperty("nameServer", DEFAULTS.get("nameServer"));
+        Set<Map.Entry<String, String>> entries = DEFAULTS.entrySet();
+        for(Map.Entry<String, String> entry : entries){
+            prop.setProperty(entry.getKey(), entry.getValue());
+        }
+
         prop.store(outputStream, null);
 
         outputStream.close();
