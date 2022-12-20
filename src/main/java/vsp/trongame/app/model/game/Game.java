@@ -72,9 +72,21 @@ public class Game implements IGame {
     }
 
     @Override
-    public void handleSteers(List<Steer> steers) {
-        //TODO
+    public void handleSteers(List<Steer> steers, int tickCount) {
+        if(tickCount == this.tickCount){
+            steers.forEach(steer -> {
+                int playerId = steer.getPlayerId();
+                DirectionChange directionChange = steer.getDirectionChange();
+                for (IPlayer player: players) {
+                    if(player.getId() == playerId){
+                        player.performDirectionChange(directionChange);
+                        break;
+                    }
+                }
+            });
+        }
     }
+
 
     /**
      * Transitions to the next state and informs stateListeners.
@@ -215,9 +227,10 @@ public class Game implements IGame {
 
     private void gameLoop() throws InterruptedException {
         while (!isGameOver() && !Thread.interrupted()){
+            long whileStart = System.currentTimeMillis();
             players.forEach(p -> {
                 if(p.isAlive()){
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
+                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
                     p.addCoordinate(nextCoordinate);
                 }
             });
@@ -227,8 +240,10 @@ public class Game implements IGame {
             gameListeners.forEach(dl -> dl.updateOnField(mappedPlayers));
             gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
 
+            long whileEnd = System.currentTimeMillis();
+            long timeDiff = whileEnd - whileStart;
             // noinspection BusyWait: tickrate here
-            sleep(0);
+            sleep(speed - timeDiff);
         }
     }
 
