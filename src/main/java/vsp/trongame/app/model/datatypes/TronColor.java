@@ -1,7 +1,5 @@
 package vsp.trongame.app.model.datatypes;
 
-import javafx.scene.paint.Color;
-
 /**
  * Represents a Color that a Player Bike can have. Maps to javafx Colors.
  */
@@ -21,7 +19,7 @@ public enum TronColor {
         this.color = color;
     }
 
-    public String getColor(){
+    public String getHex(){
         return this.color;
     }
 

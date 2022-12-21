@@ -30,7 +30,7 @@ public class TronGame extends Application {
             ModelState.COUNTDOWN.toString(), "countdownOverlay.fxml",
             ModelState.ENDING.toString(), "endingOverlay.fxml"));
 
-    private static final int MODEL_THREAD_COUNT = 2; // model has max two tasks simultaneously
+    private static final int MODEL_THREAD_COUNT = 4; // model has max two tasks simultaneously
     private ExecutorService modelExecutor; // reference for shutting down on application stop
 
     public static void main(String[] args) {

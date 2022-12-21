@@ -20,4 +20,5 @@ public interface IViewWrapper {
     Scene getScene();
 
     void registerOverlay(String overlayName, Node node);
+
 }

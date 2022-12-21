@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
+import javafx.scene.paint.Color;
 import vsp.trongame.app.model.datatypes.Direction;
 import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.TronColor;
@@ -60,6 +61,7 @@ public class Player implements IPlayer {
     @Override
     public void crash() {
         this.alive = false;
+        this.coordinates.remove(coordinates.size()-1);
     }
 
     @Override
@@ -112,4 +114,11 @@ public class Player implements IPlayer {
        return this.direction;
     }
 
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "alive=" + alive +
+                '}';
+    }
 }

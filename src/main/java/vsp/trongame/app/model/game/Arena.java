@@ -4,6 +4,7 @@ import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.datatypes.Direction;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class Arena implements IArena{
     public Arena(int rows, int columns){
         this.rows = rows;
         this.columns = columns;
-        this.arenaField = new int[columns][rows];
+        this.arenaField = new int[rows][columns];
     }
 
     @Override
@@ -49,8 +50,10 @@ public class Arena implements IArena{
 
     @Override
     public boolean detectCollision(Coordinate coordinate) {
-        return (arenaField.length == coordinate.x || arenaField[0].length == coordinate.y) || arenaField[coordinate.y][coordinate.x] != 0
-                || coordinate.x < 0 || coordinate.y < 0;
+        return (coordinate.x < 0 || coordinate.y < 0 ||
+                arenaField.length <= coordinate.y ||
+                arenaField[0].length <= coordinate.x) ||
+                arenaField[coordinate.y][coordinate.x] != 0;
     }
 
     @Override
@@ -58,34 +61,34 @@ public class Arena implements IArena{
         List<Coordinate> fairPositions = new ArrayList<>();
         switch (playerCount) {
             case 2 -> {
-                fairPositions.add(new Coordinate(0, rows));
-                fairPositions.add(new Coordinate(rows, columns));
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(columns-1, rows-1));
             }
             case 3 -> {
-                fairPositions.add(new Coordinate(0, rows));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(0, 0));
+                fairPositions.add(new Coordinate(columns-1, rows-1));
+                fairPositions.add(new Coordinate(columns-1, 0));
             }
             case 4 -> {
                 fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
+                fairPositions.add(new Coordinate(columns-1, rows-1));
+                fairPositions.add(new Coordinate(columns-1, 0));
+                fairPositions.add(new Coordinate(0, rows-1));
             }
             case 5 -> {
                 fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-                fairPositions.add(new Coordinate(rows / 2, columns / 2));
+                fairPositions.add(new Coordinate(columns-1, rows-1));
+                fairPositions.add(new Coordinate(columns-1, 0));
+                fairPositions.add(new Coordinate(0, rows-1));
+                fairPositions.add(new Coordinate(columns / 2, rows / 2));
             }
             case 6 -> {
                 fairPositions.add(new Coordinate(0, 0));
-                fairPositions.add(new Coordinate(rows, columns));
-                fairPositions.add(new Coordinate(0, columns));
-                fairPositions.add(new Coordinate(rows, 0));
-                fairPositions.add(new Coordinate(rows / 2, 0));
-                fairPositions.add(new Coordinate(rows / 2, columns));
+                fairPositions.add(new Coordinate(columns-1, rows-1));
+                fairPositions.add(new Coordinate(columns-1, 0));
+                fairPositions.add(new Coordinate(0, rows-1));
+                fairPositions.add(new Coordinate( 0, rows / 2));
+                fairPositions.add(new Coordinate(columns-1, rows / 2));
             }
             default -> {
             }
@@ -97,10 +100,11 @@ public class Arena implements IArena{
     public Direction calculateStartingDirection(Coordinate coordinate) {
         if(coordinate.x == 0){
             return Direction.RIGHT;
-        }else if(coordinate.x == columns){
+        }else if(coordinate.x == columns-1){
             return Direction.LEFT;
         } else{
             return Direction.DOWN;
         }
     }
+
 }

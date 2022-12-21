@@ -56,6 +56,7 @@ public interface ITronModel {
         void updateOnCountDown(int value);
 
         void updateOnField(Map<String, List<Coordinate>> field);
+        void updateOnCrash(String crashedColor, String newColor);
 
     }
 

@@ -8,7 +8,6 @@ import vsp.trongame.app.model.game.IGameFactory;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 
 /**
  * Functions as the Model's Manager. Takes controls from outside and manages the model's states, that are represented in the gui.
@@ -47,7 +46,11 @@ public class GameManager implements IGameManager, ITronModel {
         this.singleView = singleView;
         this.config = config;
         this.game = IGameFactory.getGame(modus);
-        game.initialize(executor, 2000, 2000, 10, 100, 100); //TODO from config
+        game.initialize(executor, Integer.parseInt(config.getAttribut(Config.WAITING_TIMER)),
+                Integer.parseInt(config.getAttribut(Config.ENDING_TIMER)),
+                Integer.parseInt(config.getAttribut(Config.ROWS)),
+                Integer.parseInt(config.getAttribut(Config.COLUMNS)),
+                Integer.parseInt(config.getAttribut(Config.SPEED)));
 
         updateListeners();
     }
@@ -61,6 +64,7 @@ public class GameManager implements IGameManager, ITronModel {
     @Override
     public void playGame(int listenerID, int playerCount) {
         if (currentState == ModelState.MENU) {
+            game.prepare(playerCount);
             this.playerCount = playerCount;
             handleGameState(GameState.PREPARING);
         }
@@ -81,8 +85,12 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameTick(int tickCounter) {
-        game.handleSteers(tickCounter, managedPlayers.values().stream().filter(Objects::nonNull).toList());
-        managedPlayers.replaceAll((k,v) -> null);
+        List<Steer> steers = managedPlayers.values().stream().filter(Objects::nonNull).toList();
+        if (!steers.isEmpty()) {
+            game.handleSteers(steers, tickCounter);
+            managedPlayers.replaceAll((k, v) -> null);
+
+        }
     }
 
     @Override
@@ -94,8 +102,8 @@ public class GameManager implements IGameManager, ITronModel {
             int playerID = entry.getKey();
             this.managedPlayers.put(playerID, null);
             this.listenersToPlayersMap.computeIfAbsent(id, s -> new ArrayList<>()).add(playerID);
-            String keys = config.getAttribut(String.valueOf(playerID));
-            keyMapping.put(keys, entry.getValue().getColor());
+            String keys = config.getKeyMappingForPlayer(playerID);
+            keyMapping.put(keys, entry.getValue().getHex());
         }
         listenersMap.get(id).updateOnKeyMappings(keyMapping);
 
@@ -105,8 +113,12 @@ public class GameManager implements IGameManager, ITronModel {
     public void handleSteerEvent(int id, KeyCode key) {
         if (handleSteerEvents) {
             Steer steer = config.getSteer(key);
-            int playerId = steer.getPlayerId();
-            if (listenersToPlayersMap.get(id).contains(playerId)) managedPlayers.put(playerId, steer);
+            if(steer != null) {
+                int playerId = steer.getPlayerId();
+                if (listenersToPlayersMap.get(id).contains(playerId)) {
+                    managedPlayers.put(playerId, steer);
+                }
+            }
         }
     }
 
@@ -126,7 +138,7 @@ public class GameManager implements IGameManager, ITronModel {
     private void executeState() {
 
         if (currentState != ModelState.PLAYING) updateListeners();
-        if (currentState == ModelState.WAITING) executorService.execute(() -> game.prepare(playerCount));
+        if (currentState == ModelState.WAITING) ;
         if (currentState == ModelState.PLAYING) handleSteerEvents = true;
         if (currentState == ModelState.MENU) reset();
     }
@@ -142,6 +154,7 @@ public class GameManager implements IGameManager, ITronModel {
      * Resetting data after ending state.
      */
     private void reset() {
+        handleSteerEvents = false;
         listenersToPlayersMap.clear();
         managedPlayers.clear();
         playerCount = 0;

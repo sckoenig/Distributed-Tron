@@ -101,27 +101,27 @@ public class Game implements IGame {
 
         switch (currentState) {
             case INIT -> reset();
-            case PREPARING -> startTimer(preparationTime);
+            case PREPARING -> startTimer(preparationTime, currentState);
             case COUNTDOWN -> start();
             case RUNNING -> play();
             case FINISHED -> finish();
         }
     }
 
-    private void startTimer(int waitingTime) {
+    private void startTimer(int waitingTime, GameState startedAt) {
         gameExecutor.execute(() -> {
             try {
                 sleep(waitingTime);
             } catch (InterruptedException e) {
                 currentThread().interrupt();
             }
-            if (!currentThread().isInterrupted()) handleTimeOut();
+            if (!currentThread().isInterrupted()) handleTimeOut(startedAt);
         });
     }
 
-    private void handleTimeOut() {
-        if (currentState == GameState.FINISHED) transitionState(GameState.INIT);
-        if (currentState == GameState.PREPARING) {
+    private void handleTimeOut(GameState startedAt) {
+        if (startedAt == GameState.FINISHED && currentState == GameState.FINISHED) transitionState(GameState.INIT);
+        if (startedAt == GameState.PREPARING && currentState == GameState.PREPARING) {
             if (isGameReady()) transitionState(GameState.COUNTDOWN);
             else transitionState(GameState.INIT);
         }
@@ -162,13 +162,12 @@ public class Game implements IGame {
 
         for (int i = 0; i < count; i++) {
             TronColor color = TronColor.getByOrdinal(registeredPlayerCount);
-            IPlayer newPlayer = new Player(color, registeredPlayerCount);
+            IPlayer newPlayer = new Player(color, ++registeredPlayerCount);
 
             this.players.add(newPlayer);
-            this.mappedPlayers.put(color.getColor(), newPlayer.getCoordinates());
+            this.mappedPlayers.put(color.getHex(), newPlayer.getCoordinates());
             newPlayers.put(registeredPlayerCount, color);
 
-            registeredPlayerCount++;
         }
         return newPlayers;
     }
@@ -178,7 +177,7 @@ public class Game implements IGame {
      */
     private void start() {
 
-        gameListeners.forEach(gl -> gl.updateOnArena(100,100));
+        gameListeners.forEach(gl -> gl.updateOnArena(rows, columns));
 
         List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
@@ -226,23 +225,32 @@ public class Game implements IGame {
 
     private void gameLoop() throws InterruptedException {
         while (!isGameOver() && !Thread.interrupted()){
+
+            tickCount++;
             long whileStart = System.currentTimeMillis();
+
             players.forEach(p -> {
                 if(p.isAlive()){
                     Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
                     p.addCoordinate(nextCoordinate);
                 }
             });
-            collisionDetector.detectCollision(players, arena);
 
-            tickCount++;
-            gameListeners.forEach(dl -> dl.updateOnField(mappedPlayers));
-            gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
+            gameExecutor.execute(() -> {
+                collisionDetector.detectCollision(players, arena, gameListeners);
+                Map<String, List<Coordinate>> map = new HashMap<>();
+                for (IPlayer player : players) {
+                    if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
+                }
+                gameListeners.forEach(dl -> dl.updateOnField(map));
+                gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
+            });
 
             long whileEnd = System.currentTimeMillis();
             long timeDiff = whileEnd - whileStart;
+
             // noinspection BusyWait: tickrate here
-            sleep(speed - timeDiff);
+            sleep((1000/speed) - timeDiff);
         }
     }
 
@@ -291,13 +299,14 @@ public class Game implements IGame {
         IPlayer winner = players.stream().filter(IPlayer::isAlive).reduce((a, b) -> {
             throw new IllegalStateException("More than one Player is alive!");
         }).orElse(null);
+        if (winner != null ) arena.deletePlayerPositions(List.of(winner.getId()));
         GameResult result = winner == null ? GameResult.DRAW : GameResult.WON;
         TronColor resultColor = winner == null ? TronColor.DEFAULT : winner.getColor();
 
         //inform
-        gameListeners.forEach(gameData -> gameData.updateOnGameResult(resultColor.getColor(), result.getResultText()));
+        gameListeners.forEach(gameData -> gameData.updateOnGameResult(resultColor.getHex(), result.getResultText()));
 
-        startTimer(endingTime);
+        startTimer(endingTime, currentState);
     }
 
     /**

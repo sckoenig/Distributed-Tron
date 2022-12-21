@@ -244,4 +244,16 @@ public class Config {
     public Steer getSteer(KeyCode key){
         return keyMappings.get(key);
     }
+
+    public String getKeyMappingForPlayer(int id){
+        return switch (id){
+            case 1 -> properties.getProperty(P_EINS);
+            case 2 -> properties.getProperty(P_ZWEI);
+            case 3 -> properties.getProperty(P_DREI);
+            case 4 -> properties.getProperty(P_VIER);
+            case 5 -> properties.getProperty(P_FUENF);
+            case 6 -> properties.getProperty(P_SECHS);
+            default -> "";
+        };
+    }
 }

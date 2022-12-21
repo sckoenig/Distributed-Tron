@@ -15,8 +15,7 @@ import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.view.overlays.*;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
@@ -29,8 +28,11 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     private ITronController mainController;
     private int registrationID;
 
+    private Map<String, Set<Coordinate>> coordinates;
+
     public ViewWrapper() throws IOException {
         this.mainView = new TronView();
+        this.coordinates = new HashMap<>();
     }
 
     public void initialize(ITronModel model, ITronController mainController, int defaultPlayerCount, Map<String, String> mapping) throws IOException {
@@ -48,6 +50,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
             root.minHeight(600);
             root.minWidth(750);
             mainView.registerOverlay(identifier, root);
+
 
             switch (overlay.getKey()) {
                 case MenuOverlay.IDENTIFIER -> menuOverlay = loader.getController();
@@ -109,6 +112,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
         Platform.runLater(() -> {
             endingOverlay.setResult(result, color);
             mainView.clear();
+            coordinates.clear();
         });
     }
 
@@ -119,8 +123,20 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
     @Override
     public void updateOnField(Map<String, List<Coordinate>> field) {
-        for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
-            Platform.runLater(() -> mainView.draw(entry.getValue(), Color.valueOf(entry.getKey())));
-        }
+        Platform.runLater(() -> {
+            mainView.clear();
+            for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
+                String key = entry.getKey();
+                coordinates.computeIfAbsent(key, v -> new HashSet<>()).addAll(entry.getValue());
+                List<Coordinate> coords = new ArrayList<>(coordinates.get(key));
+                mainView.draw(coords, Color.valueOf(key));
+            }
+        });
+    }
+
+    @Override
+    public void updateOnCrash(String crashedColor, String newColor){
+        coordinates.remove(crashedColor);
     }
 }
+
