@@ -6,8 +6,8 @@ package vsp.trongame.app.model.datatypes;
 public enum TronColor {
 
     BLUE("#7ca7eb"),
-    RED("#d97777"),
-    YELLOW("#d9b277"),
+    RED("#f68888"),
+    YELLOW("#f6d388"),
     GREEN("#b7d977"),
     VIOLETT("#ce91ed"),
     WHITE("#f2eee1"),

@@ -5,7 +5,6 @@ import edu.cads.bai5.vsp.tron.view.ITronView;
 import edu.cads.bai5.vsp.tron.view.TronView;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -23,19 +22,17 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     private CountdownOverlay countdownOverlay;
     private EndingOverlay endingOverlay;
     private MenuOverlay menuOverlay;
-    private WaitingOverlay waitingOverlay;
-
     private ITronController mainController;
-    private int registrationID;
-
-    private Map<String, Set<Coordinate>> coordinates;
+    private final Map<String, Set<Coordinate>> coordinates;
 
     public ViewWrapper() throws IOException {
         this.mainView = new TronView();
         this.coordinates = new HashMap<>();
     }
 
-    public void initialize(ITronModel model, ITronController mainController, int defaultPlayerCount, Map<String, String> mapping) throws IOException {
+    @Override
+    public void initialize(ITronModel model, ITronController mainController, int height, int width, int defaultPlayerCount,
+                           Map<String, String> mapping) throws IOException {
 
         this.mainController = mainController;
 
@@ -51,10 +48,8 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
             root.minWidth(750);
             mainView.registerOverlay(identifier, root);
 
-
             switch (overlay.getKey()) {
                 case MenuOverlay.IDENTIFIER -> menuOverlay = loader.getController();
-                case WaitingOverlay.IDENTIFIER -> waitingOverlay = loader.getController();
                 case CountdownOverlay.IDENTIFIER -> countdownOverlay = loader.getController();
                 case EndingOverlay.IDENTIFIER -> endingOverlay = loader.getController();
                 default -> {
@@ -72,11 +67,8 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
         return mainView.getScene();
     }
 
-    @Override
-    public void registerOverlay(String overlayName, Node node) {
-        mainView.registerOverlay(overlayName, node);
-    }
 
+    /* LISTENER */
 
     @Override
     public void updateOnKeyMappings(Map<String, String> mappings) {
@@ -85,9 +77,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
     @Override
     public void updateOnRegistration(int id) {
-        this.registrationID = id;
-        this.menuOverlay.setId(registrationID);
-        mainView.getScene().setOnKeyPressed((KeyEvent event) -> mainController.handleKeyEvent(registrationID, event));
+        mainView.getScene().setOnKeyPressed((KeyEvent event) -> mainController.handleKeyEvent(id, event));
     }
 
     @Override
@@ -134,9 +124,5 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
         });
     }
 
-    @Override
-    public void updateOnCrash(String crashedColor, String newColor){
-        coordinates.remove(crashedColor);
-    }
 }
 

@@ -1,18 +1,25 @@
 package vsp.trongame.app.view;
 
-import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.config.GameModus;
 
 import java.io.IOException;
 
 public class IViewWrapperFactory {
 
+    /**
+     * Creates Instances of {@link IViewWrapper} depending on {@link GameModus}.
+     *
+     * @param modus the modus of the game.
+     * @return view wrapper instance.
+     */
     public static IViewWrapper getViewWrapper(GameModus modus) throws IOException {
-        return switch (modus){
+        return switch (modus) {
             case LOCAL -> new ViewWrapper();
             case NETWORK -> null;
         };
     }
 
-    private IViewWrapperFactory(){}
+    private IViewWrapperFactory() {
+    }
 
 }

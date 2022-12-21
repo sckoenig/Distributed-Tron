@@ -4,7 +4,6 @@ import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.datatypes.Direction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,14 +12,9 @@ import java.util.List;
 public class Arena implements IArena{
 
     private final int[][] arenaField;
-    private int rows;
-    private int columns;
+    private final int rows;
+    private final int columns;
 
-    /**
-     * Constructor arena where a new Arena is initialized.
-     * @param rows the number of rows
-     * @param columns the number of columns
-     */
     public Arena(int rows, int columns){
         this.rows = rows;
         this.columns = columns;
@@ -34,12 +28,12 @@ public class Arena implements IArena{
 
     @Override
     public void deletePlayerPositions(List<Integer> crashedPlayer) {
-        for (int columns = 0; columns < arenaField.length; columns++) {
-            for (int row = 0; row < arenaField[columns].length; row++) {
-                if (arenaField[columns][row] !=0) {
+        for (int column = 0; column < arenaField.length; column++) {
+            for (int row = 0; row < arenaField[column].length; row++) {
+                if (arenaField[column][row] !=0) {
                     for (Integer playerId: crashedPlayer) {
-                        if(arenaField[columns][row] == playerId){
-                            arenaField[columns][row] = 0;
+                        if(arenaField[column][row] == playerId){
+                            arenaField[column][row] = 0;
                             break;
                         }
                     }
@@ -98,13 +92,9 @@ public class Arena implements IArena{
 
     @Override
     public Direction calculateStartingDirection(Coordinate coordinate) {
-        if(coordinate.x == 0){
-            return Direction.RIGHT;
-        }else if(coordinate.x == columns-1){
-            return Direction.LEFT;
-        } else{
-            return Direction.DOWN;
-        }
+        if (coordinate.x == 0) return Direction.RIGHT;
+        else if (coordinate.x == columns-1) return Direction.LEFT;
+        else return Direction.DOWN;
     }
 
 }

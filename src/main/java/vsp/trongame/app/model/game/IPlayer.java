@@ -67,10 +67,8 @@ public interface IPlayer {
     Direction getDirection();
 
     /**
-     * Sets the current direction based on the current nextDirectionChange and changes
-     * the nextDirectionChange to NONE.
+     * Sets the current direction based on the current nextDirectionChange.
      * @param directionChange the direction of change in a steer event.
-     * @return the new direction
      */
-    Direction performDirectionChange(DirectionChange directionChange);
+    void performDirectionChange(DirectionChange directionChange);
 }

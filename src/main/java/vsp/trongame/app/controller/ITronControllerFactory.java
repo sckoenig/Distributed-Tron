@@ -1,6 +1,6 @@
 package vsp.trongame.app.controller;
 
-import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.config.GameModus;
 
 public class ITronControllerFactory {
 

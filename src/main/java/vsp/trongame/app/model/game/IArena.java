@@ -31,7 +31,6 @@ public interface IArena {
 
     /**
      * Calculates in relation to the playerCount, fair starting positions for every player.
-     *
      * @param playerCount how many players are playing
      * @return the list of calculated starting coordinates
      */
@@ -39,7 +38,6 @@ public interface IArena {
 
     /**
      * Calculates for every coordinate a direction to start.
-     *
      * @param coordinate is the starting coordinate of a player
      * @return the starting direction
      */

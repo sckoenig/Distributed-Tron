@@ -1,18 +1,16 @@
 package vsp.trongame;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
+import vsp.trongame.app.model.config.Config;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
-import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.config.GameModus;
 import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.view.IViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
-import vsp.trongame.app.view.overlays.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
+import static vsp.trongame.app.model.config.GameModus.LOCAL;
 
 public class TronGame extends Application {
 
@@ -30,7 +28,7 @@ public class TronGame extends Application {
             ModelState.COUNTDOWN.toString(), "countdownOverlay.fxml",
             ModelState.ENDING.toString(), "endingOverlay.fxml"));
 
-    private static final int MODEL_THREAD_COUNT = 4; // model has max two tasks simultaneously
+    private static final int MODEL_THREAD_COUNT = 4; // threads the model can use
     private ExecutorService modelExecutor; // reference for shutting down on application stop
 
     public static void main(String[] args) {
@@ -41,10 +39,11 @@ public class TronGame extends Application {
     public void start(Stage stage) throws IOException {
 
         /* BOOT APP */
+
         this.modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         Config config = new Config();
         GameModus modus = GameModus.valueOf(config.getAttribut("gameMode"));
-        boolean singleView = modus == LOCAL? true : false;
+        boolean singleView = modus == LOCAL;
 
         /* components */
         IViewWrapper tronView = IViewWrapperFactory.getViewWrapper(modus);
@@ -54,8 +53,9 @@ public class TronGame extends Application {
         /* assemble */
         tronController.initialize(tronModel);
         tronModel.initialize(modus, modelExecutor, singleView, config);
-        tronView.initialize(tronModel, tronController, 2, STATE_VIEW_MAPPING);
-        //initializeViewWithFxml(tronView, tronController, tronModel, config);
+        tronView.initialize(tronModel, tronController, Integer.parseInt(config.getAttribut(Config.HEIGHT)),
+                Integer.parseInt(config.getAttribut(Config.WIDTH)),
+                Integer.parseInt(config.getAttribut(Config.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
 
         /* open stage */
         stage.setTitle("Tron");

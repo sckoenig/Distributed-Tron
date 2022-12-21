@@ -16,6 +16,11 @@ public class EndingOverlay {
     @FXML
     public Circle winningColorCircle;
 
+    /**
+     * Displays the game result.
+     * @param resultText label text
+     * @param resultColor color hex code for display
+     */
     public void setResult(String resultText, String resultColor){
        winningColorCircle.setFill(Paint.valueOf(resultColor));
        gameResultLabel.setText(resultText);

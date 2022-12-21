@@ -18,7 +18,6 @@ import java.util.Map;
 public class CountdownOverlay {
 
     public static final String IDENTIFIER = "COUNTDOWN";
-
     @FXML
     public AnchorPane pane;
     @FXML
@@ -26,9 +25,14 @@ public class CountdownOverlay {
     @FXML
     public HBox mainHBox;
 
+    /**
+     * Happens once a game. Displays Key Mappings and Colors.
+     * @param mappings mappings in the form of keys and color hexcode.
+     */
     public void setKeyMappings(Map<String, String> mappings) {
         Platform.runLater(() -> {
-            mainHBox.getChildren().clear();
+            mainHBox.getChildren().clear(); //happens once a game
+
             for (Map.Entry<String, String> entry : mappings.entrySet()) {
                 HBox hBox = new HBox();
                 hBox.setSpacing(10);

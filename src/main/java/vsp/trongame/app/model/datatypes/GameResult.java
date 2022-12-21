@@ -7,7 +7,7 @@ package vsp.trongame.app.model.datatypes;
 public enum GameResult {
     
     WON("Der Gewinner ist ..."),
-    DRAW("Unentschieden");
+    DRAW("Unentschieden!");
 
     private final String resultText;
 

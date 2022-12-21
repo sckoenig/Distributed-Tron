@@ -1,8 +1,6 @@
 package vsp.trongame.app.model.game;
 
-import vsp.trongame.app.model.datatypes.GameModus;
-
-import java.util.concurrent.ExecutorService;
+import vsp.trongame.app.model.config.GameModus;
 
 public class IGameFactory {
 

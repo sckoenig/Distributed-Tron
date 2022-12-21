@@ -4,7 +4,7 @@ import javafx.scene.input.KeyEvent;
 import vsp.trongame.app.model.ITronModel;
 
 /**
- * Implements the interface ITronController
+ * Serves as the main controller.
  */
 public class TronController implements ITronController {
 

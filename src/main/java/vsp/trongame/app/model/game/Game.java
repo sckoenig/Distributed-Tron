@@ -11,12 +11,11 @@ import java.util.concurrent.ExecutorService;
 import static java.lang.Thread.*;
 
 /**
- * Implements IGame and performs the gameLoop
+ * Implements the game logic.
  */
 public class Game implements IGame {
-
+    private static final int ONE_SECOND = 1000;
     private final List<IPlayer> players;
-    private final Map<String, List<Coordinate>> mappedPlayers; //for gameLoop update
     private final Set<IGameManager> gameManagers; //listeners be related to the same manager
     private final List<ITronModel.IUpdateListener> gameListeners;
     private final ICollisionDetector collisionDetector;
@@ -34,9 +33,8 @@ public class Game implements IGame {
 
     public Game() {
         this.players = new ArrayList<>();
-        this.gameManagers= new HashSet<>();
+        this.gameManagers = new HashSet<>();
         this.gameListeners = new ArrayList<>();
-        this.mappedPlayers = new HashMap<>();
         this.collisionDetector = new CollisionDetector();
         this.currentState = GameState.INIT;
     }
@@ -73,12 +71,12 @@ public class Game implements IGame {
 
     @Override
     public void handleSteers(List<Steer> steers, int tickCount) {
-        if(tickCount == this.tickCount){
+        if (tickCount == this.tickCount) {
             steers.forEach(steer -> {
-                int playerId = steer.getPlayerId();
-                DirectionChange directionChange = steer.getDirectionChange();
-                for (IPlayer player: players) {
-                    if(player.getId() == playerId){
+                int playerId = steer.playerId();
+                DirectionChange directionChange = steer.directionChange();
+                for (IPlayer player : players) {
+                    if (player.getId() == playerId) {
                         player.performDirectionChange(directionChange);
                         break;
                     }
@@ -95,6 +93,9 @@ public class Game implements IGame {
         executeState();
     }
 
+    /**
+     * Executes the current state.
+     */
     private void executeState() {
 
         gameManagers.forEach(gm -> gm.handleGameState(currentState));
@@ -108,6 +109,12 @@ public class Game implements IGame {
         }
     }
 
+    /**
+     * Starts a timer.
+     *
+     * @param waitingTime the time to wait
+     * @param startedAt   the game state the timer is started in.
+     */
     private void startTimer(int waitingTime, GameState startedAt) {
         gameExecutor.execute(() -> {
             try {
@@ -119,6 +126,11 @@ public class Game implements IGame {
         });
     }
 
+    /**
+     * Timeout handeling deoebds on the game state the timer was started in and the current game state.
+     *
+     * @param startedAt the game state the timer was started in.
+     */
     private void handleTimeOut(GameState startedAt) {
         if (startedAt == GameState.FINISHED && currentState == GameState.FINISHED) transitionState(GameState.INIT);
         if (startedAt == GameState.PREPARING && currentState == GameState.PREPARING) {
@@ -129,6 +141,7 @@ public class Game implements IGame {
 
     /**
      * Checks if enough players are registered to start the game after preperation time is over.
+     *
      * @return true, if enough players are registered, false otherwise.
      */
     private boolean isGameReady() {
@@ -137,6 +150,7 @@ public class Game implements IGame {
 
     /**
      * Checks if the desired player count was reached.
+     *
      * @return true, if the playerCount players are registered, false otherwise.
      */
     private boolean isGameFull() {
@@ -145,6 +159,7 @@ public class Game implements IGame {
 
     /**
      * Checks if a registration is allowed.
+     *
      * @param playerCountToRegister the amount of players that are to be registered.
      * @return true, if registration is allowed, false otherwise.
      */
@@ -154,6 +169,7 @@ public class Game implements IGame {
 
     /**
      * Creates and saves the given number of players and maps their ID and Color.
+     *
      * @param count number of players to be created.
      * @return a map of the player's ID and Color.
      */
@@ -165,9 +181,7 @@ public class Game implements IGame {
             IPlayer newPlayer = new Player(color, ++registeredPlayerCount);
 
             this.players.add(newPlayer);
-            this.mappedPlayers.put(color.getHex(), newPlayer.getCoordinates());
             newPlayers.put(registeredPlayerCount, color);
-
         }
         return newPlayers;
     }
@@ -176,7 +190,6 @@ public class Game implements IGame {
      * Makes necessary preparation for game start, then starts the game.
      */
     private void start() {
-
         gameListeners.forEach(gl -> gl.updateOnArena(rows, columns));
 
         List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
@@ -197,14 +210,15 @@ public class Game implements IGame {
 
     private void countDown() throws InterruptedException {
 
-        for (ITronModel.IUpdateListener gl : gameListeners) {
-            for (int i = 3; i > 0; i--) {
-                gl.updateOnCountDown(i);
-                sleep(1000);
+        for (int i = 3; i > 0; i--) {
+            long startTime = System.currentTimeMillis();
+            for (ITronModel.IUpdateListener listeners : gameListeners) {
+                listeners.updateOnCountDown(i);
             }
+            long time = System.currentTimeMillis() - startTime;
+            sleep(ONE_SECOND - time);
         }
         gameListeners.forEach(ITronModel.IUpdateListener::updateOnGameStart);
-
     }
 
     /**
@@ -215,8 +229,7 @@ public class Game implements IGame {
         gameExecutor.execute(() -> {
             try {
                 gameLoop();
-                //mockLoop();
-            } catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
             if (!interrupted()) transitionState(GameState.FINISHED);
@@ -224,34 +237,40 @@ public class Game implements IGame {
     }
 
     private void gameLoop() throws InterruptedException {
-        while (!isGameOver() && !Thread.interrupted()){
 
-            tickCount++;
+        while (!isGameOver() && !Thread.interrupted()) {
             long whileStart = System.currentTimeMillis();
 
-            players.forEach(p -> {
-                if(p.isAlive()){
-                    Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
-                    p.addCoordinate(nextCoordinate);
-                }
-            });
+            tickCount++;
+            movePlayers();
+            updateField();
 
-            gameExecutor.execute(() -> {
-                collisionDetector.detectCollision(players, arena, gameListeners);
-                Map<String, List<Coordinate>> map = new HashMap<>();
-                for (IPlayer player : players) {
-                    if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
-                }
-                gameListeners.forEach(dl -> dl.updateOnField(map));
-                gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
-            });
-
-            long whileEnd = System.currentTimeMillis();
-            long timeDiff = whileEnd - whileStart;
+            long timeDiff = System.currentTimeMillis() - whileStart;
 
             // noinspection BusyWait: tickrate here
-            sleep((1000/speed) - timeDiff);
+            sleep((ONE_SECOND / speed) - timeDiff);
         }
+    }
+
+    private void movePlayers(){
+        players.forEach(p -> {
+            if (p.isAlive()) {
+                Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
+                p.addCoordinate(nextCoordinate);
+            }
+        });
+    }
+
+    private void updateField(){
+        gameExecutor.execute(() -> {
+            collisionDetector.detectCollision(players, arena);
+            Map<String, List<Coordinate>> map = new HashMap<>();
+            for (IPlayer player : players) {
+                if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
+            }
+            gameListeners.forEach(dl -> dl.updateOnField(map));
+            gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
+        });
     }
 
 
@@ -262,23 +281,12 @@ public class Game implements IGame {
      * @return the new coordinate
      */
     private Coordinate calculateNextCoordinate(Coordinate coordinate, Direction direction) {
-        switch (direction){
-            case DOWN -> {
-                return new Coordinate(coordinate.x, coordinate.y+1);
-            }
-            case UP -> {
-                return new Coordinate(coordinate.x, coordinate.y-1);
-            }
-            case LEFT -> {
-                return new Coordinate(coordinate.x-1, coordinate.y);
-            }
-            case RIGHT -> {
-                return new Coordinate(coordinate.x+1, coordinate.y);
-            }
-            default -> {
-                return coordinate;
-            }
-        }
+        return switch (direction) {
+            case DOWN -> new Coordinate(coordinate.x, coordinate.y + 1);
+            case UP -> new Coordinate(coordinate.x, coordinate.y - 1);
+            case LEFT -> new Coordinate(coordinate.x - 1, coordinate.y);
+            case RIGHT -> new Coordinate(coordinate.x + 1, coordinate.y);
+        };
     }
 
     /**
@@ -295,17 +303,22 @@ public class Game implements IGame {
      */
     private void finish() {
 
-        //get game result
         IPlayer winner = players.stream().filter(IPlayer::isAlive).reduce((a, b) -> {
             throw new IllegalStateException("More than one Player is alive!");
         }).orElse(null);
-        if (winner != null ) arena.deletePlayerPositions(List.of(winner.getId()));
-        GameResult result = winner == null ? GameResult.DRAW : GameResult.WON;
-        TronColor resultColor = winner == null ? TronColor.DEFAULT : winner.getColor();
 
-        //inform
-        gameListeners.forEach(gameData -> gameData.updateOnGameResult(resultColor.getHex(), result.getResultText()));
+        GameResult result;
+        TronColor resultColor;
+        if (winner != null) {
+            arena.deletePlayerPositions(List.of(winner.getId()));
+            result = GameResult.WON;
+            resultColor = winner.getColor();
+        } else {
+            result = GameResult.DRAW;
+            resultColor = TronColor.DEFAULT;
+        }
 
+        gameListeners.forEach(listener -> listener.updateOnGameResult(resultColor.getHex(), result.getResultText()));
         startTimer(endingTime, currentState);
     }
 
@@ -316,42 +329,7 @@ public class Game implements IGame {
         playerCount = registeredPlayerCount = tickCount = 0;
         gameManagers.clear();
         gameListeners.clear();
-        mappedPlayers.clear();
         players.clear();
-    }
-
-    private void mockLoop() throws InterruptedException {
-
-        //startingCoordinates
-        players.get(0).getCoordinates().add(new Coordinate(1, 2));
-        players.get(1).getCoordinates().add(new Coordinate(5, 5));
-        gameListeners.get(0).updateOnField(mappedPlayers);
-
-        //gameloop
-        sleep(500);
-
-        players.get(0).getCoordinates().add(new Coordinate(1, 3));
-        players.get(1).getCoordinates().add(new Coordinate(4, 5));
-        gameListeners.get(0).updateOnField(mappedPlayers);
-
-        sleep(500);
-
-        players.get(0).getCoordinates().add(new Coordinate(1, 4));
-        players.get(1).getCoordinates().add(new Coordinate(3, 5));
-        gameListeners.get(0).updateOnField(mappedPlayers);
-
-        sleep(500);
-
-        players.get(0).getCoordinates().add(new Coordinate(1, 5));
-        players.get(1).getCoordinates().add(new Coordinate(2, 5));
-        gameListeners.get(0).updateOnField(mappedPlayers);
-
-        sleep(500);
-
-        players.get(0).getCoordinates().add(new Coordinate(1, 6));
-        gameListeners.get(0).updateOnField(mappedPlayers);
-
-        players.get(1).crash();
     }
 
 }

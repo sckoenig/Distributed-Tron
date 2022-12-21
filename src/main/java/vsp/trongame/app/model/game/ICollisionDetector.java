@@ -1,7 +1,5 @@
 package vsp.trongame.app.model.game;
 
-import vsp.trongame.app.model.ITronModel;
-
 import java.util.List;
 
 /**
@@ -17,5 +15,5 @@ public interface ICollisionDetector {
      * @param alivePlayer list with all players that are still alive
      * @param arena the arena
      */
-    void detectCollision(List<IPlayer> alivePlayer, IArena arena, List<ITronModel.IUpdateListener> listeners);
+    void detectCollision(List<IPlayer> alivePlayer, IArena arena);
 }

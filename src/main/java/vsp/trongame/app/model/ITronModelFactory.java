@@ -1,8 +1,6 @@
 package vsp.trongame.app.model;
 
-import edu.cads.bai5.vsp.tron.view.ITronView;
-import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.gamemanagement.Config;
+import vsp.trongame.app.model.config.GameModus;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
 
 public class ITronModelFactory {

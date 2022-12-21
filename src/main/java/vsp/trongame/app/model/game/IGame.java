@@ -28,7 +28,7 @@ public interface IGame {
      * @param gameManager a manager observing the state of the game
      * @param listener a listener that is listening for game updates
      * @param listenerId the listener's registration id
-     * @param managedPlayerCount the sum of players that the game is going to manage
+     * @param managedPlayerCount the sum of players that the manager is going to manage
      */
     void register(IGameManager gameManager, ITronModel.IUpdateListener listener, int listenerId, int managedPlayerCount);
 

@@ -1,6 +1,8 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
+import vsp.trongame.app.model.config.Config;
+import vsp.trongame.app.model.config.GameModus;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.game.IGame;
@@ -29,12 +31,11 @@ public class GameManager implements IGameManager, ITronModel {
     private Config config;
     private boolean singleView;
     private ModelState currentState;
-    private int playerCount;
-    private boolean handleSteerEvents;
+    private boolean handleGameEvents;
 
     public GameManager() {
         this.currentState = ModelState.MENU;
-        this.handleSteerEvents = false;
+        this.handleGameEvents = false;
         this.listenersMap = new HashMap<>();
         this.listenersToPlayersMap = new HashMap<>();
         this.managedPlayers = new HashMap<>();
@@ -63,14 +64,16 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void playGame(int listenerID, int playerCount) {
+
         if (currentState == ModelState.MENU) {
             game.prepare(playerCount);
-            this.playerCount = playerCount;
             handleGameState(GameState.PREPARING);
         }
+
         executorService.execute(() -> {
             int managedPlayerCount = singleView ? playerCount : 1;
-            game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount);
+            if (listenersMap.containsKey(listenerID))
+                game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount);
         });
     }
 
@@ -85,11 +88,13 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameTick(int tickCounter) {
-        List<Steer> steers = managedPlayers.values().stream().filter(Objects::nonNull).toList();
-        if (!steers.isEmpty()) {
-            game.handleSteers(steers, tickCounter);
-            managedPlayers.replaceAll((k, v) -> null);
+        if (handleGameEvents){
+            List<Steer> steers = managedPlayers.values().stream().filter(Objects::nonNull).toList();
 
+            if (!steers.isEmpty()) {
+                game.handleSteers(steers, tickCounter);
+                managedPlayers.replaceAll((k, v) -> null);
+            }
         }
     }
 
@@ -106,16 +111,15 @@ public class GameManager implements IGameManager, ITronModel {
             keyMapping.put(keys, entry.getValue().getHex());
         }
         listenersMap.get(id).updateOnKeyMappings(keyMapping);
-
     }
 
     @Override
     public void handleSteerEvent(int id, KeyCode key) {
-        if (handleSteerEvents) {
+        if (handleGameEvents) {
             Steer steer = config.getSteer(key);
             if(steer != null) {
-                int playerId = steer.getPlayerId();
-                if (listenersToPlayersMap.get(id).contains(playerId)) {
+                int playerId = steer.playerId();
+                if (listenersToPlayersMap.get(id).contains(playerId)) { // is steer allowed
                     managedPlayers.put(playerId, steer);
                 }
             }
@@ -124,7 +128,6 @@ public class GameManager implements IGameManager, ITronModel {
 
     /**
      * A new state is reached and executed.
-     *
      * @param newState the game state initiating the transition.
      */
     private void transition(ModelState newState) {
@@ -136,28 +139,25 @@ public class GameManager implements IGameManager, ITronModel {
      * Executes the current state.
      */
     private void executeState() {
-
         if (currentState != ModelState.PLAYING) updateListeners();
-        if (currentState == ModelState.WAITING) ;
-        if (currentState == ModelState.PLAYING) handleSteerEvents = true;
+        if (currentState == ModelState.PLAYING) handleGameEvents = true;
         if (currentState == ModelState.MENU) reset();
     }
 
     /**
-     * Updates the view depending on state.
+     * Updates listeners about state updates.
      */
     private void updateListeners() {
         listenersMap.values().forEach(listener -> listener.updateOnState(currentState.toString()));
     }
 
     /**
-     * Resetting data after ending state.
+     * Resetting management data after ending state.
      */
     private void reset() {
-        handleSteerEvents = false;
+        handleGameEvents = false;
         listenersToPlayersMap.clear();
         managedPlayers.clear();
-        playerCount = 0;
     }
 
 }
