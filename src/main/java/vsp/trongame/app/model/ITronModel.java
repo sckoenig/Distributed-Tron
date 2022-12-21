@@ -2,8 +2,8 @@ package vsp.trongame.app.model;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.config.Config;
-import vsp.trongame.app.model.config.GameModus;
+import vsp.trongame.app.model.gamemanagement.Config;
+import vsp.trongame.app.model.datatypes.GameModus;
 
 import java.util.List;
 import java.util.Map;
@@ -40,7 +40,7 @@ public interface ITronModel {
      * Registers a Listener at the model for updates.
      * @param listener the listener.
      */
-    void registerListener(IUpdateListener listener);
+    void registerUpdateListener(IUpdateListener listener);
 
 
     /**

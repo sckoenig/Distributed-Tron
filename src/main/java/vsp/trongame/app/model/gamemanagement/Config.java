@@ -1,6 +1,7 @@
-package vsp.trongame.app.model.config;
+package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
+import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.Steer;
 
@@ -103,6 +104,10 @@ public class Config {
         return !properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
     }
 
+    /**
+     * Checks if all necessary attributes are present.
+     * @return true, if all attributes are present, false otherwise.
+     */
     private boolean hasAllAttributes() {
         return properties.keySet().equals(DEFAULTS.keySet());
     }
@@ -180,7 +185,6 @@ public class Config {
             prop.store(outputStream, null);
             return prop;
         }
-
     }
 
     /**
@@ -194,7 +198,6 @@ public class Config {
             keyMappings.put(KeyCode.valueOf(temp[0]), new Steer(i, DirectionChange.LEFT_STEER));
             keyMappings.put(KeyCode.valueOf(temp[1]), new Steer(i, DirectionChange.RIGHT_STEER));
         }
-
     }
 
     /**
@@ -234,6 +237,11 @@ public class Config {
         return keyMappings.get(key);
     }
 
+    /**
+     * Finds the Key Mappings for a specific player
+     * @param id the player's id
+     * @return Key Mappings in the form of e.g. "Q,W" with Q being the right-key, and W being the left-key.
+     */
     public String getKeyMappingForPlayer(int id) {
         return switch (id) {
             case 1 -> properties.getProperty(P_EINS);

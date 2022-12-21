@@ -59,7 +59,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
         menuOverlay.initialize(mainController, defaultPlayerCount);
         mainView.clear();
-        model.registerListener(this);
+        model.registerUpdateListener(this);
     }
 
     @Override

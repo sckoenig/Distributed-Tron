@@ -60,11 +60,11 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 ## 3.1 Business Kontext
 
-![image info](./diagrams/scope_business.png) \
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/kontext/scope_business.png) \
 Details siehe [Use Cases](#use-cases).
 
 ## 3.2 Technischer Kontext
-![image info](./diagrams/scope_technical.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/kontext/scope_technical.png)
 
 # 4. Lösungsstrategie
 
@@ -192,53 +192,53 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
-![image info](./diagrams/bs_layer1.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer1.png)
 ## 5.2 Ebene 2 : Application
-![image info](./diagrams/bs_layer2_view_controller.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer2_view_controller.png)
 ## 5.3 Ebene 3 : Application
-![image info](./diagrams/bs_layer3_model_interfaces.png)
-![image info](./diagrams/bs_layer3_model.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer3_model_interfaces.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer3_model.png)
 ## 5.2 Ebene 3 : ApplicationStub
-![image info](./diagrams/bs_layer3_stub_model_interfaces.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer3_stub_model_interfaces.png)
 
 Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
-![image info](./diagrams/bs_layer3_stub_model.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/baustein/bs_layer3_stub_model.png)
 
 # 6. Laufzeitsicht
 ## 6.1 Ebene 1
 ### 6.1.1 UC-2: Spiel starten
-![image info](./diagrams/sd_mvc_startGame.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/sd_mvc_startGame.png)
 
 ### 6.1.2 UC-3: Spiel spielen
-![image info](./diagrams/sd_mvc_playGame.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/sd_mvc_playGame.png)
 
 ### 6.1.3 UC-3.1: Lenken
-![image info](./diagrams/sd_mvc_steerBike.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/sd_mvc_steerBike.png)
 
 ### 6.1.4 UC-4: Ergebnisse ansehen
-![image info](./diagrams/sd_mvc_seeResults.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/sd_mvc_seeResults.png)
 
 ## 6.2 Ebene 2: Model
 ### 6.2.1 Model States
-![image info](./diagrams/GameManager_states.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/GameManager_states.png)
 
 ### 6.2.2 UC-1: Spiel konfigurieren
-![image info](./diagrams/configure.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/configure.png)
 
 ### 6.2.3 UC-2: Spiel starten
-![image info](./diagrams/activity_start.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/activity_start.png)
 
 ### 6.2.4 UC-3: Spiel spielen
 ![image info](./diagrams/activity_play.png)
 
 ### 6.2.5 UC-4: Spiel beenden & Ergebnisse ansehen
-![image info](./diagrams/activity_end.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/activity_end.png)
 
 ### 6.2.5 UC-3.1: Lenken
-![image info](./diagrams/sd_steerBike.png)
+![image info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/sd_steerBike.png)
 
 ### 6.2.6 UC-3.1: Lenken-States
-![image-info](./diagrams/Steer_states.png)
+![image-info](Desktop/VS/wise22-23-vs-2582106-2279123-2576932/Dokumentation/App/diagrams/laufzeit/Steer_states.png)
 
 
 

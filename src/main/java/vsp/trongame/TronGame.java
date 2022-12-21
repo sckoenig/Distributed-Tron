@@ -4,10 +4,10 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
-import vsp.trongame.app.model.config.Config;
+import vsp.trongame.app.model.gamemanagement.Config;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
-import vsp.trongame.app.model.config.GameModus;
+import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.view.IViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static vsp.trongame.app.model.config.GameModus.LOCAL;
+import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 
 public class TronGame extends Application {
 

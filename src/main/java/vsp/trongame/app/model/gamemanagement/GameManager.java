@@ -1,8 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.config.Config;
-import vsp.trongame.app.model.config.GameModus;
+import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.game.IGame;
@@ -78,7 +77,7 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void registerListener(IUpdateListener listener) {
+    public void registerUpdateListener(IUpdateListener listener) {
         int nextID = listenersMap.size();
         listenersMap.put(nextID, listener);
         listenersToPlayersMap.put(nextID, new ArrayList<>());

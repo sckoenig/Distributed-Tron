@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.config;
+package vsp.trongame.app.model.datatypes;
 
 /**
  * Contains the GameModus enums.
