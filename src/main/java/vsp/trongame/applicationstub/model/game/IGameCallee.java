@@ -42,7 +42,8 @@ public class IGameCallee implements IRemoteObject {
                 game.register(gm, );
             }
             case HANDLE_STEERS -> {
-                if(parameters.length < 13 && parameters.length > 0){
+                int straight = parameters.length % 2;
+                if(parameters.length < 13 && parameters.length > 0 && straight > 0){
                     int tickCount = parameters[0];
                     List<Steer> steerList = new ArrayList<>();
                     for(int i = 1; i < parameters.length; i+=2){
