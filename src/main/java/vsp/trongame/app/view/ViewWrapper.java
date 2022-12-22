@@ -18,15 +18,14 @@ import java.util.*;
 
 public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
 
-    private final ITronView mainView;
+    private ITronView mainView;
     private CountdownOverlay countdownOverlay;
     private EndingOverlay endingOverlay;
     private MenuOverlay menuOverlay;
     private ITronController mainController;
     private final Map<String, Set<Coordinate>> coordinates;
 
-    public ViewWrapper() throws IOException {
-        this.mainView = new TronView();
+    public ViewWrapper() {
         this.coordinates = new HashMap<>();
     }
 
@@ -34,6 +33,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
     public void initialize(ITronModel model, ITronController mainController, int height, int width, int defaultPlayerCount,
                            Map<String, String> mapping) throws IOException {
 
+        this.mainView = new TronView();
         this.mainController = mainController;
 
         Parent root;
