@@ -5,5 +5,15 @@ package vsp.trongame.app.model.datatypes;
  */
 public enum DirectionChange {
     LEFT_STEER,
-    RIGHT_STEER
+    RIGHT_STEER;
+
+    public static DirectionChange getByOrdinal(int ordinal){
+
+        DirectionChange[] results = DirectionChange.values();
+        if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
+
+        return results[ordinal];
+    }
+
+
 }
