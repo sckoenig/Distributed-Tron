@@ -8,5 +8,13 @@ public enum GameState {
     PREPARING,
     COUNTDOWN,
     RUNNING,
-    FINISHED
+    FINISHED;
+
+    public static GameState getByOrdinal(int ordinal){
+
+        GameState[] results = GameState.values();
+        if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
+
+        return results[ordinal];
+    }
 }
