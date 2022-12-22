@@ -96,12 +96,8 @@ public class Config {
         if (isSteerValid(properties.getProperty(P_EINS), properties.getProperty(P_ZWEI), properties.getProperty(P_DREI),
                 properties.getProperty(P_VIER), properties.getProperty(P_FUENF), properties.getProperty(P_SECHS)))
             return false;
-
-        if (properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.LOCAL.name()) ||
-                properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.NETWORK.name())) {
-            return false;
-        }
-        return !properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
+        if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.NETWORK.toString())) return false;
+        return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
     }
 
     /**
