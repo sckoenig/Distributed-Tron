@@ -3,7 +3,6 @@ package vsp.trongame.applicationstub.view;
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
-import vsp.trongame.app.model.gamemanagement.Config;
 import vsp.trongame.applicationstub.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
@@ -17,30 +16,11 @@ public class IUpdateListenerCallee implements IRemoteObject {
 
     private ITronModel.IUpdateListener updateListener;
     private IRegister middleware;
-    private Config config;
 
     @Override
     public void call(int serviceID, int... parameters) {
         Service service = Service.getByOrdinal(serviceID);
         switch (service){
-            case UPDATE_REGISTRATION -> {
-                if(parameters.length == 1){
-                    //TODO
-                    updateListener.updateOnRegistration(parameters[0]);
-                }
-            }
-            case UPDATE_KEYMAPPING -> {
-                if(parameters.length > 2){
-                    //TODO Hat jeder Spieler immer 2 Tasten?
-                    Map<String, String> keyMappings = new HashMap<>();
-                    for(int i = 0; i < parameters.length; i+=3){
-                        //TODO
-                        String color = TronColor.getByOrdinal(parameters[i]).getHex();
-                        //keyMappings.put(color, parameters[i+1]);
-                    }
-                    updateListener.updateOnKeyMappings(keyMappings);
-                }
-            }
             case UPDATE_ARENA -> {
                 if(parameters.length == 2){
                     int rows = parameters[0];
@@ -57,10 +37,13 @@ public class IUpdateListenerCallee implements IRemoteObject {
                 updateListener.updateOnGameStart();
             }
             case UPDATE_RESULT -> {
-                if(parameters.length == 2){
+                if(parameters.length >= 2){
                     String color = TronColor.getByOrdinal(parameters[0]).name();
-                    String result = GameResult.getByOrdinal(parameters[1]).getResultText();
-                    updateListener.updateOnGameResult(color, result);
+                    StringBuilder result = new StringBuilder();
+                    for(int i = 1 ; i < parameters.length; i+=9){
+                        result.append((char) parameters[i]);
+                    }
+                    updateListener.updateOnGameResult(color, result.toString());
                 }
             }
             case UPDATE_COUNTDOWN -> {
