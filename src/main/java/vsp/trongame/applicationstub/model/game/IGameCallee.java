@@ -1,70 +1,77 @@
 package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.datatypes.DirectionChange;
-import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.datatypes.Steer;
+import vsp.trongame.app.model.game.IGameFactory;
+import vsp.trongame.app.model.util.datatypes.DirectionChange;
+import vsp.trongame.app.model.util.datatypes.GameModus;
+import vsp.trongame.app.model.util.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
 import vsp.trongame.app.view.IUpdateListenerFactory;
-import vsp.trongame.applicationstub.ICaller;
-import vsp.trongame.applicationstub.Service;
-import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCaller;
+import vsp.trongame.applicationstub.util.ICaller;
+import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
+import vsp.trongame.middleware.Middleware;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
+import static vsp.trongame.applicationstub.util.Service.*;
+
+/**
+ * Callee Remote Object, that knows the local Instance of {@link IGame} and can call its methods.
+ */
 public class IGameCallee implements IRemoteObject {
 
-    private IGame game;
-    private IRegister middleware;
+    private final IGame localGame;
 
-    public void setGame(IGame game){
-        this.game = game;
+    public IGameCallee() {
+        this.localGame = IGameFactory.getGame(GameModus.LOCAL); //knows the "real" game
+
+        // can be called from remote
+        IRegister middleware = Middleware.getInstance();
+        middleware.registerRemoteObject(PREPARE.ordinal(), this);
+        middleware.registerRemoteObject(REGISTER.ordinal(), this);
+        middleware.registerRemoteObject(HANDLE_STEERS.ordinal(), this);
     }
 
     @Override
-    public void call(int serviceID, int... parameters) {
+    public void call(int serviceID, int[] intParameters, String... stringParameters) {
         Service service = Service.getByOrdinal(serviceID);
         switch (service){
             case PREPARE -> {
-                if (parameters.length == 1){
-                    int playerCount = parameters[0];
-                    game.prepare(playerCount);
+                if (intParameters.length == 1){
+                    int playerCount = intParameters[0];
+                    localGame.prepare(playerCount);
                 }
             }
             case REGISTER -> {
-                if (parameters.length == 10){
+                if (intParameters.length == 2 && stringParameters.length == 2){
+
+                    // Caller Objects that represent the remote Objects that want to register at the local game
                     IGameManager managerCaller = IGameManagerFactory.getGameManager(GameModus.NETWORK);
-                    String gmId = String.format("%d.%d.%d:%d", parameters[0], parameters[1], parameters[2], parameters[3]);
-                    String listenerId = String.format("%d.%d.%d:%d", parameters[4], parameters[5], parameters[6], parameters[7]);
-                    ((ICaller)managerCaller).setRemoteId(gmId);
                     ITronModel.IUpdateListener listenerCaller = IUpdateListenerFactory.getUpdateListener(GameModus.NETWORK);
-                    ((ICaller)listenerCaller).setRemoteId(listenerId);
-                    game.register(managerCaller, listenerCaller,parameters[8], parameters[9]);
+                    ((ICaller) managerCaller).setRemoteId(stringParameters[0]);
+                    ((ICaller) listenerCaller).setRemoteId(stringParameters[1]);
+
+                    localGame.register(managerCaller, listenerCaller, intParameters[0], intParameters[1]);
                 }
             }
             case HANDLE_STEERS -> {
-                int straight = parameters.length % 2;
-                if(parameters.length < 13 && parameters.length > 0 && straight > 0){
-                    int tickCount = parameters[0];
+                boolean uneven = intParameters.length % 2 != 0; // must be uneven: tickcount + steer(id, direction)
+                if (intParameters.length < 13 && intParameters.length > 0 && uneven){
+                    int tickCount = intParameters[0];
                     List<Steer> steerList = new ArrayList<>();
-                    for(int i = 1; i < parameters.length; i+=2){
-                        Steer steer = new Steer(parameters[i], DirectionChange.getByOrdinal(parameters[i+1]));
+                    for(int i = 1; i < intParameters.length; i+=2){
+                        Steer steer = new Steer(intParameters[i], DirectionChange.getByOrdinal(intParameters[i+1]));
                         steerList.add(steer);
                     }
-                    game.handleSteers(steerList, tickCount);
+                    localGame.handleSteers(steerList, tickCount);
                 }
             }
             default -> {}
         }
-
     }
 }

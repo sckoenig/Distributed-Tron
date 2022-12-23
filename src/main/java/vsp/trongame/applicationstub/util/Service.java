@@ -1,6 +1,8 @@
-package vsp.trongame.applicationstub;
+package vsp.trongame.applicationstub.util;
 
-
+/**
+ * Represents Services that can be provided.
+ */
 public enum Service {
     PREPARE,
     REGISTER,
@@ -8,8 +10,6 @@ public enum Service {
     HANDLE_MANAGED_PLAYERS,
     HANDLE_GAME_STATE,
     HANDLE_GAME_TICK,
-    UPDATE_REGISTRATION,
-    UPDATE_KEYMAPPING,
     UPDATE_ARENA,
     UPDATE_STATE,
     UPDATE_START,

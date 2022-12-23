@@ -1,9 +1,9 @@
 package vsp.trongame.applicationstub.model.gamemanagement;
 
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
+import vsp.trongame.app.model.util.datatypes.GameState;
+import vsp.trongame.app.model.util.datatypes.TronColor;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
-import vsp.trongame.applicationstub.Service;
+import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
 
@@ -20,7 +20,7 @@ public class IGameManagerCallee implements IRemoteObject {
     }
 
     @Override
-    public void call(int serviceID, int... parameters) {
+    public void call(int serviceID, int[] parameters, String... stringParameters) {
         Service service = Service.getByOrdinal(serviceID);
         switch (service){
             case HANDLE_GAME_STATE -> {

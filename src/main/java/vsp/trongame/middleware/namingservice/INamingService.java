@@ -1,4 +1,4 @@
-package vsp.trongame.middleware;
+package vsp.trongame.middleware.namingservice;
 
 import java.net.InetAddress;
 

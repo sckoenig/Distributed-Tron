@@ -4,21 +4,17 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
-import vsp.trongame.app.model.gamemanagement.Config;
+import vsp.trongame.app.model.util.Configuration;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
-import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.gamemanagement.*;
+import vsp.trongame.app.model.util.datatypes.GameModus;
 import vsp.trongame.app.view.IViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import static vsp.trongame.app.model.datatypes.GameModus.LOCAL;
 
 public class TronGame extends Application {
 
@@ -27,9 +23,6 @@ public class TronGame extends Application {
             ModelState.WAITING.toString(), "waitingOverlay.fxml",
             ModelState.COUNTDOWN.toString(), "countdownOverlay.fxml",
             ModelState.ENDING.toString(), "endingOverlay.fxml"));
-
-    private static final int MODEL_THREAD_COUNT = 4; // threads the model can use
-    private ExecutorService modelExecutor; // reference for shutting down on application stop
 
     public static void main(String[] args) {
         launch();
@@ -40,10 +33,9 @@ public class TronGame extends Application {
 
         /* BOOT APP */
 
-        this.modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
-        Config config = new Config();
+        Configuration config = Configuration.getConfig();
         GameModus modus = GameModus.valueOf(config.getAttribut("gameMode"));
-        boolean singleView = modus == LOCAL;
+        boolean singleView = modus == GameModus.LOCAL;
 
         /* components */
         IViewWrapper tronView = IViewWrapperFactory.getViewWrapper(modus);
@@ -52,15 +44,16 @@ public class TronGame extends Application {
 
         /* assemble */
         tronController.initialize(tronModel);
-        tronModel.initialize(modus, modelExecutor, singleView, config);
-        tronView.initialize(tronModel, tronController, Integer.parseInt(config.getAttribut(Config.HEIGHT)),
-                Integer.parseInt(config.getAttribut(Config.WIDTH)),
-                Integer.parseInt(config.getAttribut(Config.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
+        tronModel.initialize(modus, singleView);
+        tronView.initialize(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
+                Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
+                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
 
         /* open stage */
         stage.setTitle("Tron");
         stage.setScene(tronView.getScene());
         stage.show();
+
     }
 
     /**
@@ -69,7 +62,7 @@ public class TronGame extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        this.modelExecutor.shutdownNow(); //stop threads
+        Configuration.getConfig().getExecutorService().shutdownNow(); //stop threads
     }
 
 }

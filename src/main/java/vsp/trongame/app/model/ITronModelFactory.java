@@ -1,7 +1,7 @@
 package vsp.trongame.app.model;
 
-import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
+import vsp.trongame.app.model.util.datatypes.GameModus;
 
 public class ITronModelFactory {
 

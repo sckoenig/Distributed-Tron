@@ -1,48 +1,51 @@
 package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.datatypes.Steer;
+import vsp.trongame.app.model.util.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
-import vsp.trongame.applicationstub.ICaller;
-import vsp.trongame.applicationstub.Service;
+import vsp.trongame.applicationstub.util.ICaller;
+import vsp.trongame.applicationstub.util.RemoteId;
+import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRemoteInvocation;
+import vsp.trongame.middleware.Middleware;
+
+import static vsp.trongame.middleware.IRemoteInvocation.*;
+
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 
 public class IGameCaller implements IGame, ICaller {
 
 
-    private String remoteId;
-    private IRemoteInvocation middleware;
+    private String remoteId; //id of the remote Object I want to call
+    private final IRemoteInvocation middleware;
 
-    @Override
-    public void initialize(ExecutorService executorService, int waitingTimer, int endingTimer, int rows, int columns, int speed) {
-        //not needed
+    public IGameCaller() {
+        this.remoteId = RemoteId.DEFAULT_ID; //id of the remote Object Game is not known and not relevant, we want any game that is callable
+        this.middleware = Middleware.getInstance();
     }
 
     @Override
     public void prepare(int playerCount) {
-        middleware.invoke("", Service.PREPARE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, playerCount);
+        middleware.invoke(remoteId, Service.PREPARE.ordinal(), InvocationType.RELIABLE, new int[]{playerCount});
     }
 
     @Override
     public void register(IGameManager gameManager, ITronModel.IUpdateListener listener, int listenerId, int managedPlayerCount) {
-
-
-        //middleware.invoke("", Service.REGISTER.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, );
+        middleware.invoke(remoteId, Service.REGISTER.ordinal(), InvocationType.RELIABLE, new int[]{listenerId, managedPlayerCount},
+                RemoteId.getRemoteId().getIdString(), RemoteId.getRemoteId().getIdString());
     }
 
     @Override
     public void handleSteers(List<Steer> steers, int tickCount) {
-        int[] steerArray = new int[steers.size()+1];
+        int[] steerArray = new int[steers.size()*2+1];
         steerArray[0] = tickCount;
-        for (int i = 1; i < steers.size(); i++) {
+        for (int i = 1; i < steerArray.length; i+=2) {
             steerArray[i] = steers.get(i).playerId();
-            steerArray[++i] = steers.get(i).directionChange().ordinal();
+            steerArray[i+1] = steers.get(i).directionChange().ordinal();
         }
-        middleware.invoke("", Service.HANDLE_STEERS.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
+        middleware.invoke(remoteId, Service.HANDLE_STEERS.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
                 steerArray);
     }
 

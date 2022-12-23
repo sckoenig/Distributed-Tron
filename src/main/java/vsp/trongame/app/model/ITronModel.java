@@ -2,12 +2,10 @@ package vsp.trongame.app.model;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.gamemanagement.Config;
-import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.util.datatypes.GameModus;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 
 /**
  * Represents the Model to the outside of the Model component.
@@ -26,7 +24,7 @@ public interface ITronModel {
     /**
      * Initializes the Model with necessary dependencies.
      */
-    void initialize(GameModus modus, ExecutorService executor, boolean singleView, Config config);
+    void initialize(GameModus modus, boolean singleView);
 
     /**
      * Registers the initiator at the game.
