@@ -7,14 +7,19 @@ import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
+import vsp.trongame.app.view.IUpdateListenerFactory;
 import vsp.trongame.applicationstub.ICaller;
 import vsp.trongame.applicationstub.Service;
 import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCaller;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
 
+import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class IGameCallee implements IRemoteObject {
 
@@ -36,10 +41,15 @@ public class IGameCallee implements IRemoteObject {
                 }
             }
             case REGISTER -> {
-                ICaller caller = new IGameManagerCaller();
-                caller.setRemoteId("TEST");
-                IGameManager gm = (IGameManager) caller;
-                game.register(gm, );
+                if (parameters.length == 10){
+                    IGameManager managerCaller = IGameManagerFactory.getGameManager(GameModus.NETWORK);
+                    String gmId = String.format("%d.%d.%d:%d", parameters[0], parameters[1], parameters[2], parameters[3]);
+                    String listenerId = String.format("%d.%d.%d:%d", parameters[4], parameters[5], parameters[6], parameters[7]);
+                    ((ICaller)managerCaller).setRemoteId(gmId);
+                    ITronModel.IUpdateListener listenerCaller = IUpdateListenerFactory.getUpdateListener(GameModus.NETWORK);
+                    ((ICaller)listenerCaller).setRemoteId(listenerId);
+                    game.register(managerCaller, listenerCaller,parameters[8], parameters[9]);
+                }
             }
             case HANDLE_STEERS -> {
                 int straight = parameters.length % 2;

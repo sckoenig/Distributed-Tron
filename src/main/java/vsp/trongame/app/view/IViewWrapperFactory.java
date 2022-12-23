@@ -12,7 +12,7 @@ public class IViewWrapperFactory {
      * @param modus the modus of the game.
      * @return view wrapper instance.
      */
-    public static IViewWrapper getViewWrapper(GameModus modus) throws IOException {
+    public static IViewWrapper getViewWrapper(GameModus modus){
         return switch (modus) {
             case LOCAL -> new ViewWrapper();
             case NETWORK -> null;

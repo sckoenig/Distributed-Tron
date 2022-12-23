@@ -1,7 +1,5 @@
 package vsp.trongame.middleware;
 
-public class MethodCall {
-
-
+public record MethodCall(int serviceId, int[] parameters) {
 
 }
