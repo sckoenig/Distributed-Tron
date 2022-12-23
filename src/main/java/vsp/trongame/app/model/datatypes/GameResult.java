@@ -19,7 +19,7 @@ public enum GameResult {
         return this.resultText;
     }
 
-    public GameResult getByOrdinal(int ordinal){
+    public static GameResult getByOrdinal(int ordinal){
 
         GameResult[] results = GameResult.values();
         if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
