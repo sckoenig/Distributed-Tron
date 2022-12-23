@@ -1,22 +1,22 @@
-package vsp.trongame.app.model.gamemanagement;
+package vsp.trongame.app.model.util;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.datatypes.DirectionChange;
-import vsp.trongame.app.model.datatypes.Steer;
+import vsp.trongame.app.model.util.datatypes.DirectionChange;
+import vsp.trongame.app.model.util.datatypes.GameModus;
+import vsp.trongame.app.model.util.datatypes.Steer;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
- * Manages all adjustable parameters and prepares the properties files,
+ * Manages all adjustable parameters and prepares the properties file.
  */
-public class Config {
-
-    private static final String FILE_PATH = "tronConfig.properties";
+public class Configuration {
     public static final String WIDTH = "width";
     public static final String HEIGHT = "height";
     public static final String ROWS = "rows";
@@ -33,10 +33,11 @@ public class Config {
     public static final String P_SECHS = "p6";
     public static final String GAME_MODE = "gameMode";
     public static final String NAME_SERVER = "nameServer";
+    private static final String FILE_PATH = "tronConfig.properties";
     private static final Map<String, String> DEFAULTS;
 
     static {
-        DEFAULTS = new HashMap<>();
+        DEFAULTS = new HashMap<>(Map.of());
         DEFAULTS.put(WIDTH, "750");
         DEFAULTS.put(HEIGHT, "600");
         DEFAULTS.put(ROWS, "30");
@@ -55,11 +56,19 @@ public class Config {
         DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
     }
 
+    private static final int MODEL_THREAD_COUNT = 4; // threads the model can use
+    private static final Configuration INSTANCE = new Configuration();
+    public static Configuration getConfig(){
+        return INSTANCE;
+    }
+
+    private final ExecutorService executorService;
     private Properties properties;
     private final Map<KeyCode, Steer> keyMappings;
 
-    public Config() {
+    private Configuration() {
         this.properties = new Properties();
+        this.executorService = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         this.keyMappings = new HashMap<>();
         loadConfigFromFile();
         if (!isConfigValid()) {
@@ -199,7 +208,7 @@ public class Config {
     /**
      * Gets the config from a file.
      */
-    public void loadConfigFromFile() {
+    private void loadConfigFromFile() {
         File propertiesFile = new File(FILE_PATH);
 
         try (BufferedInputStream bis = new BufferedInputStream(new FileInputStream(propertiesFile))) {
@@ -248,5 +257,9 @@ public class Config {
             case 6 -> properties.getProperty(P_SECHS);
             default -> "";
         };
+    }
+
+    public ExecutorService getExecutorService(){
+        return this.executorService;
     }
 }

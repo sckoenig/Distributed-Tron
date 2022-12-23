@@ -1,9 +1,9 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.util.Configuration;
+import vsp.trongame.app.model.util.datatypes.*;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.game.IGameFactory;
 
@@ -25,14 +25,16 @@ public class GameManager implements IGameManager, ITronModel {
     private final Map<Integer, IUpdateListener> listenersMap; //find listeners by their id
     private final Map<Integer, List<Integer>> listenersToPlayersMap; //map listeners to players to check for valid key input
     private final Map<Integer, Steer> managedPlayers; //managed players and their next steer event
-    private ExecutorService executorService;
+    private final Configuration config;
+    private final ExecutorService executorService;
     private IGame game;
-    private Config config;
     private boolean singleView;
     private ModelState currentState;
     private boolean handleGameEvents;
 
     public GameManager() {
+        this.config = Configuration.getConfig();
+        this.executorService = config.getExecutorService();
         this.currentState = ModelState.MENU;
         this.handleGameEvents = false;
         this.listenersMap = new HashMap<>();
@@ -41,16 +43,9 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void initialize(GameModus modus, ExecutorService executor, boolean singleView, Config config) {
-        this.executorService = executor;
+    public void initialize(GameModus modus, boolean singleView) {
         this.singleView = singleView;
-        this.config = config;
         this.game = IGameFactory.getGame(modus);
-        game.initialize(executor, Integer.parseInt(config.getAttribut(Config.WAITING_TIMER)),
-                Integer.parseInt(config.getAttribut(Config.ENDING_TIMER)),
-                Integer.parseInt(config.getAttribut(Config.ROWS)),
-                Integer.parseInt(config.getAttribut(Config.COLUMNS)),
-                Integer.parseInt(config.getAttribut(Config.SPEED)));
 
         updateListeners();
     }

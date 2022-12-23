@@ -2,8 +2,9 @@ package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.datatypes.*;
+import vsp.trongame.app.model.util.Configuration;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
+import vsp.trongame.app.model.util.datatypes.*;
 
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -19,35 +20,33 @@ public class Game implements IGame {
     private final Set<IGameManager> gameManagers; //listeners be related to the same manager
     private final List<ITronModel.IUpdateListener> gameListeners;
     private final ICollisionDetector collisionDetector;
-    private ExecutorService gameExecutor;
-    private int speed;
-    private int preparationTime;
-    private int endingTime;
-    private IArena arena;
-    private int rows;
-    private int columns;
+    private final ExecutorService gameExecutor;
+    private final int speed;
+    private final int preparationTime;
+    private final int endingTime;
+    private final IArena arena;
+    private final int rows;
+    private final int columns;
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
     private int tickCount;
 
+
     public Game() {
+        Configuration config = Configuration.getConfig();
+        this.gameExecutor = config.getExecutorService();
+        this.rows = Integer.parseInt(config.getAttribut(Configuration.ROWS));
+        this.columns = Integer.parseInt(config.getAttribut(Configuration.COLUMNS));
+        this.speed = Integer.parseInt(config.getAttribut(Configuration.SPEED));
+        this.preparationTime = Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER));
+        this.endingTime = Integer.parseInt(config.getAttribut(Configuration.ENDING_TIMER));
+        this.arena = new Arena(rows, columns);
         this.players = new ArrayList<>();
         this.gameManagers = new HashSet<>();
         this.gameListeners = new ArrayList<>();
         this.collisionDetector = new CollisionDetector();
         this.currentState = GameState.INIT;
-    }
-
-    @Override
-    public void initialize(ExecutorService executorService, int waitingTimer, int endingTime, int rows, int columns, int speed) {
-        this.gameExecutor = executorService;
-        this.rows = rows;
-        this.columns = columns;
-        this.speed = speed;
-        this.preparationTime = waitingTimer;
-        this.endingTime = endingTime;
-        this.arena = new Arena(rows, columns);
     }
 
     @Override

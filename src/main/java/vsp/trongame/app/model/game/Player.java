@@ -1,9 +1,9 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.datatypes.Direction;
-import vsp.trongame.app.model.datatypes.DirectionChange;
-import vsp.trongame.app.model.datatypes.TronColor;
+import vsp.trongame.app.model.util.datatypes.Direction;
+import vsp.trongame.app.model.util.datatypes.DirectionChange;
+import vsp.trongame.app.model.util.datatypes.TronColor;
 
 import java.util.ArrayList;
 import java.util.List;

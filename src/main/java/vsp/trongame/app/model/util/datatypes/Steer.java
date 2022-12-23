@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.datatypes;
+package vsp.trongame.app.model.util.datatypes;
 
 /**
  * Represents a steer Object, which contains a playerID and a directtion.

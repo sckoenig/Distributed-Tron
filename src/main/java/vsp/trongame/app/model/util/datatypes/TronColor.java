@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.datatypes;
+package vsp.trongame.app.model.util.datatypes;
 
 /**
  * Represents a Color that a Player Bike can have. Maps to javafx Colors.

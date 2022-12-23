@@ -1,8 +1,7 @@
 package vsp.trongame.app.view;
 
-import vsp.trongame.app.model.datatypes.GameModus;
 
-import java.io.IOException;
+import vsp.trongame.app.model.util.datatypes.GameModus;
 
 public class IViewWrapperFactory {
 
