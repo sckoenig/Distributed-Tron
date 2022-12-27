@@ -10,5 +10,5 @@ public interface ICaller {
      * @param remoteId the id of the remote object this caller represents.
      */
     void setRemoteId(String remoteId);
-    
+
 }

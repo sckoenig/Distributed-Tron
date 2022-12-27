@@ -68,6 +68,7 @@ public class Configuration {
 
     private Configuration() {
         this.properties = new Properties();
+        new Properties();
         this.executorService = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         this.keyMappings = new HashMap<>();
         loadConfigFromFile();

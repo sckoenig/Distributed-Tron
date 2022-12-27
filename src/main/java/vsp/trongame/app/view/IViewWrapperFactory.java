@@ -14,7 +14,7 @@ public class IViewWrapperFactory {
     public static IViewWrapper getViewWrapper(GameModus modus){
         return switch (modus) {
             case LOCAL -> new ViewWrapper();
-            case NETWORK -> null;
+            case NETWORK -> null; //not needed right now
         };
     }
 
