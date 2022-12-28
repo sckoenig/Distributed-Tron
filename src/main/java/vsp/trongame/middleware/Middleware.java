@@ -51,6 +51,6 @@ public class Middleware implements IRegister, IRemoteInvocation {
     }
 
     public void stop() {
-        middlewareExecutor.shutdownNow();
+        if (middlewareExecutor != null) middlewareExecutor.shutdownNow();
     }
 }
