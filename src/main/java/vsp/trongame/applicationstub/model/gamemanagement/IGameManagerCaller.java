@@ -1,10 +1,11 @@
 package vsp.trongame.applicationstub.model.gamemanagement;
 
-import vsp.trongame.app.model.util.datatypes.GameState;
-import vsp.trongame.app.model.util.datatypes.TronColor;
+import vsp.trongame.app.model.datatypes.GameState;
+import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.middleware.IRemoteInvocation;
+import vsp.trongame.middleware.Middleware;
 
 import java.util.Map;
 import java.util.Set;
@@ -13,8 +14,12 @@ import static vsp.trongame.applicationstub.util.Service.*;
 
 public class IGameManagerCaller implements IGameManager, ICaller {
 
-    private IRemoteInvocation middleware;
+    private final IRemoteInvocation middleware;
     private String remoteId;
+
+    public IGameManagerCaller() {
+        this.middleware = Middleware.getInstance();
+    }
 
     @Override
     public void handleGameState(GameState gameState) {

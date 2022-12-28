@@ -2,12 +2,13 @@ package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.util.datatypes.GameResult;
-import vsp.trongame.app.model.util.datatypes.GameState;
-import vsp.trongame.app.model.util.datatypes.TronColor;
+import vsp.trongame.app.model.datatypes.GameResult;
+import vsp.trongame.app.model.datatypes.GameState;
+import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRemoteInvocation;
+import vsp.trongame.middleware.Middleware;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,13 @@ import java.util.Map;
 public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICaller {
 
     private String remoteId;
-    private IRemoteInvocation middleware;
+    private final IRemoteInvocation middleware;
+
+    public IUpdateListenerCaller() {
+        this.middleware = Middleware.getInstance();
+    }
+
+
     @Override
     public void updateOnRegistration(int id) {
         //not needed

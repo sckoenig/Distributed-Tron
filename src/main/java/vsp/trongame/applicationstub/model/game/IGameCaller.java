@@ -1,7 +1,7 @@
 package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.util.datatypes.Steer;
+import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.ICaller;
@@ -14,6 +14,7 @@ import static vsp.trongame.middleware.IRemoteInvocation.*;
 
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class IGameCaller implements IGame, ICaller {
 
@@ -27,6 +28,11 @@ public class IGameCaller implements IGame, ICaller {
     }
 
     @Override
+    public void initialize(int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
+        //not needed
+    }
+
+    @Override
     public void prepare(int playerCount) {
         middleware.invoke(remoteId, Service.PREPARE.ordinal(), InvocationType.RELIABLE, new int[]{playerCount});
     }
@@ -34,7 +40,7 @@ public class IGameCaller implements IGame, ICaller {
     @Override
     public void register(IGameManager gameManager, ITronModel.IUpdateListener listener, int listenerId, int managedPlayerCount) {
         middleware.invoke(remoteId, Service.REGISTER.ordinal(), InvocationType.RELIABLE, new int[]{listenerId, managedPlayerCount},
-                RemoteId.getRemoteId().getIdString(), RemoteId.getRemoteId().getIdString());
+                RemoteId.STRING_ID, RemoteId.STRING_ID);
     }
 
     @Override

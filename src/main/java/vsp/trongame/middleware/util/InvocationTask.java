@@ -1,7 +1,7 @@
-package vsp.trongame.middleware.clientstub;
+package vsp.trongame.middleware.util;
 
-import vsp.trongame.middleware.util.ServiceCall;
-
+import vsp.trongame.middleware.clientstub.ISender;
+import vsp.trongame.middleware.clientstub.Marshaller;
 /**
  * Represents a task for the {@link Marshaller}.
  * @param serviceCall the service call that shall be performed

@@ -2,83 +2,92 @@ package vsp.trongame.middleware.serverstub;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Random;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class Receiver {
-
     private static final int PACKAGE_SIZE = 1400;
-    private DatagramSocket udpSocket;
-    private ServerSocket tcpSocket;
+    private static final int MIN_PORT = 1024;
+    private static final int MAX_PORT = 49152;
+    private final DatagramSocket udpSocket;
+    private final ServerSocket tcpSocket;
+    private final IUnmarshaller unmarshaller;
+    private final BlockingQueue<Socket> tcpSocketQueue;
+    private final Random rand;
+    private final ExecutorService executorService;
+    private final byte[] udpPacketBuffer;
 
-    private Unmarshaller unmarshaller;
-    private final BlockingQueue<Socket> queue;
+    public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) throws IOException {
+        this.unmarshaller = unmarshaller;
+        this.executorService = executorService;
+        this.tcpSocketQueue = new LinkedBlockingQueue<>();
+        this.udpPacketBuffer = new byte[PACKAGE_SIZE];
+        this.udpSocket = new DatagramSocket();
+        this.tcpSocket = new ServerSocket();
+        this.rand = new Random();
 
-    public Receiver() throws IOException {
-        queue = new LinkedBlockingQueue<>();
-        unmarshaller = new Unmarshaller();
-        udpSocket = new DatagramSocket();
-        tcpSocket = new ServerSocket();
+        createServerSockets();
 
-        int portMin = 1024;
-        int portMax = 49152;
+    }
+
+    private void createServerSockets() throws UnknownHostException {
         int port;
         boolean success = false;
         InetAddress ipAddress = InetAddress.getLocalHost();
 
         while (!success){
-           port = (int)(Math.random() * (portMax - portMin)) + portMin;
-
-           try{
-               SocketAddress address = new InetSocketAddress(ipAddress, port);
-               tcpSocket.bind(address);
-               udpSocket.bind(address);
-               success = true;
+            port = rand.nextInt(MIN_PORT, MAX_PORT+1);
+            try{
+                SocketAddress address = new InetSocketAddress(ipAddress, port);
+                tcpSocket.bind(address);
+                udpSocket.bind(address);
+                success = true;
             } catch (IOException e) {
-               e.printStackTrace();
+                e.printStackTrace();
             }
         }
 
-        startTcpSocket();
-        startUdpSocket();
-
+        startTcpReceiver();
+        startUdpReceiver();
     }
 
-    private void startTcpSocket(){
-
-        new Thread(() -> {
-            while (!Thread.currentThread().isInterrupted()){
-                try {
-                    Socket clientSocket = queue.take();
-                    byte[] message = clientSocket.getInputStream().readAllBytes();
-                    unmarshaller.addToQueue(message);
-                } catch (InterruptedException | IOException e) {
-                    Thread.currentThread().interrupt();
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        new Thread(() -> {
+    private void startTcpReceiver(){
+        executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
                     Socket clientSocket = tcpSocket.accept();
-                    queue.add(clientSocket);
+                    tcpSocketQueue.add(clientSocket);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         });
+
+        startTcpSocketHandler();
     }
 
-    private void startUdpSocket(){
-        new Thread(() -> {
+    private void startTcpSocketHandler(){
+        executorService.execute(() -> {
+            while (!Thread.currentThread().isInterrupted()){
+                try (Socket clientSocket = tcpSocketQueue.take()) {
 
-            byte[] buffer = new byte[PACKAGE_SIZE];
+                    byte[] message = clientSocket.getInputStream().readAllBytes();
+                    unmarshaller.addToQueue(message);
 
+                } catch (InterruptedException | IOException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+    }
+
+    private void startUdpReceiver(){
+        executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
-                    DatagramPacket packet = new DatagramPacket(buffer, PACKAGE_SIZE);
+                    DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());
                 } catch (IOException e) {
@@ -86,6 +95,7 @@ public class Receiver {
                 }
             }
         });
+
     }
     
 }

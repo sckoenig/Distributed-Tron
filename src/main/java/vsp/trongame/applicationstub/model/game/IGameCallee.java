@@ -2,9 +2,9 @@ package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.game.IGameFactory;
-import vsp.trongame.app.model.util.datatypes.DirectionChange;
-import vsp.trongame.app.model.util.datatypes.GameModus;
-import vsp.trongame.app.model.util.datatypes.Steer;
+import vsp.trongame.app.model.datatypes.DirectionChange;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;

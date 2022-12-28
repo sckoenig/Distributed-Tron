@@ -1,22 +1,32 @@
 package vsp.trongame.applicationstub.model.gamemanagement;
 
-import vsp.trongame.app.model.util.datatypes.GameState;
-import vsp.trongame.app.model.util.datatypes.TronColor;
+import vsp.trongame.app.model.datatypes.GameState;
+import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
+import vsp.trongame.middleware.Middleware;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static vsp.trongame.applicationstub.util.Service.*;
+
 public class IGameManagerCallee implements IRemoteObject {
 
     private IGameManager gameManager;
-    private IRegister middleware;
 
     public void setGameManager(IGameManager gameManager){
         this.gameManager = gameManager;
+    }
+
+    public IGameManagerCallee() {
+        // can be called from remote
+        IRegister middleware = Middleware.getInstance();
+        middleware.registerRemoteObject(HANDLE_GAME_STATE.ordinal(), this);
+        middleware.registerRemoteObject(HANDLE_MANAGED_PLAYERS.ordinal(), this);
+        middleware.registerRemoteObject(HANDLE_GAME_TICK.ordinal(), this);
     }
 
     @Override

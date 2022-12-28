@@ -2,18 +2,31 @@ package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.util.datatypes.GameState;
-import vsp.trongame.app.model.util.datatypes.TronColor;
+import vsp.trongame.app.model.datatypes.GameState;
+import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
+import vsp.trongame.middleware.Middleware;
 
 import java.util.*;
+
+import static vsp.trongame.applicationstub.util.Service.*;
 
 public class IUpdateListenerCallee implements IRemoteObject {
 
     private ITronModel.IUpdateListener updateListener;
-    private IRegister middleware;
+
+    public IUpdateListenerCallee() {
+
+        // can be called from remote
+        IRegister middleware = Middleware.getInstance();
+        middleware.registerRemoteObject(UPDATE_ARENA.ordinal(), this);
+        middleware.registerRemoteObject(UPDATE_START.ordinal(), this);
+        middleware.registerRemoteObject(UPDATE_RESULT.ordinal(), this);
+        middleware.registerRemoteObject(UPDATE_COUNTDOWN.ordinal(), this);
+        middleware.registerRemoteObject(UPDATE_FIELD.ordinal(), this);
+    }
 
     @Override
     public void call(int serviceID, int[] parameters, String... stringParameters) {
