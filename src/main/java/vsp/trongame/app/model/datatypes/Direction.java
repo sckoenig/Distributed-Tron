@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.util.datatypes;
+package vsp.trongame.app.model.datatypes;
 
 /**
  * Represents the directions a player can move in.

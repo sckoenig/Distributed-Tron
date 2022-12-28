@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
-import vsp.trongame.app.model.util.datatypes.GameModus;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCaller;
 
 public class IGameManagerFactory {
 
@@ -12,7 +13,7 @@ public class IGameManagerFactory {
     public static IGameManager getGameManager(GameModus modus){
         return switch (modus){
             case LOCAL -> new GameManager();
-            case NETWORK -> null;
+            case NETWORK -> new IGameManagerCaller();
         };
     }
 

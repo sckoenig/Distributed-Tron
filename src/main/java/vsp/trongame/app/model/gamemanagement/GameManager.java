@@ -1,8 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.util.Configuration;
-import vsp.trongame.app.model.util.datatypes.*;
+import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.game.IGameFactory;
@@ -25,16 +24,14 @@ public class GameManager implements IGameManager, ITronModel {
     private final Map<Integer, IUpdateListener> listenersMap; //find listeners by their id
     private final Map<Integer, List<Integer>> listenersToPlayersMap; //map listeners to players to check for valid key input
     private final Map<Integer, Steer> managedPlayers; //managed players and their next steer event
-    private final Configuration config;
-    private final ExecutorService executorService;
+    private Configuration config;
+    private ExecutorService executorService;
     private IGame game;
     private boolean singleView;
     private ModelState currentState;
     private boolean handleGameEvents;
 
     public GameManager() {
-        this.config = Configuration.getConfig();
-        this.executorService = config.getExecutorService();
         this.currentState = ModelState.MENU;
         this.handleGameEvents = false;
         this.listenersMap = new HashMap<>();
@@ -43,9 +40,16 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void initialize(GameModus modus, boolean singleView) {
+    public void initialize(Configuration config, GameModus modus, boolean singleView, ExecutorService executorService) {
+        this.config = config;
         this.singleView = singleView;
         this.game = IGameFactory.getGame(modus);
+        this.executorService = executorService;
+        game.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+                Integer.parseInt(config.getAttribut(Configuration.ROWS)),
+                Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
+                Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),
+                Integer.parseInt(config.getAttribut(Configuration.ENDING_TIMER)), executorService);
 
         updateListeners();
     }

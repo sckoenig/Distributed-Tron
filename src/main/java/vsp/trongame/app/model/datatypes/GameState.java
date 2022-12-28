@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.util.datatypes;
+package vsp.trongame.app.model.datatypes;
 
 /**
  * Contains the enums for the current game state

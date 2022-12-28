@@ -1,7 +1,8 @@
 package vsp.trongame.app.model.game;
 
 
-import vsp.trongame.app.model.util.datatypes.GameModus;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.applicationstub.model.game.IGameCaller;
 
 public class IGameFactory {
 
@@ -13,7 +14,7 @@ public class IGameFactory {
     public static IGame getGame(GameModus modus){
         return switch (modus){
             case LOCAL -> new Game();
-            case NETWORK -> null;
+            case NETWORK -> new IGameCaller();
         };
     }
 

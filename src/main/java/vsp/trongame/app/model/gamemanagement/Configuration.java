@@ -1,17 +1,15 @@
-package vsp.trongame.app.model.util;
+package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.util.datatypes.DirectionChange;
-import vsp.trongame.app.model.util.datatypes.GameModus;
-import vsp.trongame.app.model.util.datatypes.Steer;
+import vsp.trongame.app.model.datatypes.DirectionChange;
+import vsp.trongame.app.model.datatypes.GameModus;
+import vsp.trongame.app.model.datatypes.Steer;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Manages all adjustable parameters and prepares the properties file.
@@ -56,20 +54,12 @@ public class Configuration {
         DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
     }
 
-    private static final int MODEL_THREAD_COUNT = 4; // threads the model can use
-    private static final Configuration INSTANCE = new Configuration();
-    public static Configuration getConfig(){
-        return INSTANCE;
-    }
-
-    private final ExecutorService executorService;
     private Properties properties;
     private final Map<KeyCode, Steer> keyMappings;
 
-    private Configuration() {
+    public Configuration() {
         this.properties = new Properties();
         new Properties();
-        this.executorService = Executors.newFixedThreadPool(MODEL_THREAD_COUNT);
         this.keyMappings = new HashMap<>();
         loadConfigFromFile();
         if (!isConfigValid()) {
@@ -260,7 +250,4 @@ public class Configuration {
         };
     }
 
-    public ExecutorService getExecutorService(){
-        return this.executorService;
-    }
 }

@@ -1,7 +1,7 @@
 package vsp.trongame.app.view;
 
 
-import vsp.trongame.app.model.util.datatypes.GameModus;
+import vsp.trongame.app.model.datatypes.GameModus;
 
 public class IViewWrapperFactory {
 

@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.util.datatypes;
+package vsp.trongame.app.model.datatypes;
 
 /**
  * Represents the Game Result Text, that can be displayed in GUI.

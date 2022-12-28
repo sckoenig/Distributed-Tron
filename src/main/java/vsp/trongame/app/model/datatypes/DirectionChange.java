@@ -1,4 +1,4 @@
-package vsp.trongame.app.model.util.datatypes;
+package vsp.trongame.app.model.datatypes;
 
 /**
  * Contains the DirectionChange enums, which can be calculated from the keyboard input of the player.

@@ -1,15 +1,18 @@
 package vsp.trongame.app.model.game;
 
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.util.datatypes.Steer;
+import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Provides funcionality for influencing a Game's state for other components such as the GameManagement component.
  */
 public interface IGame {
+
+    void initialize(int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService);
 
     /**
      * Prepares the game to start, sets a timer for the countdown and creates an arena.
