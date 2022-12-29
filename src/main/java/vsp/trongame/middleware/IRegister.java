@@ -10,5 +10,5 @@ public interface IRegister {
      * @param serviceID the id of the service the remote object provides
      * @param remoteObject the remote object
      */
-    void registerRemoteObject(int serviceID, IRemoteObject remoteObject);
+    void registerRemoteObject(int serviceID, String remoteId, IRemoteObject remoteObject);
 }

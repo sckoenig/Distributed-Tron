@@ -10,6 +10,7 @@ import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
 import vsp.trongame.app.view.IUpdateListenerFactory;
 import vsp.trongame.applicationstub.util.ICaller;
+import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
@@ -32,9 +33,9 @@ public class IGameCallee implements IRemoteObject {
 
         // can be called from remote
         IRegister middleware = Middleware.getInstance();
-        middleware.registerRemoteObject(PREPARE.ordinal(), this);
-        middleware.registerRemoteObject(REGISTER.ordinal(), this);
-        middleware.registerRemoteObject(HANDLE_STEERS.ordinal(), this);
+        middleware.registerRemoteObject(PREPARE.ordinal(),RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(REGISTER.ordinal(), RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(HANDLE_STEERS.ordinal(), RemoteId.STRING_ID, this);
     }
 
     @Override

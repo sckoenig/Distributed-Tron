@@ -9,10 +9,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class Receiver {
     private static final int PACKAGE_SIZE = 1400;
-    private static final int MIN_PORT = 1024;
+    private static final int MIN_PORT = 5555;
     private static final int MAX_PORT = 49152;
-    private final DatagramSocket udpSocket;
-    private final ServerSocket tcpSocket;
+    private DatagramSocket udpSocket;
+    private ServerSocket tcpSocket;
     private final IUnmarshaller unmarshaller;
     private final BlockingQueue<Socket> tcpSocketQueue;
     private final Random rand;
@@ -24,8 +24,6 @@ public class Receiver {
         this.executorService = executorService;
         this.tcpSocketQueue = new LinkedBlockingQueue<>();
         this.udpPacketBuffer = new byte[PACKAGE_SIZE];
-        this.udpSocket = new DatagramSocket();
-        this.tcpSocket = new ServerSocket();
         this.rand = new Random();
 
         createServerSockets();
@@ -40,12 +38,17 @@ public class Receiver {
         while (!success){
             port = rand.nextInt(MIN_PORT, MAX_PORT+1);
             try{
-                SocketAddress address = new InetSocketAddress(ipAddress, port);
-                tcpSocket.bind(address);
-                udpSocket.bind(address);
+
+                this.udpSocket = new DatagramSocket( port, ipAddress);
+                this.tcpSocket = new ServerSocket( );
+                tcpSocket.bind(new InetSocketAddress(ipAddress, port));
+                tcpSocket.setReuseAddress(true);
+                udpSocket.setReuseAddress(true);
+
                 success = true;
+                unmarshaller.setAddress(new InetSocketAddress(ipAddress, port));
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("CATCH");
             }
         }
 
@@ -57,10 +60,12 @@ public class Receiver {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
+                    System.out.println("TCP RECEIVER ALIVE");
                     Socket clientSocket = tcpSocket.accept();
                     tcpSocketQueue.add(clientSocket);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    //logging
                 }
             }
         });
@@ -71,9 +76,10 @@ public class Receiver {
     private void startTcpSocketHandler(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
+                System.out.println("TCP SOCKET HANDLER ALIVE");
                 try (Socket clientSocket = tcpSocketQueue.take()) {
-
-                    byte[] message = clientSocket.getInputStream().readAllBytes();
+                    int length = clientSocket.getInputStream().read();
+                    byte[] message = clientSocket.getInputStream().readNBytes(length);
                     unmarshaller.addToQueue(message);
 
                 } catch (InterruptedException | IOException e) {
@@ -87,15 +93,25 @@ public class Receiver {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
+                    System.out.println("UDP RECEIVER ALIVE");
                     DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
                 }
             }
         });
 
+    }
+
+    public void shutDown(){
+        try {
+            tcpSocket.close();
+            udpSocket.close();
+        } catch (IOException e){
+            //logging irgendwann
+        }
     }
     
 }

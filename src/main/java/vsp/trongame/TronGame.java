@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
+import vsp.trongame.app.model.game.Game;
 import vsp.trongame.app.model.gamemanagement.Configuration;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
@@ -11,6 +12,9 @@ import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.view.IViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
+import vsp.trongame.applicationstub.model.game.IGameCallee;
+import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCallee;
+import vsp.trongame.applicationstub.view.IUpdateListenerCallee;
 import vsp.trongame.middleware.Middleware;
 
 import java.io.IOException;
@@ -46,15 +50,23 @@ public class TronGame extends Application {
 
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
-        /* middleware & stubs if not LOCAL */
-        if (modus != GameModus.LOCAL){
-            // ... create callees
-        }
-
         /* local components */
         IViewWrapper tronView = IViewWrapperFactory.getViewWrapper(GameModus.LOCAL);
         ITronController tronController = ITronControllerFactory.getTronController(GameModus.LOCAL);
         ITronModel tronModel = ITronModelFactory.getTronModel(GameModus.LOCAL);
+
+        /* middleware & stubs if not LOCAL */
+        if (modus != GameModus.LOCAL){
+            boolean nameServer = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
+            String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
+            Middleware.getInstance().start(nameServerAddress, nameServer);
+            //create stub
+            new IGameCallee();
+            IUpdateListenerCallee updateListenerCallee = new IUpdateListenerCallee();
+            IGameManagerCallee gameManagerCallee = new IGameManagerCallee();
+            updateListenerCallee.setUpdateListener((ITronModel.IUpdateListener) tronView);
+            gameManagerCallee.setGameManager((IGameManager) tronModel);
+        }
 
         /* assemble */
         tronController.initialize(tronModel);

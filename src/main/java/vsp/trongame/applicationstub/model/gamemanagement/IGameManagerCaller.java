@@ -34,7 +34,6 @@ public class IGameManagerCaller implements IGameManager, ICaller {
 
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
-        //TODO
         int[] parameters = new int[managedPlayers.size()*2];
         parameters[0] = id;
         int index = 1;

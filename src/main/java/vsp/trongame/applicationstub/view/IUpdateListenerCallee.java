@@ -28,6 +28,10 @@ public class IUpdateListenerCallee implements IRemoteObject {
         middleware.registerRemoteObject(UPDATE_FIELD.ordinal(), this);
     }
 
+    public void setUpdateListener(ITronModel.IUpdateListener updateListener){
+        this.updateListener = updateListener;
+    }
+
     @Override
     public void call(int serviceID, int[] parameters, String... stringParameters) {
         Service service = Service.getByOrdinal(serviceID);
