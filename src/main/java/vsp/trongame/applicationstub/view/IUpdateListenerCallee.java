@@ -3,7 +3,6 @@ package vsp.trongame.applicationstub.view;
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.*;
-import vsp.trongame.applicationstub.Service;
 import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.applicationstub.util.RemoteId;
@@ -38,7 +37,7 @@ public class IUpdateListenerCallee implements IRemoteObject {
     }
 
     @Override
-    public void call(int serviceID, int... parameters) {
+    public void call(int serviceID, int[] parameters,  String... stringParameters) {
         Service service = Service.getByOrdinal(serviceID);
         switch (service){
             case UPDATE_ARENA -> {
@@ -79,8 +78,7 @@ public class IUpdateListenerCallee implements IRemoteObject {
                 Map<String, List<Coordinate>> updateCoordinates = new HashMap<>();
                 List<Coordinate> coordinates = new ArrayList<>();
                 for(int i = 1 ; i < parameters.length; i+=coordinatesCount*2){
-                    //TODO - müsste
-                    String color = TronColor.getByOrdinal(parameters[i]).name();
+                    String color = TronColor.getByOrdinal(parameters[i]).getHex();
                     i++;
                     int k = 0;
                     for(int j = 0; j < coordinatesCount; j++){

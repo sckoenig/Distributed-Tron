@@ -33,8 +33,6 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         this.middleware = Middleware.getInstance();
     }
 
-
-    IRemoteInvocation middleware;
     @Override
     public void updateOnRegistration(int id) {
         //not needed
@@ -78,27 +76,26 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     public void updateOnCountDown(int value) {
         int[] parameters = new int[1];
         parameters[0] = value;
-        middleware.invoke("", Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
     }
 
     @Override
     public void updateOnField(Map<String, List<Coordinate>> field) {
         List<Integer> parametersList = new ArrayList<>();
+        parametersList.add(field.size());
         for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
             List<Coordinate> firstFour = entry.getValue().stream().limit(4).toList();
-            if(firstFour.size() >= 4){
                 parametersList.add(TronColor.valueOf(entry.getKey()).ordinal());
                 firstFour.forEach(coordinate -> {
                     parametersList.add(coordinate.x);
                     parametersList.add(coordinate.y);
                 });
-            }
         }
         int[] parameters = new int[parametersList.size()];
         for (int i = 0; i < parameters.length; i++) {
             parameters[i] = parametersList.get(i);
         }
-        middleware.invoke("", Service.UPDATE_FIELD.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_FIELD.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
     }
     @Override
     public void setRemoteId(String remoteId) {
