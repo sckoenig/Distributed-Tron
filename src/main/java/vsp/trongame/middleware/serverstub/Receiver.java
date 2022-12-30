@@ -33,7 +33,9 @@ public class Receiver {
     private void createServerSockets() throws UnknownHostException {
         int port;
         boolean success = false;
-        InetAddress ipAddress = InetAddress.getLocalHost();
+        //InetAddress ipAddress = InetAddress.getLocalHost();
+        InetAddress ipAddress = InetAddress.getByName("169.254.171.162");
+        System.out.println(ipAddress);
 
         while (!success){
             port = rand.nextInt(MIN_PORT, MAX_PORT+1);
