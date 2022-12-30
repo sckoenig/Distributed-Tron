@@ -75,7 +75,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void registerRemoteObject(int serviceID, String remoteId, IRemoteObject remoteObject) {
         remoteObjectRegister.put(serviceID, remoteObject);
-        namingService.registerService(remoteId, serviceID, address);
+        namingService.registerService(remoteId, serviceID, address.getAddress().getHostAddress()+":"+address.getPort());
     }
 
     public void shutDown(){

@@ -70,7 +70,7 @@ public class NameServer implements INamingService {
     }
 
     @Override
-    public void registerService(String remoteID, int serviceID, InetSocketAddress address) {
+    public void registerService(String remoteID, int serviceID, String address) {
         services.computeIfAbsent(serviceID, v -> new HashMap<>()).put(remoteID, address);
     }
 

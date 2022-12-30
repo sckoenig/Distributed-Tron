@@ -12,7 +12,7 @@ public interface INamingService {
 
     String lookupService(String remoteID, int serviceId);
 
-    void registerService(String remoteID, int serviceID, InetAddress address);
+    void registerService(String remoteID, int serviceID, String address);
 
     void unregisterService(String remoteID);
 

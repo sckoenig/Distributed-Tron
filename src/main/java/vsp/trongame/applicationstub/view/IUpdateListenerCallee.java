@@ -4,6 +4,7 @@ import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
+import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
@@ -21,11 +22,11 @@ public class IUpdateListenerCallee implements IRemoteObject {
 
         // can be called from remote
         IRegister middleware = Middleware.getInstance();
-        middleware.registerRemoteObject(UPDATE_ARENA.ordinal(), this);
-        middleware.registerRemoteObject(UPDATE_START.ordinal(), this);
-        middleware.registerRemoteObject(UPDATE_RESULT.ordinal(), this);
-        middleware.registerRemoteObject(UPDATE_COUNTDOWN.ordinal(), this);
-        middleware.registerRemoteObject(UPDATE_FIELD.ordinal(), this);
+        middleware.registerRemoteObject(UPDATE_ARENA.ordinal(), RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(UPDATE_START.ordinal(), RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(UPDATE_RESULT.ordinal(),RemoteId.STRING_ID,  this);
+        middleware.registerRemoteObject(UPDATE_COUNTDOWN.ordinal(), RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(UPDATE_FIELD.ordinal(), RemoteId.STRING_ID, this);
     }
 
     public void setUpdateListener(ITronModel.IUpdateListener updateListener){

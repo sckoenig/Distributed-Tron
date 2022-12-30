@@ -62,7 +62,6 @@ public class Receiver {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
-                    System.out.println("TCP RECEIVER ALIVE");
                     Socket clientSocket = tcpSocket.accept();
                     tcpSocketQueue.add(clientSocket);
                 } catch (IOException e) {
@@ -78,7 +77,6 @@ public class Receiver {
     private void startTcpSocketHandler(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
-                System.out.println("TCP SOCKET HANDLER ALIVE");
                 try (Socket clientSocket = tcpSocketQueue.take()) {
                     int length = clientSocket.getInputStream().read();
                     byte[] message = clientSocket.getInputStream().readNBytes(length);
@@ -95,7 +93,6 @@ public class Receiver {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
-                    System.out.println("UDP RECEIVER ALIVE");
                     DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());

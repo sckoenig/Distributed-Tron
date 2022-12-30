@@ -106,6 +106,10 @@ public class Game implements IGame {
         System.out.println("INFORM GM");
         gameManagers.forEach(gm -> gm.handleGameState(currentState));
 
+        if(gameManagers.size() >= 1){
+            System.out.println("");
+        }
+
         switch (currentState) {
             case INIT -> reset();
             case PREPARING -> startTimer(preparationTime, currentState);
