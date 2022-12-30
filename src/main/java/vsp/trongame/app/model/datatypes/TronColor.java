@@ -24,7 +24,6 @@ public enum TronColor {
     }
 
     public static TronColor getByOrdinal(int ordinal){
-
         TronColor[] results = TronColor.values();
         if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
 
