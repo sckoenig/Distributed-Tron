@@ -7,10 +7,7 @@ import vsp.trongame.applicationstub.Service;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class IUpdateListenerCallee implements IRemoteObject {
 
@@ -29,14 +26,16 @@ public class IUpdateListenerCallee implements IRemoteObject {
                 }
             }
             case UPDATE_STATE -> {
-                if(parameters.length == 1) {
-                    updateListener.updateOnState(GameState.getByOrdinal(parameters[0]).name());
+                if(parameters.length > 0) {
+                    int state = parameters[0];
+                    updateListener.updateOnState(GameState.getByOrdinal(state).name());
                 }
             }
             case UPDATE_START -> {
                 updateListener.updateOnGameStart();
             }
             case UPDATE_RESULT -> {
+                //TODO
                 if(parameters.length >= 2){
                     String color = TronColor.getByOrdinal(parameters[0]).name();
                     StringBuilder result = new StringBuilder();
@@ -52,20 +51,24 @@ public class IUpdateListenerCallee implements IRemoteObject {
                 }
             }
             case UPDATE_FIELD -> {
-                if(parameters.length >= 9){
-                    Map<String, List<Coordinate>> updateCoordinates = new HashMap<>();
-                    List<Coordinate> coordinates = new ArrayList<>();
-                    for(int i = 0 ; i < parameters.length; i+=9){
-                        String color = TronColor.getByOrdinal(parameters[i]).name();
-                        coordinates.add(new Coordinate(i+1, i+2));
-                        coordinates.add(new Coordinate(i+3, i+4));
-                        coordinates.add(new Coordinate(i+5, i+6));
-                        coordinates.add(new Coordinate(i+7, i+8));
-                        updateCoordinates.put(color, coordinates);
+                int playerCount = parameters[0];
+                int coordinatesCount = ((((parameters.length-1)-playerCount) / playerCount) /2);
+                Map<String, List<Coordinate>> updateCoordinates = new HashMap<>();
+                List<Coordinate> coordinates = new ArrayList<>();
+                for(int i = 1 ; i < parameters.length; i+=coordinatesCount*2){
+                    //TODO - müsste
+                    String color = TronColor.getByOrdinal(parameters[i]).name();
+                    i++;
+                    int k = 0;
+                    for(int j = 0; j < coordinatesCount; j++){
+                        coordinates.add(new Coordinate(parameters[k+i], parameters[k+i+1]));
+                        k+=2;
                     }
-                    updateListener.updateOnField(updateCoordinates);
+                    updateCoordinates.put(color, coordinates);
                 }
+                updateListener.updateOnField(updateCoordinates);
             }
+            default -> {}
         }
     }
 }
