@@ -7,17 +7,9 @@ import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRemoteInvocation;
-import vsp.trongame.app.model.datatypes.GameResult;
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
 import vsp.trongame.applicationstub.util.ICaller;
-import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRemoteInvocation;
 import vsp.trongame.middleware.Middleware;
-import vsp.trongame.app.model.datatypes.GameResult;
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
-import vsp.trongame.middleware.IRemoteInvocation;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +37,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
 
     @Override
     public void updateOnArena(int rows, int columns) {
+        System.out.println("updateOnArena");
         int[] parameters = new int[2];
         parameters[0] = rows;
         parameters[1] = columns;
@@ -55,7 +48,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     public void updateOnState(String state) {
         int[] parameters = new int[1];
         parameters[0] = GameState.valueOf(state).ordinal();
-        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_STATE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
@@ -69,14 +62,14 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         int[] parameters = new int[2];
         parameters[0] = TronColor.getTronColorByHex(color).ordinal();
         parameters[1] = GameResult.valueOf(result).ordinal();
-        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_RESULT.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
     public void updateOnCountDown(int value) {
         int[] parameters = new int[1];
         parameters[0] = value;
-        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
     }
 
     @Override

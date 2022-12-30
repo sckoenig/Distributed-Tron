@@ -30,6 +30,7 @@ public class IGameManagerCaller implements IGameManager, ICaller {
 
     @Override
     public void handleGameTick(int tickCount) {
+        System.out.println("handleGameTick: " + tickCount);
         middleware.invoke(remoteId, HANDLE_GAME_TICK.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, new int[] {tickCount});
     }
 
