@@ -1,28 +1,22 @@
 package vsp.trongame.middleware.namingservice;
 
 import com.google.gson.Gson;
-import vsp.trongame.middleware.util.InvocationTask;
-
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static java.lang.Thread.sleep;
 
 public class NameResolver implements INamingService{
     @Override
-    public InetSocketAddress lookupService(String remoteID, int serviceId) {
-        Map<String, InetSocketAddress> map = cache.get(serviceId);
-        InetSocketAddress address = null;
+    public String lookupService(String remoteID, int serviceId) {
+        Map<String, String> map = cache.get(serviceId);
+        String address = null;
         if (map != null) address = map.get(remoteID);
         if (address == null) {
             try {
@@ -49,7 +43,7 @@ public class NameResolver implements INamingService{
     }
 
     @Override
-    public void registerService(String remoteID, int serviceID, InetSocketAddress address) {
+    public void registerService(String remoteID, int serviceID, String address) {
         try {
             clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
             NamingServiceMessage message = new NamingServiceMessage(REGISTER, serviceID, remoteID, address);

@@ -1,6 +1,7 @@
 package vsp.trongame.middleware;
 
 import vsp.trongame.app.model.gamemanagement.Configuration;
+import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.clientstub.Marshaller;
 import vsp.trongame.middleware.namingservice.INamingService;
 import vsp.trongame.middleware.namingservice.NameResolver;
@@ -10,6 +11,7 @@ import vsp.trongame.middleware.serverstub.Unmarshaller;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -72,6 +74,7 @@ public class Middleware implements IRegister, IRemoteInvocation {
     @Override
     public void invoke(String remoteID, int serviceID, InvocationType type, int[] intParameters, String... stringParameters) {
         // forward to ClientStub
+        System.out.println("INVOKE: "+remoteID+" "+ Service.getByOrdinal(serviceID) + " " + type + " "+ Arrays.toString(intParameters) + "" + Arrays.toString(stringParameters));
         marshaller.invoke(remoteID, serviceID, type, intParameters, stringParameters);
     }
 

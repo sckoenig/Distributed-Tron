@@ -61,7 +61,7 @@ public class TronGame extends Application {
             String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
             Middleware.getInstance().start(nameServerAddress, nameServer);
             //create stub
-            new IGameCallee();
+            new IGameCallee(config, modelExecutor);
             IUpdateListenerCallee updateListenerCallee = new IUpdateListenerCallee();
             IGameManagerCallee gameManagerCallee = new IGameManagerCallee();
             updateListenerCallee.setUpdateListener((ITronModel.IUpdateListener) tronView);

@@ -10,7 +10,7 @@ public interface INamingService {
     byte LOOKUP = 3;
     byte RESPONSE = 4;
 
-    InetSocketAddress lookupService(String remoteID, int serviceId);
+    String lookupService(String remoteID, int serviceId);
 
     void registerService(String remoteID, int serviceID, InetAddress address);
 

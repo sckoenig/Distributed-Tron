@@ -23,6 +23,7 @@ public class IGameManagerCaller implements IGameManager, ICaller {
 
     @Override
     public void handleGameState(GameState gameState) {
+        System.out.println("HANDLE GAME STATE GM "+ gameState);
         middleware.invoke(remoteId, HANDLE_GAME_STATE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE,
                 new int[]{gameState.ordinal()});
     }
@@ -34,14 +35,14 @@ public class IGameManagerCaller implements IGameManager, ICaller {
 
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
-        int[] parameters = new int[managedPlayers.size()*2];
+        int[] parameters = new int[managedPlayers.size()*2+1];
         parameters[0] = id;
         int index = 1;
         Set<Map.Entry<Integer, TronColor>> entries =  managedPlayers.entrySet();
         for (Map.Entry<Integer, TronColor> entry: entries) {
-            parameters[index] = Integer.parseInt(entry.getKey().toString());
+            parameters[index] = entry.getKey();
             index++;
-            parameters[index] = Integer.parseInt(entry.getValue().toString());
+            parameters[index] = entry.getValue().ordinal();
             index++;
         }
         middleware.invoke(remoteId, HANDLE_MANAGED_PLAYERS.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);

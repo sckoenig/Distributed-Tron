@@ -6,6 +6,7 @@ import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
+import vsp.trongame.app.model.gamemanagement.Configuration;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
 import vsp.trongame.app.view.IUpdateListenerFactory;
@@ -18,6 +19,7 @@ import vsp.trongame.middleware.Middleware;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
@@ -28,8 +30,13 @@ public class IGameCallee implements IRemoteObject {
 
     private final IGame localGame;
 
-    public IGameCallee() {
+    public IGameCallee(Configuration config, ExecutorService executorService) {
         this.localGame = IGameFactory.getGame(GameModus.LOCAL); //knows the "real" game
+        localGame.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+                Integer.parseInt(config.getAttribut(Configuration.ROWS)),
+                Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
+                Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),
+                Integer.parseInt(config.getAttribut(Configuration.ENDING_TIMER)), executorService);
 
         // can be called from remote
         IRegister middleware = Middleware.getInstance();
