@@ -57,14 +57,10 @@ public class IUpdateListenerCallee implements IRemoteObject {
                 updateListener.updateOnGameStart();
             }
             case UPDATE_RESULT -> {
-                //TODO
                 if(parameters.length >= 2){
-                    String color = TronColor.getByOrdinal(parameters[0]).name();
-                    StringBuilder result = new StringBuilder();
-                    for(int i = 1 ; i < parameters.length; i+=9){
-                        result.append((char) parameters[i]);
-                    }
-                    updateListener.updateOnGameResult(color, result.toString());
+                    String color = TronColor.getByOrdinal(parameters[0]).getHex();
+                    String result = String.valueOf(GameResult.getByOrdinal(parameters[1]));
+                    updateListener.updateOnGameResult(color, result);
                 }
             }
             case UPDATE_COUNTDOWN -> {

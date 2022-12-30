@@ -61,7 +61,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     public void updateOnGameResult(String color, String result) {
         int[] parameters = new int[2];
         parameters[0] = TronColor.getTronColorByHex(color).ordinal();
-        parameters[1] = GameResult.valueOf(result).ordinal();
+        parameters[1] = GameResult.getGameResultByText(result).ordinal();
         middleware.invoke(remoteId, Service.UPDATE_RESULT.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
@@ -69,7 +69,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     public void updateOnCountDown(int value) {
         int[] parameters = new int[1];
         parameters[0] = value;
-        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override

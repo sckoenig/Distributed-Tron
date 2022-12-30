@@ -1,5 +1,7 @@
 package vsp.trongame.app.model.datatypes;
 
+import java.util.Objects;
+
 /**
  * Represents the Game Result Text, that can be displayed in GUI.
  */
@@ -25,6 +27,13 @@ public enum GameResult {
         if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
 
         return results[ordinal];
+    }
+
+    public static GameResult getGameResultByText(String text){
+        for (GameResult result: values()) {
+            if (Objects.equals(result.getResultText(), text)) return result;
+        }
+        throw new IllegalArgumentException("Unkown Result!");
     }
     
 }
