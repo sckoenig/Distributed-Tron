@@ -67,7 +67,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     @Override
     public void updateOnGameResult(String color, String result) {
         int[] parameters = new int[2];
-        parameters[0] = TronColor.valueOf(color).ordinal();
+        parameters[0] = TronColor.getTronColorByHex(color).ordinal();
         parameters[1] = GameResult.valueOf(result).ordinal();
         middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
@@ -85,7 +85,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         parametersList.add(field.size());
         for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
             List<Coordinate> firstFour = entry.getValue().stream().limit(4).toList();
-                parametersList.add(TronColor.valueOf(entry.getKey()).ordinal());
+                parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
                 firstFour.forEach(coordinate -> {
                     parametersList.add(coordinate.x);
                     parametersList.add(coordinate.y);

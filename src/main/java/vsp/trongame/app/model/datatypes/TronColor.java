@@ -1,5 +1,8 @@
 package vsp.trongame.app.model.datatypes;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /**
  * Represents a Color that a Player Bike can have. Maps to javafx Colors.
  */
@@ -28,6 +31,13 @@ public enum TronColor {
         if (ordinal > results.length-1) throw new IllegalArgumentException("Unkown Ordinal!");
 
         return results[ordinal];
+    }
+
+    public static TronColor getTronColorByHex(String hex){
+        for (TronColor color: values()) {
+            if (Objects.equals(color.getHex(), hex)) return color;
+        }
+        throw new IllegalArgumentException("Unkown Color!");
     }
 
 
