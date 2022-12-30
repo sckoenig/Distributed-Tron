@@ -12,7 +12,39 @@ import java.util.concurrent.ExecutorService;
 
 import static java.lang.Thread.sleep;
 
-public class NameResolver implements INamingService{
+public class NameResolver implements INamingService {
+    private static final int CACHE_TIME = 15000;
+    private Map<Integer, Map<String, String>> cache;
+    private Socket clientSocket;
+
+    private InetSocketAddress serverAddress;
+    private final Gson gson;
+    private final ExecutorService executorService;
+
+    public NameResolver(InetSocketAddress serverAddress, ExecutorService executorService) {
+        this.executorService = executorService;
+        this.serverAddress = serverAddress;
+        this.cache = new HashMap<>();
+        this.gson = new Gson();
+        System.out.println();
+
+        startClearCache();
+    }
+
+    private void startClearCache() {
+        executorService.execute(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // noinspection BusyWait: cache clearance interval
+                    sleep(CACHE_TIME);
+                    cache.clear();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+    }
+
     @Override
     public String lookupService(String remoteID, int serviceId) {
         Map<String, String> map = cache.get(serviceId);
@@ -60,7 +92,14 @@ public class NameResolver implements INamingService{
 
     @Override
     public void unregisterService(String remoteID) {
-
+        try {
+            clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
+            NamingServiceMessage message = new NamingServiceMessage(UNREGISTER, -1, remoteID, null);
+            byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
+            clientSocket.getOutputStream().write(byteMessage);
+        } catch (IOException e) {
+            error();
+        }
     }
 
     private void error() {

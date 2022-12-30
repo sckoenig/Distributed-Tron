@@ -31,6 +31,7 @@ public class Configuration {
     public static final String P_SECHS = "p6";
     public static final String GAME_MODE = "gameMode";
     public static final String NAME_SERVER = "nameServer";
+    public static final String NAME_SERVER_HOST = "nameServerHost";
     private static final String FILE_PATH = "tronConfig.properties";
     private static final Map<String, String> DEFAULTS;
 
@@ -52,6 +53,7 @@ public class Configuration {
         DEFAULTS.put(P_SECHS, "Z,U");
         DEFAULTS.put(GAME_MODE, "LOCAL");
         DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
+        DEFAULTS.put(NAME_SERVER_HOST, "false");
     }
 
     private Properties properties;
@@ -97,7 +99,9 @@ public class Configuration {
                 properties.getProperty(P_VIER), properties.getProperty(P_FUENF), properties.getProperty(P_SECHS)))
             return false;
         if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.NETWORK.toString())) return false;
-        return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
+        if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
+        //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
+        return true;
     }
 
     /**

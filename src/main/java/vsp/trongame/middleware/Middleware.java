@@ -66,9 +66,9 @@ public class Middleware implements IRegister, IRemoteInvocation {
     }
 
     @Override
-    public void registerRemoteObject(int serviceID, IRemoteObject remoteObject) {
+    public void registerRemoteObject(int serviceID, String remoteId, IRemoteObject remoteObject) {
         // forward to ServerStub
-        unmarshaller.registerRemoteObject(serviceID, remoteObject);
+        unmarshaller.registerRemoteObject(serviceID, remoteId, remoteObject);
     }
 
     @Override
