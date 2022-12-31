@@ -23,14 +23,12 @@ public class IGameManagerCaller implements IGameManager, ICaller {
 
     @Override
     public void handleGameState(GameState gameState) {
-        System.out.println("HANDLE GAME STATE GM "+ gameState);
         middleware.invoke(remoteId, HANDLE_GAME_STATE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE,
                 new int[]{gameState.ordinal()});
     }
 
     @Override
     public void handleGameTick(int tickCount) {
-        System.out.println("handleGameTick: " + tickCount);
         middleware.invoke(remoteId, HANDLE_GAME_TICK.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, new int[] {tickCount});
     }
 

@@ -2,6 +2,7 @@ package vsp.trongame.middleware.serverstub;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -17,13 +18,13 @@ public class Receiver {
     private final BlockingQueue<Socket> tcpSocketQueue;
     private final Random rand;
     private final ExecutorService executorService;
-    private final byte[] udpPacketBuffer;
+    //private final byte[] udpPacketBuffer;
 
     public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) throws IOException {
         this.unmarshaller = unmarshaller;
         this.executorService = executorService;
         this.tcpSocketQueue = new LinkedBlockingQueue<>();
-        this.udpPacketBuffer = new byte[PACKAGE_SIZE];
+        //this.udpPacketBuffer = new byte[PACKAGE_SIZE];
         this.rand = new Random();
 
         createServerSockets();
@@ -34,7 +35,7 @@ public class Receiver {
         int port;
         boolean success = false;
         //InetAddress ipAddress = InetAddress.getLocalHost();
-        InetAddress ipAddress = InetAddress.getByName("169.254.171.162");
+        InetAddress ipAddress = InetAddress.getByName("192.168.188.27");
         System.out.println(ipAddress);
 
         while (!success){
@@ -93,6 +94,7 @@ public class Receiver {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
+                    byte[] udpPacketBuffer = new byte[PACKAGE_SIZE];
                     DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());

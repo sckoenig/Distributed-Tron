@@ -53,23 +53,20 @@ public class Game implements IGame {
 
     @Override
     public void prepare(int playerCount) {
-        System.out.println("PREPARE" + playerCount);
+        System.out.println("####### GAME: PREPARE CALL");
         this.playerCount = playerCount;
         transitionState(GameState.PREPARING);
     }
 
     @Override
     public void register(IGameManager gameManager, ITronModel.IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
-        System.out.println("REGISTER "+gameManager);
-
-        boolean test = isRegistrationAllowed(managedPlayerCount);
+        System.out.println("####### GAME: REGISTER CALL");
 
         if (isRegistrationAllowed(managedPlayerCount)) {
             this.gameListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
         }
-        System.out.println(gameManager);
 
         if (isGameFull()) transitionState(GameState.COUNTDOWN);
 
@@ -77,6 +74,7 @@ public class Game implements IGame {
 
     @Override
     public void handleSteers(List<Steer> steers, int tickCount) {
+        System.out.println("####### GAME: STEERS CALL -> "+steers);
         if (tickCount == this.tickCount) {
             steers.forEach(steer -> {
                 int playerId = steer.playerId();
@@ -103,12 +101,7 @@ public class Game implements IGame {
      * Executes the current state.
      */
     private void executeState() {
-        System.out.println("INFORM GM");
         gameManagers.forEach(gm -> gm.handleGameState(currentState));
-
-        if(gameManagers.size() >= 1){
-            System.out.println("");
-        }
 
         switch (currentState) {
             case INIT -> reset();
@@ -142,7 +135,6 @@ public class Game implements IGame {
      * @param startedAt the game state the timer was started in.
      */
     private void handleTimeOut(GameState startedAt) {
-        System.out.println("TIMEOUT GAME");
         if (startedAt == GameState.FINISHED && currentState == GameState.FINISHED) transitionState(GameState.INIT);
         if (startedAt == GameState.PREPARING && currentState == GameState.PREPARING) {
             if (isGameReady()) transitionState(GameState.COUNTDOWN);
@@ -156,7 +148,7 @@ public class Game implements IGame {
      * @return true, if enough players are registered, false otherwise.
      */
     private boolean isGameReady() {
-        return currentState == GameState.PREPARING && registeredPlayerCount > 2;
+        return currentState == GameState.PREPARING && registeredPlayerCount >= 1;
     }
 
     /**
@@ -305,8 +297,14 @@ public class Game implements IGame {
      *
      * @return if the game is over
      */
+    /**
     private boolean isGameOver() {
         return players.stream().filter(IPlayer::isAlive).count() <= 1;
+    }
+     */
+
+    private boolean isGameOver() {
+        return players.stream().filter(IPlayer::isAlive).count() <= 0;
     }
 
     /**

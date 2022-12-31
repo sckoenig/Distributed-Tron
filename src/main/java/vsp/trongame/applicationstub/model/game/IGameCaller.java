@@ -48,8 +48,8 @@ public class IGameCaller implements IGame, ICaller {
         int[] steerArray = new int[steers.size()*2+1];
         steerArray[0] = tickCount;
         for (int i = 1; i < steerArray.length; i+=2) {
-            steerArray[i] = steers.get(i).playerId();
-            steerArray[i+1] = steers.get(i).directionChange().ordinal();
+            steerArray[i] = steers.get(i-1).playerId();
+            steerArray[i+1] = steers.get(i-1).directionChange().ordinal();
         }
         middleware.invoke(remoteId, Service.HANDLE_STEERS.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
                 steerArray);

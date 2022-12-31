@@ -26,7 +26,6 @@ public class NameResolver implements INamingService {
         this.serverAddress = serverAddress;
         this.cache = new HashMap<>();
         this.gson = new Gson();
-        System.out.println();
 
         startClearCache();
     }

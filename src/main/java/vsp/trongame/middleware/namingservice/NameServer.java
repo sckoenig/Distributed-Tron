@@ -1,6 +1,7 @@
 package vsp.trongame.middleware.namingservice;
 
 import com.google.gson.Gson;
+import vsp.trongame.applicationstub.util.Service;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -19,9 +20,11 @@ public class NameServer implements INamingService {
     private final Gson gson;
 
     public NameServer(String address) throws IOException {
+
         String[] split = address.split(":");
         this.tcpServerSocket = new ServerSocket();
         tcpServerSocket.bind(new InetSocketAddress(split[0], Integer.parseInt(split[1])));
+        System.out.println("NAME SERVER ON : " + tcpServerSocket.getInetAddress());
         this.gson = new Gson();
         this.services = new HashMap<>();
     }
@@ -42,6 +45,9 @@ public class NameServer implements INamingService {
             if (message.messageType() == LOOKUP) {
                 String result = lookupService(message.remoteId(), message.serviceId());
                 NamingServiceMessage response = new NamingServiceMessage(RESPONSE, -1, "", result);
+
+                System.err.println("NAME SERVER -- LOOKUP: " + Service.getByOrdinal(message.serviceId()) + " by "+ clientSocket.getInetAddress());
+
                 byte[] responseMessage = gson.toJson(response).getBytes(StandardCharsets.UTF_8);
                 clientSocket.getOutputStream().write(responseMessage.length);
                 clientSocket.getOutputStream().write(responseMessage);
@@ -63,9 +69,6 @@ public class NameServer implements INamingService {
             remoteID = list.get(0);
 
         }
-        System.out.println(remoteID);
-        System.out.println(services);
-        System.out.println(services.get(serviceId).get(remoteID));
         return services.get(serviceId).get(remoteID);
     }
 

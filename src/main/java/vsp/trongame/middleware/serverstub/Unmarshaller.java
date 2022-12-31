@@ -47,8 +47,9 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
                     byte[] message = messageQueue.take();
-                    String json = new String(message, StandardCharsets.UTF_8);
+                    String json = new String(message, StandardCharsets.UTF_8).strip().trim();
                     ServiceCall call = gson.fromJson(json, ServiceCall.class);
+                    System.out.println("RECEIVED: "+json);
 
                     IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
                     if (remoteObject != null)

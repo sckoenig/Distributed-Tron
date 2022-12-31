@@ -56,6 +56,7 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameState(GameState gameState) {
+        System.out.println("################ GM : received GameState " + gameState + "while in state "+currentState);
         ModelState newState = transitions.get(currentState).get(gameState);
         if (newState != null) transition(newState);
     }
@@ -98,6 +99,7 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
+        System.out.println("################ GM : MANAGED PLAYERS INFO RECEIVED");
 
         Map<String, String> keyMapping = new HashMap<>();
 

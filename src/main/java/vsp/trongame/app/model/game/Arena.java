@@ -54,7 +54,7 @@ public class Arena implements IArena{
     public List<Coordinate> calculateFairStartingCoordinates(int playerCount) {
         List<Coordinate> fairPositions = new ArrayList<>();
         switch (playerCount) {
-            case 2 -> {
+            case 1,2 -> {
                 fairPositions.add(new Coordinate(0, 0));
                 fairPositions.add(new Coordinate(columns-1, rows-1));
             }

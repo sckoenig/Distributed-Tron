@@ -37,7 +37,6 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
 
     @Override
     public void updateOnArena(int rows, int columns) {
-        System.out.println("updateOnArena");
         int[] parameters = new int[2];
         parameters[0] = rows;
         parameters[1] = columns;
