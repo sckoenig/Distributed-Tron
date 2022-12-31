@@ -1,6 +1,7 @@
 package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
@@ -44,15 +45,10 @@ public class IGameCaller implements IGame, ICaller {
     }
 
     @Override
-    public void handleSteers(List<Steer> steers, int tickCount) {
-        int[] steerArray = new int[steers.size()*2+1];
-        steerArray[0] = tickCount;
-        for (int i = 1; i < steerArray.length; i+=2) {
-            steerArray[i] = steers.get(i-1).playerId();
-            steerArray[i+1] = steers.get(i-1).directionChange().ordinal();
-        }
+    public void handleSteer(Steer steer) {
+
         middleware.invoke(remoteId, Service.HANDLE_STEERS.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
-                steerArray);
+                new int[]{steer.playerId(), steer.directionChange().ordinal()});
     }
 
     @Override

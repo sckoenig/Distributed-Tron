@@ -23,9 +23,4 @@ public interface IGameManager {
      */
     void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers);
 
-    /**
-     * Informs the GameManager about a game tick.
-     * @param tickCount number of current tick.
-     */
-    void handleGameTick(int tickCount);
 }

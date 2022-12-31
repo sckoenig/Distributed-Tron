@@ -27,10 +27,6 @@ public class IGameManagerCaller implements IGameManager, ICaller {
                 new int[]{gameState.ordinal()});
     }
 
-    @Override
-    public void handleGameTick(int tickCount) {
-        middleware.invoke(remoteId, HANDLE_GAME_TICK.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, new int[] {tickCount});
-    }
 
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {

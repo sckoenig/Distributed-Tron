@@ -68,15 +68,9 @@ public class IGameCallee implements IRemoteObject {
                 }
             }
             case HANDLE_STEERS -> {
-                boolean uneven = intParameters.length % 2 != 0; // must be uneven: tickcount + steer(id, direction)
-                if (intParameters.length < 13 && intParameters.length > 0 && uneven){
-                    int tickCount = intParameters[0];
-                    List<Steer> steerList = new ArrayList<>();
-                    for(int i = 1; i < intParameters.length; i+=2){
-                        Steer steer = new Steer(intParameters[i], DirectionChange.getByOrdinal(intParameters[i+1]));
-                        steerList.add(steer);
-                    }
-                    localGame.handleSteers(steerList, tickCount);
+                if (intParameters.length == 2){
+                    Steer steer = new Steer(intParameters[0], DirectionChange.getByOrdinal(intParameters[1]));
+                    localGame.handleSteer(steer);
                 }
             }
             default -> {}

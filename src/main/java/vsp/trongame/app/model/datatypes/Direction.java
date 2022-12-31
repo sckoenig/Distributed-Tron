@@ -10,6 +10,7 @@ public enum Direction {
     DOWN;
 
     public static Direction getNextDirection(Direction oldDirection, DirectionChange directionChange) {
+        if (directionChange == DirectionChange.NO_STEER) return oldDirection;
         switch (oldDirection) {
             case LEFT -> {
                 if (directionChange == DirectionChange.LEFT_STEER) return Direction.DOWN;

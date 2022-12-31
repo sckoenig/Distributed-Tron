@@ -73,19 +73,15 @@ public class Game implements IGame {
     }
 
     @Override
-    public void handleSteers(List<Steer> steers, int tickCount) {
-        System.out.println("####### GAME: STEERS CALL -> "+steers);
-        if (tickCount == this.tickCount) {
-            steers.forEach(steer -> {
-                int playerId = steer.playerId();
-                DirectionChange directionChange = steer.directionChange();
-                for (IPlayer player : players) {
-                    if (player.getId() == playerId) {
-                        player.performDirectionChange(directionChange);
-                        break;
-                    }
-                }
-            });
+    public void handleSteer(Steer steer) {
+        System.out.println("####### GAME: STEERS CALL -> " + steer);
+        int playerId = steer.playerId();
+        DirectionChange directionChange = steer.directionChange();
+        for (IPlayer player : players) {
+            if (player.getId() == playerId) {
+                player.setNextDirectionChange(directionChange);
+                break;
+            }
         }
     }
 
@@ -243,8 +239,10 @@ public class Game implements IGame {
 
         while (!isGameOver() && !Thread.interrupted()) {
             long whileStart = System.currentTimeMillis();
+            System.err.println(tickCount);
 
             tickCount++;
+            System.err.println(players.get(0).isAlive());
             movePlayers();
             updateField();
 
@@ -255,16 +253,16 @@ public class Game implements IGame {
         }
     }
 
-    private void movePlayers(){
+    private void movePlayers() {
         players.forEach(p -> {
             if (p.isAlive()) {
-                Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.getDirection());
+                Coordinate nextCoordinate = calculateNextCoordinate(p.getHeadPosition(), p.performDirectionChange());
                 p.addCoordinate(nextCoordinate);
             }
         });
     }
 
-    private void updateField(){
+    private void updateField() {
         gameExecutor.execute(() -> {
             collisionDetector.detectCollision(players, arena);
             Map<String, List<Coordinate>> map = new HashMap<>();
@@ -272,7 +270,6 @@ public class Game implements IGame {
                 if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
             }
             gameListeners.forEach(dl -> dl.updateOnField(map));
-            gameManagers.forEach(gm -> gm.handleGameTick(tickCount));
         });
     }
 
@@ -298,9 +295,9 @@ public class Game implements IGame {
      * @return if the game is over
      */
     /**
-    private boolean isGameOver() {
-        return players.stream().filter(IPlayer::isAlive).count() <= 1;
-    }
+     * private boolean isGameOver() {
+     * return players.stream().filter(IPlayer::isAlive).count() <= 1;
+     * }
      */
 
     private boolean isGameOver() {

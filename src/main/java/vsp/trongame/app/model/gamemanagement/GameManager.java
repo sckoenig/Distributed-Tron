@@ -23,7 +23,6 @@ public class GameManager implements IGameManager, ITronModel {
 
     private final Map<Integer, IUpdateListener> listenersMap; //find listeners by their id
     private final Map<Integer, List<Integer>> listenersToPlayersMap; //map listeners to players to check for valid key input
-    private final Map<Integer, Steer> managedPlayers; //managed players and their next steer event
     private Configuration config;
     private ExecutorService executorService;
     private IGame game;
@@ -36,7 +35,6 @@ public class GameManager implements IGameManager, ITronModel {
         this.handleGameEvents = false;
         this.listenersMap = new HashMap<>();
         this.listenersToPlayersMap = new HashMap<>();
-        this.managedPlayers = new HashMap<>();
     }
 
     @Override
@@ -86,18 +84,6 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void handleGameTick(int tickCounter) {
-        if (handleGameEvents){
-            List<Steer> steers = managedPlayers.values().stream().filter(Objects::nonNull).toList();
-
-            if (!steers.isEmpty()) {
-                game.handleSteers(steers, tickCounter);
-                managedPlayers.replaceAll((k, v) -> null);
-            }
-        }
-    }
-
-    @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
         System.out.println("################ GM : MANAGED PLAYERS INFO RECEIVED");
 
@@ -105,7 +91,6 @@ public class GameManager implements IGameManager, ITronModel {
 
         for (Map.Entry<Integer, TronColor> entry : managedPlayers.entrySet()) {
             int playerID = entry.getKey();
-            this.managedPlayers.put(playerID, null);
             this.listenersToPlayersMap.computeIfAbsent(id, s -> new ArrayList<>()).add(playerID);
             String keys = config.getKeyMappingForPlayer(playerID);
             keyMapping.put(keys, entry.getValue().getHex());
@@ -120,7 +105,7 @@ public class GameManager implements IGameManager, ITronModel {
             if(steer != null) {
                 int playerId = steer.playerId();
                 if (listenersToPlayersMap.get(id).contains(playerId)) { // is steer allowed
-                    managedPlayers.put(playerId, steer);
+                    game.handleSteer(steer);
                 }
             }
         }
@@ -157,7 +142,6 @@ public class GameManager implements IGameManager, ITronModel {
     private void reset() {
         handleGameEvents = false;
         listenersToPlayersMap.clear();
-        managedPlayers.clear();
     }
 
 }

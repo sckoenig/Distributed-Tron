@@ -51,11 +51,6 @@ public class IGameManagerCallee implements IRemoteObject {
                     gameManager.handleManagedPlayers(id, playerMap);
                 }
             }
-            case HANDLE_GAME_TICK -> {
-                if(parameters.length==1){
-                    gameManager.handleGameTick(parameters[0]);
-                }
-            }
             default -> {}
         }
     }

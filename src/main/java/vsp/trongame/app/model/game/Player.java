@@ -18,12 +18,14 @@ public class Player implements IPlayer {
     private final TronColor color;
     private Direction direction;
     private boolean alive;
+    private DirectionChange nextDirectionChange; //one per game tick
 
     public Player(TronColor color, int id) {
         this.color = color;
         this.id = id;
         this.alive = true;
         this.coordinates = new ArrayList<>();
+        this.nextDirectionChange = DirectionChange.NO_STEER;
     }
 
     @Override
@@ -68,13 +70,16 @@ public class Player implements IPlayer {
     }
 
     @Override
-    public Direction getDirection() {
-        return this.direction;
+    public void setNextDirectionChange(DirectionChange directionChange) {
+        this.nextDirectionChange = directionChange;
     }
 
     @Override
-    public void performDirectionChange(DirectionChange directionChange) {
-        this.direction = Direction.getNextDirection(direction, directionChange);
+    public Direction performDirectionChange() {
+        this.direction = Direction.getNextDirection(direction, nextDirectionChange);
+        this.nextDirectionChange = DirectionChange.NO_STEER;
+        return this.direction;
     }
+
 
 }
