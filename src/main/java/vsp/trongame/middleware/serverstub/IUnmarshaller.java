@@ -6,5 +6,5 @@ public interface IUnmarshaller {
 
     void addToQueue(byte[] message);
 
-    void setAddress(InetSocketAddress address);
+    void setPort(int port);
 }

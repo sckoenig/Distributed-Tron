@@ -3,7 +3,6 @@ package vsp.trongame.middleware.clientstub;
 import com.google.gson.Gson;
 import vsp.trongame.middleware.IRemoteInvocation;
 import vsp.trongame.middleware.namingservice.INamingService;
-import vsp.trongame.middleware.namingservice.NameResolver;
 import vsp.trongame.middleware.util.InvocationTask;
 import vsp.trongame.middleware.util.ServiceCall;
 
@@ -31,8 +30,7 @@ public class Marshaller implements IRemoteInvocation {
         this.sender = new Sender();
         this.namingService = namingService;
 
-
-        startInvocationTaskHandler(); //handles tasks in queue
+        runInvocationTaskHandler(); //handles tasks in queue
     }
 
     @Override
@@ -41,7 +39,7 @@ public class Marshaller implements IRemoteInvocation {
         queue.add(new InvocationTask(new ServiceCall(serviceID, intParameters, stringParameters), remoteID, protocol));
     }
 
-    private void startInvocationTaskHandler(){
+    private void runInvocationTaskHandler(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {

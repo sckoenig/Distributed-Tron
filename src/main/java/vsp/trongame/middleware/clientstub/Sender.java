@@ -6,7 +6,7 @@ import java.net.*;
 
 public class Sender implements ISender {
 
-    private DatagramSocket udpSocket;
+    private final DatagramSocket udpSocket;
 
     public Sender() throws SocketException {
         this.udpSocket = new DatagramSocket();

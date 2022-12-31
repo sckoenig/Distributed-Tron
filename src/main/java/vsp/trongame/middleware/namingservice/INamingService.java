@@ -1,14 +1,15 @@
 package vsp.trongame.middleware.namingservice;
 
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-
 public interface INamingService {
 
+    int NO_SERVICE = -1;
+    String NO_REMOTE_ID = "";
     byte REGISTER = 1;
     byte UNREGISTER = 2;
     byte LOOKUP = 3;
     byte RESPONSE = 4;
+
+    void startWithAddress(String address);
 
     String lookupService(String remoteID, int serviceId);
 

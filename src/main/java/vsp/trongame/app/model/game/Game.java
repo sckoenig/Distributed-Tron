@@ -53,9 +53,11 @@ public class Game implements IGame {
 
     @Override
     public void prepare(int playerCount) {
-        System.out.println("####### GAME: PREPARE CALL");
-        this.playerCount = playerCount;
-        transitionState(GameState.PREPARING);
+        System.err.println("---------------------------------------------------------------------------------------------------------------------- GAME: PREPARE CALL");
+        if (currentState == GameState.INIT) {
+            this.playerCount = playerCount;
+            transitionState(GameState.PREPARING);
+        }
     }
 
     @Override
@@ -189,6 +191,7 @@ public class Game implements IGame {
      * Makes necessary preparation for game start, then starts the game.
      */
     private void start() {
+        System.err.println("---------------------------------------------------------------------- " + gameManagers.size());
         gameListeners.forEach(gl -> gl.updateOnArena(rows, columns));
 
         List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
@@ -199,12 +202,14 @@ public class Game implements IGame {
             player.setDirection(arena.calculateStartingDirection(coordinate));
         }
 
-        try {
-            countDown();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        if (!Thread.interrupted()) transitionState(GameState.RUNNING);
+        gameExecutor.execute(() -> {
+            try {
+                countDown();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (!interrupted()) transitionState(GameState.RUNNING);
+        });
     }
 
     private void countDown() throws InterruptedException {

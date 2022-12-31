@@ -21,9 +21,8 @@ public class NameResolver implements INamingService {
     private final Gson gson;
     private final ExecutorService executorService;
 
-    public NameResolver(InetSocketAddress serverAddress, ExecutorService executorService) {
+    public NameResolver(ExecutorService executorService) {
         this.executorService = executorService;
-        this.serverAddress = serverAddress;
         this.cache = new HashMap<>();
         this.gson = new Gson();
 
@@ -42,6 +41,12 @@ public class NameResolver implements INamingService {
                 }
             }
         });
+    }
+
+    @Override
+    public void startWithAddress(String address) {
+        String[] split = address.split(":");
+        this.serverAddress = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
     }
 
     @Override
@@ -87,7 +92,6 @@ public class NameResolver implements INamingService {
             error();
         }
     }
-
 
     @Override
     public void unregisterService(String remoteID) {

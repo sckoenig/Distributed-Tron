@@ -2,7 +2,6 @@ package vsp.trongame.middleware.serverstub;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -34,22 +33,18 @@ public class Receiver {
     private void createServerSockets() throws UnknownHostException {
         int port;
         boolean success = false;
-        //InetAddress ipAddress = InetAddress.getLocalHost();
-        InetAddress ipAddress = InetAddress.getByName("192.168.188.27");
-        System.out.println(ipAddress);
 
         while (!success){
             port = rand.nextInt(MIN_PORT, MAX_PORT+1);
             try{
-
-                this.udpSocket = new DatagramSocket( port, ipAddress);
+                this.udpSocket = new DatagramSocket( port);
                 this.tcpSocket = new ServerSocket( );
-                tcpSocket.bind(new InetSocketAddress(ipAddress, port));
+                tcpSocket.bind(new InetSocketAddress(port));
                 tcpSocket.setReuseAddress(true);
                 udpSocket.setReuseAddress(true);
 
                 success = true;
-                unmarshaller.setAddress(new InetSocketAddress(ipAddress, port));
+                unmarshaller.setPort(port);
             } catch (IOException e) {
                 System.out.println("CATCH");
             }

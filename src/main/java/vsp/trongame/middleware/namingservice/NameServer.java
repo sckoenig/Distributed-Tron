@@ -1,94 +1,102 @@
 package vsp.trongame.middleware.namingservice;
 
 import com.google.gson.Gson;
-import vsp.trongame.applicationstub.util.Service;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NameServer implements INamingService {
 
     private final Map<Integer, Map<String, String>> services;
-    private final ServerSocket tcpServerSocket;
     private final Gson gson;
+    private final ExecutorService executorService;
+    private ServerSocket tcpServerSocket;
 
-    public NameServer(String address) throws IOException {
-
-        String[] split = address.split(":");
-        this.tcpServerSocket = new ServerSocket();
-        tcpServerSocket.bind(new InetSocketAddress(split[0], Integer.parseInt(split[1])));
-        System.out.println("NAME SERVER ON : " + tcpServerSocket.getInetAddress());
+    public NameServer() {
         this.gson = new Gson();
         this.services = new HashMap<>();
+        this.executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void start() throws IOException {
-        startServerSocket();
+
+    public void startWithAddress(String address) {
+        String[] split = address.split(":");
+        executorService.execute(() -> runServerSocket(new InetSocketAddress(split[0], Integer.parseInt(split[1]))));
     }
 
-    private void startServerSocket() throws IOException {
+    private void runServerSocket(InetSocketAddress address) {
+        try {
 
-        while (!Thread.currentThread().isInterrupted()) {
-            Socket clientSocket = this.tcpServerSocket.accept();
-            int length = clientSocket.getInputStream().read();
-            byte[] byteMessage = clientSocket.getInputStream().readNBytes(length);
-            String jsonMessage = new String(byteMessage, StandardCharsets.UTF_8);
-            NamingServiceMessage message = gson.fromJson(jsonMessage, NamingServiceMessage.class);
+            this.tcpServerSocket = new ServerSocket();
+            tcpServerSocket.bind(address);
 
-            if (message.messageType() == LOOKUP) {
-                String result = lookupService(message.remoteId(), message.serviceId());
-                NamingServiceMessage response = new NamingServiceMessage(RESPONSE, -1, "", result);
+            while (!Thread.currentThread().isInterrupted()) {
 
-                System.err.println("NAME SERVER -- LOOKUP: " + Service.getByOrdinal(message.serviceId()) + " by "+ clientSocket.getInetAddress());
+                Socket clientSocket = this.tcpServerSocket.accept();
 
-                byte[] responseMessage = gson.toJson(response).getBytes(StandardCharsets.UTF_8);
-                clientSocket.getOutputStream().write(responseMessage.length);
-                clientSocket.getOutputStream().write(responseMessage);
+                int messageLength = clientSocket.getInputStream().read();//needs to know how much to read from stream
+                byte[] byteMessage = clientSocket.getInputStream().readNBytes(messageLength);
+
+                String jsonMessage = new String(byteMessage, StandardCharsets.UTF_8);
+                NamingServiceMessage message = gson.fromJson(jsonMessage, NamingServiceMessage.class);
+
+                processMessage(message, clientSocket);
             }
-            if (message.messageType() == REGISTER) {
-                registerService(message.remoteId(), message.serviceId(), message.address());
-            }
-            if (message.messageType() == UNREGISTER) {
-                unregisterService(message.remoteId());
-            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void processMessage(NamingServiceMessage message, Socket clientSocket) throws IOException {
+
+        if (message.messageType() == LOOKUP) {
+            String requestedService = lookupService(message.remoteId(), message.serviceId());
+            NamingServiceMessage response = new NamingServiceMessage(RESPONSE, NO_SERVICE, NO_REMOTE_ID, requestedService);
+            byte[] responseMessage = gson.toJson(response).getBytes(StandardCharsets.UTF_8);
+            clientSocket.getOutputStream().write(responseMessage.length);
+            clientSocket.getOutputStream().write(responseMessage);
+        }
+        if (message.messageType() == REGISTER) {
+            registerService(message.remoteId(), message.serviceId(), message.address());
+        }
+        if (message.messageType() == UNREGISTER) {
+            unregisterService(message.remoteId());
         }
     }
 
     @Override
     public String lookupService(String remoteID, int serviceId) {
-        if (remoteID.isEmpty()) {
-            ArrayList<String> list = new ArrayList<>(services.get(serviceId).keySet());
-            list.sort(String::compareTo);
-            remoteID = list.get(0);
-
+        if (remoteID.equals(NO_REMOTE_ID)) {
+            remoteID = services.get(serviceId).entrySet().iterator().next().getKey(); //LinkedHashMap, returns the first inserted key.
         }
         return services.get(serviceId).get(remoteID);
     }
 
     @Override
     public void registerService(String remoteID, int serviceID, String address) {
-        services.computeIfAbsent(serviceID, v -> new HashMap<>()).put(remoteID, address);
+        services.computeIfAbsent(serviceID, v -> new LinkedHashMap<>()).put(remoteID, address);
     }
 
     @Override
     public void unregisterService(String remoteID) {
-        for (Map.Entry<Integer, Map<String, String>> entry: services.entrySet()) {
+        for (Map.Entry<Integer, Map<String, String>> entry : services.entrySet()) {
             entry.getValue().remove(remoteID);
         }
     }
 
-    public void shutDown(){
+    public void stop() {
         try {
             tcpServerSocket.close();
-        } catch (IOException e){
-            //
+            executorService.shutdownNow();
+        } catch (IOException e) {
+            // we want server socket to close here, but will throw exception if still blocked in accept().
         }
     }
 }
