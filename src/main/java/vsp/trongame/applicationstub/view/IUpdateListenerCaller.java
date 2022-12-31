@@ -69,7 +69,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     public void updateOnCountDown(int value) {
         int[] parameters = new int[1];
         parameters[0] = value;
-        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
+        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
     }
 
     @Override
@@ -77,9 +77,9 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         List<Integer> parametersList = new ArrayList<>();
         parametersList.add(field.size());
         for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
-            List<Coordinate> firstFour = entry.getValue().stream().limit(4).toList();
+            List<Coordinate> lastFour = entry.getValue().stream().skip((entry.getValue().size())-4).toList();
                 parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
-                firstFour.forEach(coordinate -> {
+                lastFour.forEach(coordinate -> {
                     parametersList.add(coordinate.x);
                     parametersList.add(coordinate.y);
                 });
