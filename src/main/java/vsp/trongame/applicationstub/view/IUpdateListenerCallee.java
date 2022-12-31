@@ -71,20 +71,17 @@ public class IUpdateListenerCallee implements IRemoteObject {
             case UPDATE_FIELD -> {
                 int playerCount = parameters[0];
                 if (parameters.length > 1) {
-                    System.err.println("PARAMS ++++++++++++ " + parameters.length);
                     int coordinatesCount = ((((parameters.length - 1) - playerCount) / playerCount) / 2);
                     Map<String, List<Coordinate>> updateCoordinates = new HashMap<>();
-                    List<Coordinate> coordinates = new ArrayList<>();
-                    for (int i = 1; i < parameters.length; i += coordinatesCount * 2) {
+                    for (int i = 1; i < parameters.length; i += coordinatesCount * 2 + 1) {
+                        List<Coordinate> coordinates = new ArrayList<>();
                         String color = TronColor.getByOrdinal(parameters[i]).getHex();
-                        i++;
-                        int k = 0;
-                        for (int j = 0; j < coordinatesCount; j++) {
-                            coordinates.add(new Coordinate(parameters[k + i], parameters[k + i + 1]));
-                            k += 2;
+                        for (int j = 1; j < coordinatesCount; j+=2) {
+                            coordinates.add(new Coordinate(parameters[i+j], parameters[i+j+1]));
                         }
                         updateCoordinates.put(color, coordinates);
                     }
+                    System.out.println("RECEIVED: "+updateCoordinates);
                     updateListener.updateOnField(updateCoordinates);
                 }
             }

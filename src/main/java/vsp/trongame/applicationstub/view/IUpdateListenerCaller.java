@@ -20,6 +20,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
 
     private String remoteId;
     private final IRemoteInvocation middleware;
+    private static final int COORDINATE_DELTA = 4;
 
     public IUpdateListenerCaller() {
         this.middleware = Middleware.getInstance();
@@ -74,18 +75,21 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
     @Override
     public void updateOnField(Map<String, List<Coordinate>> field) {
         List<Integer> parametersList = new ArrayList<>();
-        parametersList.add(field.size());
+        parametersList.add(field.size()); //playercount
         for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
             int skipValue = 0;
-            if(entry.getValue().size() > 4){
-                skipValue = entry.getValue().size() - 4;
+            if (entry.getValue().size() > COORDINATE_DELTA) {
+                skipValue = entry.getValue().size() - COORDINATE_DELTA;
             }
-                List<Coordinate> lastFour = entry.getValue().stream().skip(skipValue).toList();
-                parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
-                lastFour.forEach(coordinate -> {
-                    parametersList.add(coordinate.x);
-                    parametersList.add(coordinate.y);
-                });
+            System.err.println("SKIPVALUE "+skipValue);
+
+            List<Coordinate> lastFour = entry.getValue().stream().skip(skipValue).toList();
+            parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
+            lastFour.forEach(coordinate -> {
+                parametersList.add(coordinate.x);
+                parametersList.add(coordinate.y);
+            });
+            System.out.println("PARAMMMMMMMMMMS " + parametersList);
         }
         int[] parameters = new int[parametersList.size()];
         for (int i = 0; i < parameters.length; i++) {
@@ -93,6 +97,7 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         }
         middleware.invoke(remoteId, Service.UPDATE_FIELD.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters, new String[]{});
     }
+
     @Override
     public void setRemoteId(String remoteId) {
         this.remoteId = remoteId;
