@@ -6,7 +6,6 @@ import vsp.trongame.middleware.namingservice.INamingService;
 import vsp.trongame.middleware.util.InvocationTask;
 import vsp.trongame.middleware.util.ServiceCall;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
@@ -20,8 +19,7 @@ public class Marshaller implements IRemoteInvocation {
     private final ISender sender;
     private final ExecutorService executorService;
     private final Gson gson;
-
-    INamingService namingService;
+    private final INamingService namingService;
 
     public Marshaller(ExecutorService executorService, INamingService namingService) throws SocketException {
         this.gson = new Gson();

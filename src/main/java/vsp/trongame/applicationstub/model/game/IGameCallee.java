@@ -17,8 +17,6 @@ import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
 import vsp.trongame.middleware.Middleware;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import static vsp.trongame.applicationstub.util.Service.*;
@@ -32,7 +30,7 @@ public class IGameCallee implements IRemoteObject {
 
     public IGameCallee(Configuration config, ExecutorService executorService) {
         this.localGame = IGameFactory.getGame(GameModus.LOCAL); //knows the "real" game
-        localGame.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+        this.localGame.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
                 Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
                 Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),
@@ -52,7 +50,7 @@ public class IGameCallee implements IRemoteObject {
             case PREPARE -> {
                 if (intParameters.length == 1){
                     int playerCount = intParameters[0];
-                    localGame.prepare(playerCount);
+                    localGame.prepareForRegistration(playerCount);
                 }
             }
             case REGISTER -> {

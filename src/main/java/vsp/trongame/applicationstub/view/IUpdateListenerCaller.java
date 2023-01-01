@@ -41,20 +41,20 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         int[] parameters = new int[2];
         parameters[0] = rows;
         parameters[1] = columns;
-        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_ARENA.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
     public void updateOnState(String state) {
         int[] parameters = new int[1];
         parameters[0] = GameState.valueOf(state).ordinal();
-        middleware.invoke(remoteId, Service.UPDATE_STATE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_STATE.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
     public void updateOnGameStart() {
         int[] parameters = new int[0];
-        middleware.invoke(remoteId, Service.UPDATE_START.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_START.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
@@ -62,14 +62,14 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
         int[] parameters = new int[2];
         parameters[0] = TronColor.getTronColorByHex(color).ordinal();
         parameters[1] = GameResult.getGameResultByText(result).ordinal();
-        middleware.invoke(remoteId, Service.UPDATE_RESULT.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_RESULT.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
     public void updateOnCountDown(int value) {
         int[] parameters = new int[1];
         parameters[0] = value;
-        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_COUNTDOWN.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
 
     @Override
@@ -81,7 +81,6 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
             if (entry.getValue().size() > COORDINATE_DELTA) {
                 skipValue = entry.getValue().size() - COORDINATE_DELTA;
             }
-            System.err.println("SKIPVALUE "+skipValue);
 
             List<Coordinate> lastFour = entry.getValue().stream().skip(skipValue).toList();
             parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
@@ -89,13 +88,12 @@ public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICalle
                 parametersList.add(coordinate.x);
                 parametersList.add(coordinate.y);
             });
-            System.out.println("PARAMMMMMMMMMMS " + parametersList);
         }
         int[] parameters = new int[parametersList.size()];
         for (int i = 0; i < parameters.length; i++) {
             parameters[i] = parametersList.get(i);
         }
-        middleware.invoke(remoteId, Service.UPDATE_FIELD.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters, new String[]{});
+        middleware.invoke(remoteId, Service.UPDATE_FIELD.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE, parameters);
     }
 
     @Override

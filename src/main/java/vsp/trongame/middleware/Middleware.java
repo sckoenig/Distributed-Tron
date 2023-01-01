@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 public class Middleware implements IRegister, IRemoteInvocation {
 
     private static final Middleware INSTANCE = new Middleware();
-    private static final int MIDDLEWARE_THREAD_SIZE = 10; //TODO: Anzahl 6?
+    private static final int MIDDLEWARE_THREAD_SIZE = 6;
 
     public static Middleware getInstance() {
         return INSTANCE;
@@ -27,18 +27,20 @@ public class Middleware implements IRegister, IRemoteInvocation {
     private Marshaller marshaller;
     private Unmarshaller unmarshaller;
     private NameServer nameServer;
+    boolean isNameServerHost;
 
     private Middleware() {
     }
 
-    public void start(String nameServerAddress, boolean nameServer) {
+    public void start(String nameServerAddress, boolean asNameServerHost) {
 
+        this.isNameServerHost = asNameServerHost;
         this.middlewareExecutor = Executors.newFixedThreadPool(MIDDLEWARE_THREAD_SIZE);
         String[] split = nameServerAddress.split(":");
         InetSocketAddress nameServerSocketAddress = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
 
         try {
-            if (nameServer) {
+            if (asNameServerHost) {
                 this.nameServer = new NameServer(nameServerSocketAddress);
                 this.nameServer.start();
             }
@@ -65,7 +67,7 @@ public class Middleware implements IRegister, IRemoteInvocation {
 
     public void stop() {
         if (middlewareExecutor != null) middlewareExecutor.shutdownNow();
-        unmarshaller.shutDown();
-        nameServer.stop();
+        if (isNameServerHost) nameServer.stop();
+        unmarshaller.stop();
     }
 }

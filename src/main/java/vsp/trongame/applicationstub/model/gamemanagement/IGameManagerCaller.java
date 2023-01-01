@@ -8,7 +8,6 @@ import vsp.trongame.middleware.IRemoteInvocation;
 import vsp.trongame.middleware.Middleware;
 
 import java.util.Map;
-import java.util.Set;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
@@ -27,18 +26,14 @@ public class IGameManagerCaller implements IGameManager, ICaller {
                 new int[]{gameState.ordinal()});
     }
 
-
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
         int[] parameters = new int[managedPlayers.size()*2+1];
         parameters[0] = id;
         int index = 1;
-        Set<Map.Entry<Integer, TronColor>> entries =  managedPlayers.entrySet();
-        for (Map.Entry<Integer, TronColor> entry: entries) {
-            parameters[index] = entry.getKey();
-            index++;
-            parameters[index] = entry.getValue().ordinal();
-            index++;
+        for (Map.Entry<Integer, TronColor> entry: managedPlayers.entrySet()) {
+            parameters[index++] = entry.getKey();
+            parameters[index++] = entry.getValue().ordinal();
         }
         middleware.invoke(remoteId, HANDLE_MANAGED_PLAYERS.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }

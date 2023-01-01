@@ -15,13 +15,13 @@ import java.util.*;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
-import java.util.*;
 
 public class IUpdateListenerCallee implements IRemoteObject {
 
-    private ITronModel.IUpdateListener updateListener;
+    private final ITronModel.IUpdateListener updateListener;
 
-    public IUpdateListenerCallee() {
+    public IUpdateListenerCallee(ITronModel.IUpdateListener updateListener) {
+        this.updateListener = updateListener;
 
         // can be called from remote
         IRegister middleware = Middleware.getInstance();
@@ -30,10 +30,6 @@ public class IUpdateListenerCallee implements IRemoteObject {
         middleware.registerRemoteObject(UPDATE_RESULT.ordinal(), RemoteId.STRING_ID, this);
         middleware.registerRemoteObject(UPDATE_COUNTDOWN.ordinal(), RemoteId.STRING_ID, this);
         middleware.registerRemoteObject(UPDATE_FIELD.ordinal(), RemoteId.STRING_ID, this);
-    }
-
-    public void setUpdateListener(ITronModel.IUpdateListener updateListener) {
-        this.updateListener = updateListener;
     }
 
     @Override
@@ -59,7 +55,7 @@ public class IUpdateListenerCallee implements IRemoteObject {
             case UPDATE_RESULT -> {
                 if (parameters.length >= 2) {
                     String color = TronColor.getByOrdinal(parameters[0]).getHex();
-                    String result = String.valueOf(GameResult.getByOrdinal(parameters[1]));
+                    String result = GameResult.getByOrdinal(parameters[1]).getResultText();
                     updateListener.updateOnGameResult(color, result);
                 }
             }
@@ -81,13 +77,11 @@ public class IUpdateListenerCallee implements IRemoteObject {
                         }
                         updateCoordinates.put(color, coordinates);
                     }
-                    System.out.println("RECEIVED: "+updateCoordinates);
                     updateListener.updateOnField(updateCoordinates);
                 }
             }
             default -> {
             }
         }
-
     }
 }

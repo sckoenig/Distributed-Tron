@@ -18,25 +18,36 @@ public class Receiver {
     private final Random rand;
     private final ExecutorService executorService;
 
-    public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService)  {
+    public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) {
         this.unmarshaller = unmarshaller;
         this.executorService = executorService;
         this.tcpSocketQueue = new LinkedBlockingQueue<>();
         this.rand = new Random();
+    }
 
+    public void start() {
         createReceiverSockets();
         startTcpReceiver();
         startUdpReceiver();
+    }
+
+    public void stop() {
+        try {
+            tcpSocket.close();
+            udpSocket.close();
+        } catch (IOException e) {
+            // we want server socket to close here, but will throw exception if still blocked in accept().
+        }
     }
 
     private void createReceiverSockets() {
         int port;
         boolean portAvailable = false;
 
-        while (!portAvailable){
-            port = rand.nextInt(MIN_PORT, MAX_PORT+1);
+        while (!portAvailable) {
+            port = rand.nextInt(MIN_PORT, MAX_PORT + 1);
 
-            try{
+            try {
                 this.udpSocket = new DatagramSocket(port);
                 this.tcpSocket = new ServerSocket();
                 tcpSocket.bind(new InetSocketAddress(port));
@@ -49,11 +60,12 @@ public class Receiver {
         }
     }
 
-    private void startTcpReceiver(){
+    private void startTcpReceiver() {
         executorService.execute(() -> {
-            while (!Thread.currentThread().isInterrupted()){
+            while (!Thread.currentThread().isInterrupted()) {
 
-                try (Socket clientSocket = tcpSocket.accept()){
+                try {
+                    Socket clientSocket = tcpSocket.accept();
                     tcpSocketQueue.add(clientSocket);
                 } catch (IOException e) {
                     // catch and abort on socket error
@@ -64,25 +76,25 @@ public class Receiver {
         startTcpSocketHandler();
     }
 
-    private void startTcpSocketHandler(){
+    private void startTcpSocketHandler() {
         executorService.execute(() -> {
-            while (!Thread.currentThread().isInterrupted()){
+            while (!Thread.currentThread().isInterrupted()) {
 
                 try (Socket clientSocket = tcpSocketQueue.take()) {
                     int messageLength = clientSocket.getInputStream().read();
                     byte[] message = clientSocket.getInputStream().readNBytes(messageLength);
                     unmarshaller.addToQueue(message);
-
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (IOException e){
+                } catch (IOException e) {
                     // catch and abort on socket error
                 }
             }
         });
     }
 
-    private void startUdpReceiver(){
+
+    private void startUdpReceiver() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
 
@@ -91,7 +103,6 @@ public class Receiver {
                     DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());
-
                 } catch (IOException e) {
                     // we want server socket to close here, but will throw exception if still blocked in accept().
                 }
@@ -99,13 +110,4 @@ public class Receiver {
         });
     }
 
-    public void shutDown(){
-        try {
-            tcpSocket.close();
-            udpSocket.close();
-        } catch (IOException e){
-            // we want server socket to close here, but will throw exception if still blocked in accept().
-        }
-    }
-    
 }

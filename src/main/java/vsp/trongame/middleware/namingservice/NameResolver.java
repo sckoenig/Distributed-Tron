@@ -14,6 +14,7 @@ import static java.lang.Thread.sleep;
 
 public class NameResolver implements INamingService {
     private static final int CACHE_CLEARANCE_INTERVAL = 15000;
+    private static final int TIMEOUT = 3000;
     private final Map<Integer, Map<String, String>> cache;
 
     private final InetSocketAddress serverAddress;
@@ -27,27 +28,6 @@ public class NameResolver implements INamingService {
         this.gson = new Gson();
 
         startClearCache();
-    }
-
-    private void startClearCache() {
-        executorService.execute(() -> {
-            while (!Thread.currentThread().isInterrupted()) {
-                try {
-                    // noinspection BusyWait: cache clearance interval
-                    sleep(CACHE_CLEARANCE_INTERVAL);
-                    cache.clear();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }
-        });
-    }
-
-    private String lookUpCache(String remoteId, int serviceId){
-        Map<String, String> serviceProvider = cache.get(serviceId);
-
-        if (serviceProvider != null) return serviceProvider.get(remoteId);
-        else return null;
     }
 
     @Override
@@ -71,16 +51,18 @@ public class NameResolver implements INamingService {
     }
 
     private String sendRequest(byte messageType, int serviceId, String remoteId, String address, boolean awaitResponse){
+
         NamingServiceMessage message = new NamingServiceMessage(messageType, serviceId, remoteId, address);
         byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
         String response = "";
 
-        try (Socket clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort())){
+        try (Socket clientSocket = new Socket()){
 
+            clientSocket.connect(serverAddress, TIMEOUT);
             clientSocket.getOutputStream().write(byteMessage.length);
             clientSocket.getOutputStream().write(byteMessage);
 
-            if(awaitResponse){
+            if (awaitResponse){
 
                 int responseLength = clientSocket.getInputStream().read();
                 byte[] byteResponse = clientSocket.getInputStream().readNBytes(responseLength);
@@ -94,9 +76,32 @@ public class NameResolver implements INamingService {
             }
 
         } catch (IOException e) {
-
+            // should use logger instead
+            System.err.println("NameServer Error: " + e.getMessage());
         }
         return response;
     }
+
+    private void startClearCache() {
+        executorService.execute(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                try {
+                    // noinspection BusyWait: cache clearance interval
+                    sleep(CACHE_CLEARANCE_INTERVAL);
+                    cache.clear();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+    }
+
+    private String lookUpCache(String remoteId, int serviceId){
+        Map<String, String> serviceProvider = cache.get(serviceId);
+
+        if (serviceProvider != null) return serviceProvider.get(remoteId);
+        else return null;
+    }
+
 
 }

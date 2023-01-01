@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.controller.ITronControllerFactory;
-import vsp.trongame.app.model.game.Game;
 import vsp.trongame.app.model.gamemanagement.Configuration;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
@@ -36,6 +35,7 @@ public class TronGame extends Application {
     }
 
     private static final int MODEL_THREAD_SIZE = 4;
+    private GameModus gameModus;
 
     private ExecutorService modelExecutor;
 
@@ -45,8 +45,8 @@ public class TronGame extends Application {
         /* BOOT APP */
 
         Configuration config = new Configuration();
-        GameModus modus = GameModus.valueOf(config.getAttribut("gameMode"));
-        boolean singleView = modus == GameModus.LOCAL;
+        gameModus = GameModus.valueOf(config.getAttribut("gameMode"));
+        boolean singleView = gameModus == GameModus.LOCAL;
 
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
@@ -56,21 +56,20 @@ public class TronGame extends Application {
         ITronModel tronModel = ITronModelFactory.getTronModel(GameModus.LOCAL);
 
         /* middleware & stubs if not LOCAL */
-        if (modus != GameModus.LOCAL){
-            boolean nameServer = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
+        if (gameModus != GameModus.LOCAL){
+            boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
             String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
-            Middleware.getInstance().start(nameServerAddress, nameServer);
+            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
+
             //create stub
             new IGameCallee(config, modelExecutor);
-            IUpdateListenerCallee updateListenerCallee = new IUpdateListenerCallee();
-            IGameManagerCallee gameManagerCallee = new IGameManagerCallee();
-            updateListenerCallee.setUpdateListener((ITronModel.IUpdateListener) tronView);
-            gameManagerCallee.setGameManager((IGameManager) tronModel);
+            new IUpdateListenerCallee((ITronModel.IUpdateListener) tronView);
+            new IGameManagerCallee((IGameManager) tronModel);
         }
 
         /* assemble */
         tronController.initialize(tronModel);
-        tronModel.initialize(config, modus, singleView, modelExecutor);
+        tronModel.initialize(config, gameModus, singleView, modelExecutor);
         tronView.initialize(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
                 Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
@@ -89,7 +88,7 @@ public class TronGame extends Application {
     public void stop() throws Exception {
         super.stop();
         modelExecutor.shutdownNow(); //shutdown any model threads
-        Middleware.getInstance().stop(); //shutdown any middleware threads
+        if (gameModus != GameModus.LOCAL) Middleware.getInstance().stop(); //shutdown any middleware threads
     }
 
 }

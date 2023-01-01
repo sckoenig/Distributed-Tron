@@ -16,13 +16,10 @@ import static vsp.trongame.applicationstub.util.Service.*;
 
 public class IGameManagerCallee implements IRemoteObject {
 
-    private IGameManager gameManager;
+    private final IGameManager gameManager;
 
-    public void setGameManager(IGameManager gameManager){
+    public IGameManagerCallee(IGameManager gameManager) {
         this.gameManager = gameManager;
-    }
-
-    public IGameManagerCallee() {
         // can be called from remote
         IRegister middleware = Middleware.getInstance();
         middleware.registerRemoteObject(HANDLE_GAME_STATE.ordinal(), RemoteId.STRING_ID, this);

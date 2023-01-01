@@ -4,7 +4,6 @@ import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -18,7 +17,7 @@ public interface IGame {
      * Prepares the game to start, sets a timer for the countdown and creates an arena.
      * @param playerCount the accepted playerCount
      */
-    void prepare(int playerCount);
+    void prepareForRegistration(int playerCount);
 
     /**
      * The game saves which observers are informing the game and creates the sum of players.
@@ -31,7 +30,7 @@ public interface IGame {
 
     /**
      * Based on the player id and the direction in the steer objects the players' directions are changed.
-     * @param steers a list of the player's steer events
+     * @param steer a player's steer event
      */
     void handleSteer(Steer steer);
 }

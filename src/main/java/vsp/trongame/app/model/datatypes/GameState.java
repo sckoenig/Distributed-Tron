@@ -5,10 +5,10 @@ package vsp.trongame.app.model.datatypes;
  */
 public enum GameState {
     INIT,
-    PREPARING,
-    COUNTDOWN,
+    REGISTRATION,
+    STARTING,
     RUNNING,
-    FINISHED;
+    FINISHING;
 
     public static GameState getByOrdinal(int ordinal){
 

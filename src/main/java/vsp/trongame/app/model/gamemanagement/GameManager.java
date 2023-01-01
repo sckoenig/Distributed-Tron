@@ -15,10 +15,10 @@ import java.util.concurrent.ExecutorService;
 public class GameManager implements IGameManager, ITronModel {
 
     private static final Map<ModelState, Map<GameState, ModelState>> transitions = new EnumMap<>(Map.of(
-            ModelState.MENU, Map.of(GameState.PREPARING, ModelState.WAITING),
-            ModelState.WAITING, Map.of(GameState.COUNTDOWN, ModelState.COUNTDOWN, GameState.INIT, ModelState.MENU),
-            ModelState.COUNTDOWN, Map.of(GameState.RUNNING, ModelState.PLAYING, GameState.COUNTDOWN, ModelState.COUNTDOWN),
-            ModelState.PLAYING, Map.of(GameState.FINISHED, ModelState.ENDING),
+            ModelState.MENU, Map.of(GameState.REGISTRATION, ModelState.WAITING),
+            ModelState.WAITING, Map.of(GameState.STARTING, ModelState.COUNTDOWN, GameState.INIT, ModelState.MENU),
+            ModelState.COUNTDOWN, Map.of(GameState.RUNNING, ModelState.PLAYING, GameState.STARTING, ModelState.COUNTDOWN),
+            ModelState.PLAYING, Map.of(GameState.FINISHING, ModelState.ENDING),
             ModelState.ENDING, Map.of(GameState.INIT, ModelState.MENU)));
 
     private final Map<Integer, IUpdateListener> listenersMap; //find listeners by their id
@@ -54,7 +54,6 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleGameState(GameState gameState) {
-        System.out.println("################ GM : received GameState " + gameState + "while in state "+currentState);
         ModelState newState = transitions.get(currentState).get(gameState);
         if (newState != null) transition(newState);
     }
@@ -63,8 +62,8 @@ public class GameManager implements IGameManager, ITronModel {
     public void playGame(int listenerID, int playerCount) {
 
         if (currentState == ModelState.MENU) {
-            game.prepare(playerCount);
-            handleGameState(GameState.PREPARING);
+            game.prepareForRegistration(playerCount);
+            handleGameState(GameState.REGISTRATION);
         }
 
         executorService.execute(() -> {
@@ -85,7 +84,6 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
-        System.out.println("################ GM : MANAGED PLAYERS INFO RECEIVED");
 
         Map<String, String> keyMapping = new HashMap<>();
 

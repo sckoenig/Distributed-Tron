@@ -27,7 +27,6 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     private final Receiver receiver;
     private InetSocketAddress serverStubAddress;
 
-
     public Unmarshaller(ExecutorService executorService, INamingService namingService){
         this.namingService = namingService;
         this.gson = new Gson();
@@ -35,8 +34,8 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         this.messageQueue = new LinkedBlockingQueue<>();
         this.remoteObjectRegister = new HashMap<>();
         this.receiver = new Receiver(this, executorService);
-
         startServiceCallHandler(); //handles tasks in queue
+        receiver.start();
     }
 
     private void startServiceCallHandler() {
@@ -48,14 +47,19 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
                     ServiceCall call = gson.fromJson(json, ServiceCall.class);
 
                     IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
-                    if (remoteObject != null)
+                    if (remoteObject != null) {
                         remoteObject.call(call.serviceId(), call.intParameters(), call.stringParameters());
+                    }
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         });
+    }
+
+    public void stop() {
+        receiver.stop();
     }
 
     @Override
@@ -78,7 +82,4 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         namingService.registerService(remoteId, serviceID, serverStubAddress.getAddress().getHostAddress()+":"+ serverStubAddress.getPort());
     }
 
-    public void shutDown(){
-        receiver.shutDown();
-    }
 }
