@@ -34,7 +34,7 @@ public class TronGame extends Application {
         launch();
     }
 
-    private static final int MODEL_THREAD_SIZE = 4;
+    private static final int MODEL_THREAD_SIZE = 3;
     private GameModus gameModus;
 
     private ExecutorService modelExecutor;

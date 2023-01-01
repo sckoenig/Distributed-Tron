@@ -67,7 +67,6 @@ public class Game implements IGame {
         }
 
         if (isGameFull()) transitionState(GameState.STARTING);
-
     }
 
     @Override
@@ -254,14 +253,12 @@ public class Game implements IGame {
     }
 
     private void updateField() {
-        gameExecutor.execute(() -> {
-            collisionDetector.detectCollision(players, arena);
-            Map<String, List<Coordinate>> map = new HashMap<>();
-            for (IPlayer player : players) {
-                if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
-            }
-            updateListeners.forEach(dl -> dl.updateOnField(map));
-        });
+        collisionDetector.detectCollision(players, arena);
+        Map<String, List<Coordinate>> map = new HashMap<>();
+        for (IPlayer player : players) {
+            if (player.isAlive()) map.put(player.getColor().getHex(), new ArrayList<>(player.getCoordinates()));
+        }
+        updateListeners.forEach(dl -> dl.updateOnField(map));
     }
 
 
