@@ -92,7 +92,7 @@ public class Configuration {
                 || Integer.parseInt(properties.getProperty(DEFAULT_PLAYER_NUMBER)) > 6)
             return false;
 
-        if (1 > Integer.parseInt(properties.getProperty(SPEED)) || Integer.parseInt(properties.getProperty(SPEED)) > 100)
+        if (1 > Integer.parseInt(properties.getProperty(SPEED)) || Integer.parseInt(properties.getProperty(SPEED)) > 500)
             return false;
 
         if (isSteerValid(properties.getProperty(P_EINS), properties.getProperty(P_ZWEI), properties.getProperty(P_DREI),

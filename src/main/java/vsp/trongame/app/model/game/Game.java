@@ -236,8 +236,11 @@ public class Game implements IGame {
             updateField();
             long timeDiff = System.currentTimeMillis() - whileStart;
 
-            // noinspection BusyWait: tickrate here
-            sleep((ONE_SECOND / speed) - timeDiff);
+            long waitingTime = (ONE_SECOND / speed) - timeDiff;
+            if (waitingTime >= 0) {
+                // noinspection BusyWait: tickrate here
+                sleep(waitingTime);
+            }
         }
     }
 
