@@ -35,6 +35,7 @@ public class NameServer implements INamingService {
             this.tcpServerSocket = new ServerSocket();
             tcpServerSocket.bind(address);
 
+
             while (!Thread.currentThread().isInterrupted()) {
 
                 Socket clientSocket = this.tcpServerSocket.accept();

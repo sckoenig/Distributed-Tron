@@ -19,7 +19,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Unmarshaller implements IUnmarshaller, IRegister {
 
     private final Map<Integer, IRemoteObject> remoteObjectRegister;
-
     private final BlockingQueue<byte[]> messageQueue;
     private final ExecutorService executorService;
     private final Gson gson;
@@ -34,6 +33,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         this.messageQueue = new LinkedBlockingQueue<>();
         this.remoteObjectRegister = new HashMap<>();
         this.receiver = new Receiver(this, executorService);
+
         startServiceCallHandler(); //handles tasks in queue
         receiver.start();
     }
@@ -71,6 +71,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     public void setPort(int port) {
         try {
             this.serverStubAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
+            System.out.println(InetAddress.getLocalHost());
         } catch (UnknownHostException e){
             e.printStackTrace();
         }

@@ -15,9 +15,10 @@ import static java.lang.Thread.*;
  */
 public class Game implements IGame {
     private static final int ONE_SECOND = 1000;
+    private static final int COUNTDOWN_LENGTH = 3;
     private final List<IPlayer> players;
     private final Set<IGameManager> gameManagers; //listeners be related to the same manager
-    private final List<ITronModel.IUpdateListener> gameListeners;
+    private final List<ITronModel.IUpdateListener> updateListeners;
     private final ICollisionDetector collisionDetector;
     private ExecutorService gameExecutor;
     private int speed;
@@ -33,7 +34,7 @@ public class Game implements IGame {
     public Game() {
         this.players = new ArrayList<>();
         this.gameManagers = new HashSet<>();
-        this.gameListeners = new ArrayList<>();
+        this.updateListeners = new ArrayList<>();
         this.collisionDetector = new CollisionDetector();
         this.currentState = GameState.INIT;
     }
@@ -60,7 +61,7 @@ public class Game implements IGame {
     @Override
     public void register(IGameManager gameManager, ITronModel.IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
         if (isRegistrationAllowed(managedPlayerCount)) {
-            this.gameListeners.add(gameListener);
+            this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
         }
@@ -185,7 +186,7 @@ public class Game implements IGame {
      * Makes necessary preparation for game start, then starts the game.
      */
     private void startGame() {
-        gameListeners.forEach(gl -> gl.updateOnArena(rows, columns));
+        updateListeners.forEach(gl -> gl.updateOnArena(rows, columns));
 
         List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
@@ -199,15 +200,15 @@ public class Game implements IGame {
 
     private void countDown() throws InterruptedException {
 
-        for (int i = 3; i > 0; i--) {
+        for (int i = COUNTDOWN_LENGTH; i > 0; i--) {
             long startTime = System.currentTimeMillis();
-            for (ITronModel.IUpdateListener listeners : gameListeners) {
+            for (ITronModel.IUpdateListener listeners : updateListeners) {
                 listeners.updateOnCountDown(i);
             }
             long time = System.currentTimeMillis() - startTime;
             sleep(ONE_SECOND - time);
         }
-        gameListeners.forEach(ITronModel.IUpdateListener::updateOnGameStart);
+        updateListeners.forEach(ITronModel.IUpdateListener::updateOnGameStart);
     }
 
     /**
@@ -256,7 +257,7 @@ public class Game implements IGame {
             for (IPlayer player : players) {
                 if (player.isAlive()) map.put(player.getColor().getHex(), player.getCoordinates());
             }
-            gameListeners.forEach(dl -> dl.updateOnField(map));
+            updateListeners.forEach(dl -> dl.updateOnField(map));
         });
     }
 
@@ -305,7 +306,7 @@ public class Game implements IGame {
             resultColor = TronColor.DEFAULT;
         }
 
-        gameListeners.forEach(listener -> listener.updateOnGameResult(resultColor.getHex(), result.getResultText()));
+        updateListeners.forEach(listener -> listener.updateOnGameResult(resultColor.getHex(), result.getResultText()));
         startTimer(endingTime, currentState);
     }
 
@@ -315,7 +316,7 @@ public class Game implements IGame {
     private void reset() {
         playerCount = registeredPlayerCount = 0;
         gameManagers.clear();
-        gameListeners.clear();
+        updateListeners.clear();
         players.clear();
     }
 

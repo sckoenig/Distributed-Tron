@@ -103,6 +103,7 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
             endingOverlay.setResult(result, color);
             mainView.clear();
             coordinates.clear();
+            countdownOverlay.reset();
         });
     }
 

@@ -31,7 +31,6 @@ public class CountdownOverlay {
      */
     public void setKeyMappings(Map<String, String> mappings) {
         Platform.runLater(() -> {
-            mainHBox.getChildren().clear(); //happens once a game
 
             for (Map.Entry<String, String> entry : mappings.entrySet()) {
                 HBox hBox = new HBox();
@@ -56,7 +55,13 @@ public class CountdownOverlay {
     }
 
     public void setCounterLabel(int value) {
+        counterLabel.setVisible(true);
         counterLabel.setText(String.valueOf(value));
+    }
+
+    public void reset(){
+        mainHBox.getChildren().clear(); //happens once a game
+        counterLabel.setVisible(false);
     }
 
 }
