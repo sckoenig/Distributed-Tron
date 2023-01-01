@@ -6,7 +6,6 @@ import vsp.trongame.middleware.IRemoteObject;
 import vsp.trongame.middleware.namingservice.INamingService;
 import vsp.trongame.middleware.util.ServiceCall;
 
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
@@ -25,8 +24,9 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     private final ExecutorService executorService;
     private final Gson gson;
     private final INamingService namingService;
-    private InetSocketAddress address;
-    private Receiver receiver;
+    private final Receiver receiver;
+    private InetSocketAddress serverStubAddress;
+
 
     public Unmarshaller(ExecutorService executorService, INamingService namingService){
         this.namingService = namingService;
@@ -34,12 +34,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         this.executorService = executorService;
         this.messageQueue = new LinkedBlockingQueue<>();
         this.remoteObjectRegister = new HashMap<>();
-
-        try {
-            this.receiver = new Receiver(this, executorService);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.receiver = new Receiver(this, executorService);
 
         startServiceCallHandler(); //handles tasks in queue
     }
@@ -49,9 +44,8 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
                     byte[] message = messageQueue.take();
-                    String json = new String(message, StandardCharsets.UTF_8).strip().trim();
+                    String json = new String(message, StandardCharsets.UTF_8).trim();
                     ServiceCall call = gson.fromJson(json, ServiceCall.class);
-                    System.out.println("RECEIVED: "+json);
 
                     IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
                     if (remoteObject != null)
@@ -72,7 +66,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void setPort(int port) {
         try {
-            this.address = new InetSocketAddress(InetAddress.getLocalHost(), port);
+            this.serverStubAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
         } catch (UnknownHostException e){
             e.printStackTrace();
         }
@@ -81,7 +75,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void registerRemoteObject(int serviceID, String remoteId, IRemoteObject remoteObject) {
         remoteObjectRegister.put(serviceID, remoteObject);
-        namingService.registerService(remoteId, serviceID, address.getAddress().getHostAddress()+":"+address.getPort());
+        namingService.registerService(remoteId, serviceID, serverStubAddress.getAddress().getHostAddress()+":"+ serverStubAddress.getPort());
     }
 
     public void shutDown(){

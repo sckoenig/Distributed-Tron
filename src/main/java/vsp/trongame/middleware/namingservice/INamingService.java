@@ -9,7 +9,6 @@ public interface INamingService {
     byte LOOKUP = 3;
     byte RESPONSE = 4;
 
-    void startWithAddress(String address);
 
     String lookupService(String remoteID, int serviceId);
 

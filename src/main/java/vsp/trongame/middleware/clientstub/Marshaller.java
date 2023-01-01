@@ -44,20 +44,16 @@ public class Marshaller implements IRemoteInvocation {
             while (!Thread.currentThread().isInterrupted()){
                 try {
                     InvocationTask task = queue.take();
-                    String jsonMessage =  gson.toJson(task.serviceCall());
+                    byte[] message  =  gson.toJson(task.serviceCall()).getBytes(StandardCharsets.UTF_8);
 
-                    byte[] message = jsonMessage.getBytes(StandardCharsets.UTF_8);
                     String result = namingService.lookupService(task.remoteId(), task.serviceCall().serviceId());
                     String[] split = result.split(":");
                     InetSocketAddress address = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
-                    System.out.println("SEND: "+jsonMessage);
+
                     sender.send(message, address, task.protocol());
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (IOException e){
-                    Thread.currentThread().interrupt();
-                    e.printStackTrace();
                 }
             }
         });

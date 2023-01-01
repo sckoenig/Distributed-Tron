@@ -1,7 +1,7 @@
 package vsp.trongame.middleware.namingservice;
 
 import com.google.gson.Gson;
-import java.io.DataOutputStream;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -13,15 +13,15 @@ import java.util.concurrent.ExecutorService;
 import static java.lang.Thread.sleep;
 
 public class NameResolver implements INamingService {
-    private static final int CACHE_TIME = 15000;
-    private Map<Integer, Map<String, String>> cache;
-    private Socket clientSocket;
+    private static final int CACHE_CLEARANCE_INTERVAL = 15000;
+    private final Map<Integer, Map<String, String>> cache;
 
-    private InetSocketAddress serverAddress;
+    private final InetSocketAddress serverAddress;
     private final Gson gson;
     private final ExecutorService executorService;
 
-    public NameResolver(ExecutorService executorService) {
+    public NameResolver(ExecutorService executorService, InetSocketAddress address) {
+        this.serverAddress = address;
         this.executorService = executorService;
         this.cache = new HashMap<>();
         this.gson = new Gson();
@@ -34,7 +34,7 @@ public class NameResolver implements INamingService {
             while (!Thread.currentThread().isInterrupted()) {
                 try {
                     // noinspection BusyWait: cache clearance interval
-                    sleep(CACHE_TIME);
+                    sleep(CACHE_CLEARANCE_INTERVAL);
                     cache.clear();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -43,69 +43,60 @@ public class NameResolver implements INamingService {
         });
     }
 
-    @Override
-    public void startWithAddress(String address) {
-        String[] split = address.split(":");
-        this.serverAddress = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
+    private String lookUpCache(String remoteId, int serviceId){
+        Map<String, String> serviceProvider = cache.get(serviceId);
+
+        if (serviceProvider != null) return serviceProvider.get(remoteId);
+        else return null;
     }
 
     @Override
     public String lookupService(String remoteID, int serviceId) {
-        Map<String, String> map = cache.get(serviceId);
-        String address = null;
-        if (map != null) address = map.get(remoteID);
+        String address = lookUpCache(remoteID, serviceId);
+
         if (address == null) {
-            try {
-                clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
-                NamingServiceMessage message = new NamingServiceMessage(LOOKUP, serviceId, remoteID, null);
-                byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
-                clientSocket.getOutputStream().write(byteMessage.length);
-                clientSocket.getOutputStream().write(byteMessage);
-                int length = clientSocket.getInputStream().read();
-                byte[] response = clientSocket.getInputStream().readNBytes(length);
-                String jsonResponse = new String(response, StandardCharsets.UTF_8);
-                NamingServiceMessage responseMessage = gson.fromJson(jsonResponse, NamingServiceMessage.class);
-
-                cache.computeIfAbsent(serviceId, v -> new HashMap<>()).put(remoteID, responseMessage.address());
-                address = responseMessage.address();
-
-                return address;
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return sendRequest(LOOKUP, serviceId, remoteID, null, true);
         }
         return address;
     }
 
     @Override
     public void registerService(String remoteID, int serviceID, String address) {
-        try {
-            clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
-            NamingServiceMessage message = new NamingServiceMessage(REGISTER, serviceID, remoteID, address);
-            String json = gson.toJson(message);
-            byte[] byteMessage = json.getBytes(StandardCharsets.UTF_8);
-            DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
-            out.write(byteMessage.length);
-            out.write(byteMessage);
-        } catch (IOException e) {
-            error();
-        }
+        sendRequest(REGISTER, serviceID, remoteID, address, false);
     }
 
     @Override
     public void unregisterService(String remoteID) {
-        try {
-            clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort());
-            NamingServiceMessage message = new NamingServiceMessage(UNREGISTER, -1, remoteID, null);
-            byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
-            clientSocket.getOutputStream().write(byteMessage);
-        } catch (IOException e) {
-            error();
-        }
+        sendRequest(UNREGISTER, NO_SERVICE, remoteID, null, false);
     }
 
-    private void error() {
-        System.out.println("SERVER NCIHT ERREICHBAR");
+    private String sendRequest(byte messageType, int serviceId, String remoteId, String address, boolean awaitResponse){
+        NamingServiceMessage message = new NamingServiceMessage(messageType, serviceId, remoteId, address);
+        byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
+        String response = "";
+
+        try (Socket clientSocket = new Socket(serverAddress.getAddress(), serverAddress.getPort())){
+
+            clientSocket.getOutputStream().write(byteMessage.length);
+            clientSocket.getOutputStream().write(byteMessage);
+
+            if(awaitResponse){
+
+                int responseLength = clientSocket.getInputStream().read();
+                byte[] byteResponse = clientSocket.getInputStream().readNBytes(responseLength);
+                String jsonResponse = new String(byteResponse, StandardCharsets.UTF_8);
+                NamingServiceMessage responseMessage = gson.fromJson(jsonResponse, NamingServiceMessage.class);
+
+                //save in cache
+                cache.computeIfAbsent(serviceId, v -> new HashMap<>()).put(remoteId, responseMessage.address());
+
+                return responseMessage.address();
+            }
+
+        } catch (IOException e) {
+
+        }
+        return response;
     }
+
 }

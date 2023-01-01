@@ -10,6 +10,6 @@ public interface ISender {
         TCP, UDP
     }
 
-    void send(byte[] message, InetSocketAddress address, Protocol protocol) throws IOException;
+    void send(byte[] message, InetSocketAddress address, Protocol protocol);
 
 }

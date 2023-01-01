@@ -17,52 +17,46 @@ public class Receiver {
     private final BlockingQueue<Socket> tcpSocketQueue;
     private final Random rand;
     private final ExecutorService executorService;
-    //private final byte[] udpPacketBuffer;
 
-    public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) throws IOException {
+    public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService)  {
         this.unmarshaller = unmarshaller;
         this.executorService = executorService;
         this.tcpSocketQueue = new LinkedBlockingQueue<>();
-        //this.udpPacketBuffer = new byte[PACKAGE_SIZE];
         this.rand = new Random();
 
-        createServerSockets();
-
-    }
-
-    private void createServerSockets() throws UnknownHostException {
-        int port;
-        boolean success = false;
-
-        while (!success){
-            port = rand.nextInt(MIN_PORT, MAX_PORT+1);
-            try{
-                this.udpSocket = new DatagramSocket( port);
-                this.tcpSocket = new ServerSocket( );
-                tcpSocket.bind(new InetSocketAddress(port));
-                tcpSocket.setReuseAddress(true);
-                udpSocket.setReuseAddress(true);
-
-                success = true;
-                unmarshaller.setPort(port);
-            } catch (IOException e) {
-                System.out.println("CATCH");
-            }
-        }
-
+        createReceiverSockets();
         startTcpReceiver();
         startUdpReceiver();
+    }
+
+    private void createReceiverSockets() {
+        int port;
+        boolean portAvailable = false;
+
+        while (!portAvailable){
+            port = rand.nextInt(MIN_PORT, MAX_PORT+1);
+
+            try{
+                this.udpSocket = new DatagramSocket(port);
+                this.tcpSocket = new ServerSocket();
+                tcpSocket.bind(new InetSocketAddress(port));
+
+                portAvailable = true;
+                unmarshaller.setPort(port);
+            } catch (IOException e) {
+                // catch and roll another port
+            }
+        }
     }
 
     private void startTcpReceiver(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
-                try {
-                    Socket clientSocket = tcpSocket.accept();
+
+                try (Socket clientSocket = tcpSocket.accept()){
                     tcpSocketQueue.add(clientSocket);
                 } catch (IOException e) {
-                    Thread.currentThread().interrupt();
-                    //logging
+                    // catch and abort on socket error
                 }
             }
         });
@@ -73,13 +67,16 @@ public class Receiver {
     private void startTcpSocketHandler(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
+
                 try (Socket clientSocket = tcpSocketQueue.take()) {
-                    int length = clientSocket.getInputStream().read();
-                    byte[] message = clientSocket.getInputStream().readNBytes(length);
+                    int messageLength = clientSocket.getInputStream().read();
+                    byte[] message = clientSocket.getInputStream().readNBytes(messageLength);
                     unmarshaller.addToQueue(message);
 
-                } catch (InterruptedException | IOException e) {
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                } catch (IOException e){
+                    // catch and abort on socket error
                 }
             }
         });
@@ -87,18 +84,19 @@ public class Receiver {
 
     private void startUdpReceiver(){
         executorService.execute(() -> {
-            while (!Thread.currentThread().isInterrupted()){
+            while (!Thread.currentThread().isInterrupted()) {
+
                 try {
                     byte[] udpPacketBuffer = new byte[PACKAGE_SIZE];
                     DatagramPacket packet = new DatagramPacket(udpPacketBuffer, PACKAGE_SIZE);
                     udpSocket.receive(packet);
                     unmarshaller.addToQueue(packet.getData());
+
                 } catch (IOException e) {
-                    Thread.currentThread().interrupt();
+                    // we want server socket to close here, but will throw exception if still blocked in accept().
                 }
             }
         });
-
     }
 
     public void shutDown(){
@@ -106,7 +104,7 @@ public class Receiver {
             tcpSocket.close();
             udpSocket.close();
         } catch (IOException e){
-            //logging irgendwann
+            // we want server socket to close here, but will throw exception if still blocked in accept().
         }
     }
     

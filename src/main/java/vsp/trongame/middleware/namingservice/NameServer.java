@@ -14,25 +14,24 @@ import java.util.concurrent.Executors;
 public class NameServer implements INamingService {
 
     private final Map<Integer, Map<String, String>> services;
+    private final InetSocketAddress address;
     private final Gson gson;
     private final ExecutorService executorService;
     private ServerSocket tcpServerSocket;
 
-    public NameServer() {
+    public NameServer(InetSocketAddress address) {
+        this.address = address;
         this.gson = new Gson();
         this.services = new HashMap<>();
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
-
-    public void startWithAddress(String address) {
-        String[] split = address.split(":");
-        executorService.execute(() -> runServerSocket(new InetSocketAddress(split[0], Integer.parseInt(split[1]))));
+    public void start() {
+        executorService.execute(this::runServerSocket);
     }
 
-    private void runServerSocket(InetSocketAddress address) {
+    private void runServerSocket() {
         try {
-
             this.tcpServerSocket = new ServerSocket();
             tcpServerSocket.bind(address);
 
@@ -50,7 +49,7 @@ public class NameServer implements INamingService {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            // on close() server socket will throw exception if still blocked in accept()
         }
     }
 

@@ -13,18 +13,24 @@ public class Sender implements ISender {
     }
 
     @Override
-    public void send(byte[] message, InetSocketAddress address, Protocol protocol) throws IOException {
-        switch(protocol){
-            case TCP -> {
-                Socket clientSocket = new Socket(address.getAddress(), address.getPort());
-                OutputStream out = clientSocket.getOutputStream();
-                out.write(message.length);
-                out.write(message);
+    public void send(byte[] message, InetSocketAddress address, Protocol protocol) {
+        try {
+
+            if (protocol == Protocol.TCP) {
+                try (Socket clientSocket = new Socket(address.getAddress(), address.getPort());) {
+                    OutputStream out = clientSocket.getOutputStream();
+                    out.write(message.length);
+                    out.write(message);
+                }
             }
-            case UDP -> {
-                DatagramPacket packet = new DatagramPacket(message, message.length, address);
-                udpSocket.send(packet);
+            if (protocol == Protocol.UDP) {
+                    DatagramPacket packet = new DatagramPacket(message, message.length, address);
+                    udpSocket.send(packet);
             }
+
+        } catch (IOException e){
+            // catch and abort if the receiver is not available
         }
     }
+
 }

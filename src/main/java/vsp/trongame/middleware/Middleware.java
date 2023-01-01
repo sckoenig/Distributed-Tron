@@ -1,6 +1,5 @@
 package vsp.trongame.middleware;
 
-import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.clientstub.Marshaller;
 import vsp.trongame.middleware.namingservice.INamingService;
 import vsp.trongame.middleware.namingservice.NameResolver;
@@ -9,7 +8,6 @@ import vsp.trongame.middleware.serverstub.Unmarshaller;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;
-import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,7 +17,7 @@ import java.util.concurrent.Executors;
 public class Middleware implements IRegister, IRemoteInvocation {
 
     private static final Middleware INSTANCE = new Middleware();
-    private static final int MIDDLEWARE_THREAD_SIZE = 10;
+    private static final int MIDDLEWARE_THREAD_SIZE = 10; //TODO: Anzahl 6?
 
     public static Middleware getInstance() {
         return INSTANCE;
@@ -33,17 +31,18 @@ public class Middleware implements IRegister, IRemoteInvocation {
     private Middleware() {
     }
 
-    public void start(String address, boolean nameServer) {
+    public void start(String nameServerAddress, boolean nameServer) {
 
         this.middlewareExecutor = Executors.newFixedThreadPool(MIDDLEWARE_THREAD_SIZE);
+        String[] split = nameServerAddress.split(":");
+        InetSocketAddress nameServerSocketAddress = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
 
         try {
             if (nameServer) {
-                this.nameServer = new NameServer();
-                this.nameServer.startWithAddress(address);
+                this.nameServer = new NameServer(nameServerSocketAddress);
+                this.nameServer.start();
             }
-            INamingService namingService = new NameResolver(middlewareExecutor);
-
+            INamingService namingService = new NameResolver(middlewareExecutor, nameServerSocketAddress);
             this.marshaller = new Marshaller(middlewareExecutor, namingService);
             this.unmarshaller = new Unmarshaller(middlewareExecutor, namingService);
 
