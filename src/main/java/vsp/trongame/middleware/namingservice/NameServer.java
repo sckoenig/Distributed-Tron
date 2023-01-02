@@ -32,9 +32,7 @@ public class NameServer implements INamingService {
 
     private void runServerSocket() {
         try {
-            this.tcpServerSocket = new ServerSocket();
-            tcpServerSocket.bind(address);
-
+            this.tcpServerSocket = new ServerSocket(address.getPort());
 
             while (!Thread.currentThread().isInterrupted()) {
 

@@ -57,7 +57,6 @@ public class NameResolver implements INamingService {
         String response = "";
 
         try (Socket clientSocket = new Socket()){
-
             clientSocket.connect(serverAddress, TIMEOUT);
             clientSocket.getOutputStream().write(byteMessage.length);
             clientSocket.getOutputStream().write(byteMessage);

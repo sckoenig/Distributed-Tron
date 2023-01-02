@@ -64,7 +64,7 @@ public class Game implements IGame {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
-        }
+        } else gameManager.handleGameState(GameState.INIT);
 
         if (isGameFull()) transitionState(GameState.STARTING);
     }
