@@ -1,6 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 
@@ -11,7 +12,7 @@ import java.util.concurrent.ExecutorService;
  */
 public interface IGame {
 
-    void initialize(int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService);
+    void initialize(GameModus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService);
 
     /**
      * Prepares the game to start, sets a timer for the countdown and creates an arena.

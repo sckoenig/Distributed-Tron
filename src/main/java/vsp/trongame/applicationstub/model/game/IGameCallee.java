@@ -29,8 +29,8 @@ public class IGameCallee implements IRemoteObject {
     private final IGame localGame;
 
     public IGameCallee(Configuration config, ExecutorService executorService) {
-        this.localGame = IGameFactory.getGame(GameModus.LOCAL); //knows the "real" game
-        this.localGame.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+        this.localGame = IGameFactory.getGame(GameModus.LOCAL); //TODO rest wrapper here probably
+        this.localGame.initialize(GameModus.NETWORK, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
                 Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
                 Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),

@@ -1,6 +1,7 @@
 package vsp.trongame.applicationstub.model.game;
 
 import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
@@ -25,7 +26,7 @@ public class IGameCaller implements IGame, ICaller {
     }
 
     @Override
-    public void initialize(int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
+    public void initialize(GameModus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
         //not needed
     }
 

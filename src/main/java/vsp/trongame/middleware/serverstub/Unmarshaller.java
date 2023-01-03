@@ -70,8 +70,8 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void setPort(int port) {
         try {
-            this.serverStubAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
-            System.out.println(InetAddress.getLocalHost());
+            this.serverStubAddress = new InetSocketAddress(InetAddress.getLocalHost(), port); //TODO Network Interfaces
+            //this.serverStubAddress = new InetSocketAddress("192.168.193.57", port);
         } catch (UnknownHostException e){
             e.printStackTrace();
         }

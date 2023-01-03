@@ -40,13 +40,13 @@ public class Game implements IGame {
     }
 
     @Override
-    public void initialize(int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
+    public void initialize(GameModus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
         this.rows = rows;
         this.columns = columns;
         this.speed = speed;
         this.preparationTime = waitingTimer;
         this.endingTime = endingTimer;
-        this.arena = new Arena(rows, columns);
+        this.arena = IArenaFactory.getArena(modus, rows, columns);
         this.gameExecutor = executorService;
     }
 
@@ -64,9 +64,13 @@ public class Game implements IGame {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
-        } else gameManager.handleGameState(GameState.INIT);
 
-        if (isGameFull()) transitionState(GameState.STARTING);
+            if (isGameFull()) {
+                transitionState(GameState.STARTING);
+            }
+        } else {
+            gameManager.handleGameState(GameState.INIT); // registration denied
+        }
     }
 
     @Override
@@ -84,9 +88,12 @@ public class Game implements IGame {
     /**
      * Transitions to the next state and informs stateListeners.
      */
-    private void transitionState(GameState newState) {
-        currentState = newState;
-        executeState();
+    private synchronized void transitionState(GameState newState) {
+        // synchronized: may be used by timer-thread *and* main-thread
+        if (currentState != newState) {
+            currentState = newState;
+            executeState();
+        }
     }
 
     /**
@@ -129,7 +136,9 @@ public class Game implements IGame {
     private void handleTimeOut(GameState startedAt) {
         if (startedAt == GameState.FINISHING && currentState == GameState.FINISHING) transitionState(GameState.INIT);
         if (startedAt == GameState.REGISTRATION && currentState == GameState.REGISTRATION) {
-            if (isGameReady()) transitionState(GameState.STARTING);
+            if (isGameReady()) {
+                transitionState(GameState.STARTING);
+            }
             else transitionState(GameState.INIT);
         }
     }

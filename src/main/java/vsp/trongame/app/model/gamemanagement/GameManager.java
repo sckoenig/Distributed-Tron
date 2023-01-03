@@ -43,7 +43,7 @@ public class GameManager implements IGameManager, ITronModel {
         this.singleView = singleView;
         this.game = IGameFactory.getGame(modus);
         this.executorService = executorService;
-        game.initialize(Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+        game.initialize(modus, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
                 Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
                 Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),
