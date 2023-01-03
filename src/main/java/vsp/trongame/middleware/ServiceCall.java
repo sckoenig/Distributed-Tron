@@ -1,7 +1,7 @@
-package vsp.trongame.middleware.util;
+package vsp.trongame.middleware;
 
 /**
- * Represents a Method Call to a remote Object.
+ * Represents a Service Call to a remote Object.
  * @param serviceId the id of the service that shall be called
  * @param intParameters service parameters of type int
  * @param stringParameters service parameters of type string

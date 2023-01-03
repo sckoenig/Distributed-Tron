@@ -100,7 +100,7 @@ public class Configuration {
             return false;
         if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(GameModus.NETWORK.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
-        //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555");
+        //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555"); //TODO check for valid ip:port string
         return true;
     }
 

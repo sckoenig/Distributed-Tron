@@ -1,7 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.IModelUpdateListener;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.datatypes.*;
 
@@ -18,7 +18,7 @@ public class Game implements IGame {
     private static final int COUNTDOWN_LENGTH = 3;
     private final List<IPlayer> players;
     private final Set<IGameManager> gameManagers; //listeners be related to the same manager
-    private final List<ITronModel.IUpdateListener> updateListeners;
+    private final List<IModelUpdateListener> updateListeners;
     private final ICollisionDetector collisionDetector;
     private ExecutorService gameExecutor;
     private int speed;
@@ -59,7 +59,7 @@ public class Game implements IGame {
     }
 
     @Override
-    public void register(IGameManager gameManager, ITronModel.IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
+    public void register(IGameManager gameManager, IModelUpdateListener gameListener, int listenerId, int managedPlayerCount) {
         if (isRegistrationAllowed(managedPlayerCount)) {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
@@ -194,8 +194,6 @@ public class Game implements IGame {
      * Makes necessary preparation for game start, then starts the game.
      */
     private void startGame() {
-        updateListeners.forEach(gl -> gl.updateOnArena(rows, columns));
-
         List<Coordinate> startingCoordinates = arena.calculateFairStartingCoordinates(registeredPlayerCount);
         for (int i = 0; i < registeredPlayerCount; i++) {
             Coordinate coordinate = startingCoordinates.get(i);
@@ -203,6 +201,8 @@ public class Game implements IGame {
             player.addCoordinate(coordinate);
             player.setDirection(arena.calculateStartingDirection(coordinate));
         }
+        updateListeners.forEach(gl -> gl.updateOnArena(rows, columns));
+        updateListeners.forEach(gl -> gl.updateOnField(updatePlayerMap()));
         transitionState(GameState.RUNNING);
     }
 
@@ -210,13 +210,13 @@ public class Game implements IGame {
 
         for (int i = COUNTDOWN_LENGTH; i > 0; i--) {
             long startTime = System.currentTimeMillis();
-            for (ITronModel.IUpdateListener listeners : updateListeners) {
+            for (IModelUpdateListener listeners : updateListeners) {
                 listeners.updateOnCountDown(i);
             }
             long time = System.currentTimeMillis() - startTime;
             sleep(ONE_SECOND - time);
         }
-        updateListeners.forEach(ITronModel.IUpdateListener::updateOnGameStart);
+        updateListeners.forEach(IModelUpdateListener::updateOnGameStart);
     }
 
     /**
@@ -263,11 +263,19 @@ public class Game implements IGame {
 
     private void updateField() {
         collisionDetector.detectCollision(players, arena);
+        updateListeners.forEach(dl -> dl.updateOnField(updatePlayerMap()));
+    }
+
+    /**
+     * Creates a map matching the map needed for the update listener.
+     * @return map of players
+     */
+    private Map<String, List<Coordinate>> updatePlayerMap(){
         Map<String, List<Coordinate>> map = new HashMap<>();
         for (IPlayer player : players) {
             if (player.isAlive()) map.put(player.getColor().getHex(), new ArrayList<>(player.getCoordinates()));
         }
-        updateListeners.forEach(dl -> dl.updateOnField(map));
+        return map;
     }
 
 

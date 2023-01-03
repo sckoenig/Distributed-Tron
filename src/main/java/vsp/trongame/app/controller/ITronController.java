@@ -4,12 +4,12 @@ import javafx.scene.input.KeyEvent;
 import vsp.trongame.app.model.ITronModel;
 
 /**
- * Controller, which directs player input to the Model component.
+ * Controller, which directs user input to the Model component.
  */
 public interface ITronController {
 
     /**
-     * When the Button "spiel starten" is clicked, the controller receives an event from the view and notifies the model.
+     * When the Button "PLAY" is clicked, the controller receives an event from the view and notifies the model.
      * @param id the initiator's registartion id
      * @param playerCount number of players for the game
      */

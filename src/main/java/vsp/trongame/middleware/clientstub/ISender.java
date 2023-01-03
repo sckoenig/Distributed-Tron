@@ -1,7 +1,5 @@
 package vsp.trongame.middleware.clientstub;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 public interface ISender {

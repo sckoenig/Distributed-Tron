@@ -1,7 +1,7 @@
-package vsp.trongame.middleware.util;
+package vsp.trongame.middleware.clientstub;
 
-import vsp.trongame.middleware.clientstub.ISender;
-import vsp.trongame.middleware.clientstub.Marshaller;
+import vsp.trongame.middleware.ServiceCall;
+
 /**
  * Represents a task for the {@link Marshaller}.
  * @param serviceCall the service call that shall be performed
@@ -9,6 +9,5 @@ import vsp.trongame.middleware.clientstub.Marshaller;
  * @param protocol the protocol the sender should use
  */
 public record InvocationTask(ServiceCall serviceCall, String remoteId, ISender.Protocol protocol) {
-
 }
 

@@ -6,7 +6,7 @@ import vsp.trongame.app.model.datatypes.Direction;
 import java.util.List;
 
 /**
- * The arena which stores and manages the positions of each bike.
+ * The arena which stores and manages the positions of each player.
  */
 public interface IArena {
     /**

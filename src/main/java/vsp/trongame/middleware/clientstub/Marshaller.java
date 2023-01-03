@@ -3,8 +3,7 @@ package vsp.trongame.middleware.clientstub;
 import com.google.gson.Gson;
 import vsp.trongame.middleware.IRemoteInvocation;
 import vsp.trongame.middleware.namingservice.INamingService;
-import vsp.trongame.middleware.util.InvocationTask;
-import vsp.trongame.middleware.util.ServiceCall;
+import vsp.trongame.middleware.ServiceCall;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;

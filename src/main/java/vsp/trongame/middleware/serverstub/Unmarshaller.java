@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import vsp.trongame.middleware.IRegister;
 import vsp.trongame.middleware.IRemoteObject;
 import vsp.trongame.middleware.namingservice.INamingService;
-import vsp.trongame.middleware.util.ServiceCall;
+import vsp.trongame.middleware.ServiceCall;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

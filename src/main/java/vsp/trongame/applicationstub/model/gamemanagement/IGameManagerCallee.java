@@ -24,7 +24,6 @@ public class IGameManagerCallee implements IRemoteObject {
         IRegister middleware = Middleware.getInstance();
         middleware.registerRemoteObject(HANDLE_GAME_STATE.ordinal(), RemoteId.STRING_ID, this);
         middleware.registerRemoteObject(HANDLE_MANAGED_PLAYERS.ordinal(), RemoteId.STRING_ID, this);
-        middleware.registerRemoteObject(HANDLE_GAME_TICK.ordinal(), RemoteId.STRING_ID, this);
     }
 
     @Override

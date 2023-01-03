@@ -1,6 +1,6 @@
 package vsp.trongame.applicationstub.model.game;
 
-import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.IModelUpdateListener;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
@@ -36,7 +36,7 @@ public class IGameCaller implements IGame, ICaller {
     }
 
     @Override
-    public void register(IGameManager gameManager, ITronModel.IUpdateListener listener, int listenerId, int managedPlayerCount) {
+    public void register(IGameManager gameManager, IModelUpdateListener listener, int listenerId, int managedPlayerCount) {
         middleware.invoke(remoteId, Service.REGISTER.ordinal(), InvocationType.RELIABLE, new int[]{listenerId, managedPlayerCount},
                 RemoteId.STRING_ID, RemoteId.STRING_ID);
     }

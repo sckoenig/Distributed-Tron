@@ -1,7 +1,7 @@
 package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.IModelUpdateListener;
 import vsp.trongame.app.model.datatypes.GameResult;
 import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
@@ -16,13 +16,13 @@ import java.util.List;
 import java.util.Map;
 
 
-public class IUpdateListenerCaller implements ITronModel.IUpdateListener, ICaller {
+public class IModelUpdateListenerCaller implements IModelUpdateListener, ICaller {
 
     private String remoteId;
     private final IRemoteInvocation middleware;
     private static final int COORDINATE_DELTA = 4;
 
-    public IUpdateListenerCaller() {
+    public IModelUpdateListenerCaller() {
         this.middleware = Middleware.getInstance();
     }
 

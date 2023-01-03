@@ -13,8 +13,8 @@ public class IViewWrapperFactory {
      */
     public static IViewWrapper getViewWrapper(GameModus modus){
         return switch (modus) {
-            case LOCAL -> new ViewWrapper();
-            case NETWORK -> null; //not needed right now
+            case LOCAL, NETWORK -> new TronViewWrapper();
+            // for NETWORK there is no other implementation needed at the moment
         };
     }
 

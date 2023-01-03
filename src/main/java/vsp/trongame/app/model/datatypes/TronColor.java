@@ -1,6 +1,5 @@
 package vsp.trongame.app.model.datatypes;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**

@@ -1,74 +1,35 @@
-package vsp.trongame.app.view;
+package vsp.trongame.app.view.listener;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import edu.cads.bai5.vsp.tron.view.ITronView;
-import edu.cads.bai5.vsp.tron.view.TronView;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import vsp.trongame.app.controller.ITronController;
-import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.view.overlays.*;
+import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.view.overlays.CountdownOverlay;
+import vsp.trongame.app.view.overlays.EndingOverlay;
 
-import java.io.IOException;
 import java.util.*;
 
-public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
+/**
+ * Listens to model updates and updates the view accordingly.
+ */
+public class TronModelUpdateListener implements IModelUpdateListener {
 
     private ITronView mainView;
     private CountdownOverlay countdownOverlay;
     private EndingOverlay endingOverlay;
-    private MenuOverlay menuOverlay;
     private ITronController mainController;
-    private final Map<String, Set<Coordinate>> coordinates;
+    private Map<String, Set<Coordinate>> coordinates;
 
-    public ViewWrapper() {
+    public void initialize(ITronView mainView, CountdownOverlay countdownOverlay, EndingOverlay endingOverlay, ITronController mainController) {
+        this.mainView = mainView;
+        this.countdownOverlay = countdownOverlay;
+        this.endingOverlay = endingOverlay;
+        this.mainController = mainController;
         this.coordinates = new HashMap<>();
     }
-
-    @Override
-    public void initialize(ITronModel model, ITronController mainController, int height, int width, int defaultPlayerCount,
-                           Map<String, String> mapping) throws IOException {
-
-        this.mainView = new TronView();
-        this.mainController = mainController;
-
-        Parent root;
-        FXMLLoader loader;
-        for (Map.Entry<String, String> overlay : mapping.entrySet()) {
-
-            String fxml = overlay.getValue();
-            String identifier = overlay.getKey();
-            loader = new FXMLLoader(getClass().getResource(fxml));
-            root = loader.load();
-            root.minHeight(600);
-            root.minWidth(750);
-            mainView.registerOverlay(identifier, root);
-
-            switch (overlay.getKey()) {
-                case MenuOverlay.IDENTIFIER -> menuOverlay = loader.getController();
-                case CountdownOverlay.IDENTIFIER -> countdownOverlay = loader.getController();
-                case EndingOverlay.IDENTIFIER -> endingOverlay = loader.getController();
-                default -> {
-                }
-            }
-        }
-
-        menuOverlay.initialize(mainController, defaultPlayerCount);
-        mainView.clear();
-        model.registerUpdateListener(this);
-    }
-
-    @Override
-    public Scene getScene() {
-        return mainView.getScene();
-    }
-
-
-    /* LISTENER */
 
     @Override
     public void updateOnKeyMappings(Map<String, String> mappings) {
@@ -125,5 +86,5 @@ public class ViewWrapper implements IViewWrapper, ITronModel.IUpdateListener {
         });
     }
 
-}
 
+}

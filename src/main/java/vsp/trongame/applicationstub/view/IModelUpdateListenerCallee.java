@@ -1,7 +1,7 @@
 package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.IModelUpdateListener;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
@@ -16,11 +16,11 @@ import java.util.*;
 import static vsp.trongame.applicationstub.util.Service.*;
 
 
-public class IUpdateListenerCallee implements IRemoteObject {
+public class IModelUpdateListenerCallee implements IRemoteObject {
 
-    private final ITronModel.IUpdateListener updateListener;
+    private final IModelUpdateListener updateListener;
 
-    public IUpdateListenerCallee(ITronModel.IUpdateListener updateListener) {
+    public IModelUpdateListenerCallee(IModelUpdateListener updateListener) {
         this.updateListener = updateListener;
 
         // can be called from remote

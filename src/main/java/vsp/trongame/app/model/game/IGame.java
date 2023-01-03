@@ -1,6 +1,6 @@
 package vsp.trongame.app.model.game;
 
-import vsp.trongame.app.model.ITronModel;
+import vsp.trongame.app.model.IModelUpdateListener;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
@@ -27,7 +27,7 @@ public interface IGame {
      * @param listenerId the listener's registration id
      * @param managedPlayerCount the sum of players that the manager is going to manage
      */
-    void register(IGameManager gameManager, ITronModel.IUpdateListener listener, int listenerId, int managedPlayerCount);
+    void register(IGameManager gameManager, IModelUpdateListener listener, int listenerId, int managedPlayerCount);
 
     /**
      * Based on the player id and the direction in the steer objects the players' directions are changed.

@@ -13,7 +13,7 @@ import vsp.trongame.app.view.IViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
 import vsp.trongame.applicationstub.model.game.IGameCallee;
 import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCallee;
-import vsp.trongame.applicationstub.view.IUpdateListenerCallee;
+import vsp.trongame.applicationstub.view.IModelUpdateListenerCallee;
 import vsp.trongame.middleware.Middleware;
 
 import java.io.IOException;
@@ -63,19 +63,19 @@ public class TronGame extends Application {
 
             //create stub
             new IGameCallee(config, modelExecutor);
-            new IUpdateListenerCallee((ITronModel.IUpdateListener) tronView);
+            new IModelUpdateListenerCallee(tronView.getListener());
             new IGameManagerCallee((IGameManager) tronModel);
         }
 
         /* assemble */
         tronController.initialize(tronModel);
         tronModel.initialize(config, gameModus, singleView, modelExecutor);
-        tronView.initialize(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
+        tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
                 Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
 
         /* open stage */
-        stage.setTitle("Tron");
+        stage.setTitle("LightCycles");
         stage.setScene(tronView.getScene());
         stage.show();
 
