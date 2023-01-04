@@ -21,6 +21,4 @@ module vsp.trongame {
     exports vsp.trongame.middleware.clientstub;
     exports vsp.trongame.middleware.namingservice;
     opens vsp.trongame.app.view to javafx.fxml;
-    exports vsp.trongame.app.view.listener;
-    opens vsp.trongame.app.view.listener to javafx.fxml;
 }

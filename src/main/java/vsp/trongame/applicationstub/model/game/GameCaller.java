@@ -1,6 +1,6 @@
 package vsp.trongame.applicationstub.model.game;
 
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
 import vsp.trongame.app.model.game.IGame;
@@ -15,12 +15,12 @@ import static vsp.trongame.middleware.IRemoteInvocation.*;
 
 import java.util.concurrent.ExecutorService;
 
-public class IGameCaller implements IGame, ICaller {
+public class GameCaller implements IGame, ICaller {
 
     private String remoteId; //id of the remote Object I want to call
     private final IRemoteInvocation middleware;
 
-    public IGameCaller() {
+    public GameCaller() {
         this.remoteId = RemoteId.DEFAULT_ID; //id of the remote Object Game is not known and not relevant, we want any game that is callable
         this.middleware = Middleware.getInstance();
     }
@@ -36,7 +36,7 @@ public class IGameCaller implements IGame, ICaller {
     }
 
     @Override
-    public void register(IGameManager gameManager, IModelUpdateListener listener, int listenerId, int managedPlayerCount) {
+    public void register(IGameManager gameManager, IUpdateListener listener, int listenerId, int managedPlayerCount) {
         middleware.invoke(remoteId, Service.REGISTER.ordinal(), InvocationType.RELIABLE, new int[]{listenerId, managedPlayerCount},
                 RemoteId.STRING_ID, RemoteId.STRING_ID);
     }

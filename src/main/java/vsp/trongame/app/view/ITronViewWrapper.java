@@ -3,7 +3,7 @@ package vsp.trongame.app.view;
 import javafx.scene.Scene;
 import vsp.trongame.app.controller.ITronController;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * A Wrapper Interface for the view and overlays.
  */
-public interface IViewWrapper {
+public interface ITronViewWrapper {
 
     /**
      * Initializes the wrapper with its dependencies.
@@ -32,6 +32,6 @@ public interface IViewWrapper {
      */
     Scene getScene();
 
-    IModelUpdateListener getListener();
+    IUpdateListener getListener();
 
 }

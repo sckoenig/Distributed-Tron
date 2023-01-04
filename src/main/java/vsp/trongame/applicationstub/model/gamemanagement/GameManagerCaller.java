@@ -11,12 +11,12 @@ import java.util.Map;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
-public class IGameManagerCaller implements IGameManager, ICaller {
+public class GameManagerCaller implements IGameManager, ICaller {
 
     private final IRemoteInvocation middleware;
     private String remoteId;
 
-    public IGameManagerCaller() {
+    public GameManagerCaller() {
         this.middleware = Middleware.getInstance();
     }
 

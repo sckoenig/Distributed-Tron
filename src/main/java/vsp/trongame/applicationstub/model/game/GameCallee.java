@@ -1,6 +1,6 @@
 package vsp.trongame.applicationstub.model.game;
 
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.game.IGameFactory;
 import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.GameModus;
@@ -9,7 +9,7 @@ import vsp.trongame.app.model.game.IGame;
 import vsp.trongame.app.model.gamemanagement.Configuration;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.gamemanagement.IGameManagerFactory;
-import vsp.trongame.app.view.listener.IModelUpdateListenerFactory;
+import vsp.trongame.app.view.IUpdateListenerFactory;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
@@ -24,11 +24,11 @@ import static vsp.trongame.applicationstub.util.Service.*;
 /**
  * Callee Remote Object, that knows the local Instance of {@link IGame} and can call its methods.
  */
-public class IGameCallee implements IRemoteObject {
+public class GameCallee implements IRemoteObject {
 
     private final IGame localGame;
 
-    public IGameCallee(Configuration config, ExecutorService executorService) {
+    public GameCallee(Configuration config, ExecutorService executorService) {
         this.localGame = IGameFactory.getGame(GameModus.LOCAL); //TODO rest wrapper here probably
         this.localGame.initialize(GameModus.NETWORK, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
@@ -58,7 +58,7 @@ public class IGameCallee implements IRemoteObject {
 
                     // Caller Objects that represent the remote Objects that want to register at the local game
                     IGameManager managerCaller = IGameManagerFactory.getGameManager(GameModus.NETWORK);
-                    IModelUpdateListener listenerCaller = IModelUpdateListenerFactory.getUpdateListener(GameModus.NETWORK);
+                    IUpdateListener listenerCaller = IUpdateListenerFactory.getUpdateListener(GameModus.NETWORK);
                     ((ICaller) managerCaller).setRemoteId(stringParameters[0]);
                     ((ICaller) listenerCaller).setRemoteId(stringParameters[1]);
 

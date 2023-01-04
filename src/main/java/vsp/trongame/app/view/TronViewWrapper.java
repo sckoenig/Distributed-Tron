@@ -6,9 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import vsp.trongame.app.controller.ITronController;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.ITronModel;
-import vsp.trongame.app.view.listener.TronModelUpdateListener;
 import vsp.trongame.app.view.overlays.*;
 
 import java.io.IOException;
@@ -17,10 +16,10 @@ import java.util.*;
 /**
  * Represents a wrapper for the {@link ITronView}. Builds the view and the model listener.
  */
-public class TronViewWrapper implements IViewWrapper {
+public class TronViewWrapper implements ITronViewWrapper {
 
     private ITronView mainView;
-    private TronModelUpdateListener listener;
+    private UpdateListener listener;
 
     @Override
     public void buildView(ITronModel model, ITronController mainController, int height, int width, int defaultPlayerCount,
@@ -56,7 +55,7 @@ public class TronViewWrapper implements IViewWrapper {
         }
         mainView.clear(); // hide all overlays
 
-        this.listener = new TronModelUpdateListener();
+        this.listener = new UpdateListener();
         this.listener.initialize(mainView, countdownOverlay, endingOverlay, mainController);
         model.registerUpdateListener(listener);
     }
@@ -67,7 +66,7 @@ public class TronViewWrapper implements IViewWrapper {
     }
 
     @Override
-    public IModelUpdateListener getListener() {
+    public IUpdateListener getListener() {
         return this.listener;
     }
 

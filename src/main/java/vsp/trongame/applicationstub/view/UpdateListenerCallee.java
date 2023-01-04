@@ -1,7 +1,7 @@
 package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.datatypes.GameState;
 import vsp.trongame.app.model.datatypes.TronColor;
@@ -16,11 +16,11 @@ import java.util.*;
 import static vsp.trongame.applicationstub.util.Service.*;
 
 
-public class IModelUpdateListenerCallee implements IRemoteObject {
+public class UpdateListenerCallee implements IRemoteObject {
 
-    private final IModelUpdateListener updateListener;
+    private final IUpdateListener updateListener;
 
-    public IModelUpdateListenerCallee(IModelUpdateListener updateListener) {
+    public UpdateListenerCallee(IUpdateListener updateListener) {
         this.updateListener = updateListener;
 
         // can be called from remote
@@ -49,9 +49,8 @@ public class IModelUpdateListenerCallee implements IRemoteObject {
                     updateListener.updateOnState(GameState.getByOrdinal(state).name());
                 }
             }
-            case UPDATE_START -> {
-                updateListener.updateOnGameStart();
-            }
+            case UPDATE_START -> updateListener.updateOnGameStart();
+
             case UPDATE_RESULT -> {
                 if (parameters.length >= 2) {
                     String color = TronColor.getByOrdinal(parameters[0]).getHex();

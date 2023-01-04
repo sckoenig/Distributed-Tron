@@ -17,6 +17,18 @@ public interface IArena {
     void addPlayerPosition(int playerId, Coordinate coordinate);
 
     /**
+     * Returns the arena's number of rows
+     * @return number of rows
+     */
+    int getRows();
+
+    /**
+     * Returns the arena's number of columns
+     * @return number of columns
+     */
+    int getColumns();
+
+    /**
      * Deletes all occurrences of all the playerIds in the List, in the arena.
      * @param crashedPlayerIds all the playerIds of the players which crashed.
      */

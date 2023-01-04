@@ -1,4 +1,4 @@
-package vsp.trongame.app.view.listener;
+package vsp.trongame.app.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import edu.cads.bai5.vsp.tron.view.ITronView;
@@ -6,7 +6,7 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import vsp.trongame.app.controller.ITronController;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.view.overlays.CountdownOverlay;
 import vsp.trongame.app.view.overlays.EndingOverlay;
 
@@ -15,7 +15,7 @@ import java.util.*;
 /**
  * Listens to model updates and updates the view accordingly.
  */
-public class TronModelUpdateListener implements IModelUpdateListener {
+public class UpdateListener implements IUpdateListener {
 
     private ITronView mainView;
     private CountdownOverlay countdownOverlay;

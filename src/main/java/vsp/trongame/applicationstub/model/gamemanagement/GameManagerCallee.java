@@ -14,11 +14,11 @@ import java.util.Map;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
-public class IGameManagerCallee implements IRemoteObject {
+public class GameManagerCallee implements IRemoteObject {
 
     private final IGameManager gameManager;
 
-    public IGameManagerCallee(IGameManager gameManager) {
+    public GameManagerCallee(IGameManager gameManager) {
         this.gameManager = gameManager;
         // can be called from remote
         IRegister middleware = Middleware.getInstance();

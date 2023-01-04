@@ -1,7 +1,7 @@
 package vsp.trongame.app.model.gamemanagement;
 
 import javafx.scene.input.KeyCode;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.game.IGame;
@@ -22,7 +22,7 @@ public class GameManager implements IGameManager, ITronModel {
             ModelState.PLAYING, Map.of(GameState.FINISHING, ModelState.ENDING),
             ModelState.ENDING, Map.of(GameState.INIT, ModelState.MENU)));
 
-    private final Map<Integer, IModelUpdateListener> listenersMap; //find listeners by their id
+    private final Map<Integer, IUpdateListener> listenersMap; //find listeners by their id
     private final Map<Integer, List<Integer>> listenersToPlayersMap; //map listeners to players to check for valid key input
     private Configuration config;
     private ExecutorService executorService;
@@ -75,7 +75,7 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void registerUpdateListener(IModelUpdateListener listener) {
+    public void registerUpdateListener(IUpdateListener listener) {
         int nextID = listenersMap.size();
         listenersMap.put(nextID, listener);
         listenersToPlayersMap.put(nextID, new ArrayList<>());

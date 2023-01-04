@@ -27,6 +27,16 @@ public class Arena implements IArena{
     }
 
     @Override
+    public int getRows() {
+        return this.rows;
+    }
+
+    @Override
+    public int getColumns() {
+        return this.columns;
+    }
+
+    @Override
     public void deletePlayerPositions(List<Integer> crashedPlayer) {
         for (int column = 0; column < arenaField.length; column++) {
             for (int row = 0; row < arenaField[column].length; row++) {

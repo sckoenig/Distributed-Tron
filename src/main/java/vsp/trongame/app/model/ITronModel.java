@@ -36,7 +36,7 @@ public interface ITronModel {
      * Registers a Listener at the model for updates.
      * @param listener the listener.
      */
-    void registerUpdateListener(IModelUpdateListener listener);
+    void registerUpdateListener(IUpdateListener listener);
 
 
 }

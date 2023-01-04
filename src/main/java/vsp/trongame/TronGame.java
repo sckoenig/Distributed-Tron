@@ -9,11 +9,11 @@ import vsp.trongame.app.model.ITronModel;
 import vsp.trongame.app.model.ITronModelFactory;
 import vsp.trongame.app.model.gamemanagement.*;
 import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.view.IViewWrapper;
+import vsp.trongame.app.view.ITronViewWrapper;
 import vsp.trongame.app.view.IViewWrapperFactory;
-import vsp.trongame.applicationstub.model.game.IGameCallee;
-import vsp.trongame.applicationstub.model.gamemanagement.IGameManagerCallee;
-import vsp.trongame.applicationstub.view.IModelUpdateListenerCallee;
+import vsp.trongame.applicationstub.model.game.GameCallee;
+import vsp.trongame.applicationstub.model.gamemanagement.GameManagerCallee;
+import vsp.trongame.applicationstub.view.UpdateListenerCallee;
 import vsp.trongame.middleware.Middleware;
 
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class TronGame extends Application {
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
         /* local components */
-        IViewWrapper tronView = IViewWrapperFactory.getViewWrapper(GameModus.LOCAL);
+        ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(GameModus.LOCAL);
         ITronController tronController = ITronControllerFactory.getTronController(GameModus.LOCAL);
         ITronModel tronModel = ITronModelFactory.getTronModel(GameModus.LOCAL);
 
@@ -62,9 +62,9 @@ public class TronGame extends Application {
             Middleware.getInstance().start(nameServerAddress, asNameServerHost);
 
             //create stub
-            new IGameCallee(config, modelExecutor);
-            new IModelUpdateListenerCallee(tronView.getListener());
-            new IGameManagerCallee((IGameManager) tronModel);
+            new GameCallee(config, modelExecutor);
+            new UpdateListenerCallee(tronView.getListener());
+            new GameManagerCallee((IGameManager) tronModel);
         }
 
         /* assemble */

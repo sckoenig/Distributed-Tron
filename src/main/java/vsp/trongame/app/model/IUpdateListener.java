@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Represents a listener the model can inform about its state.
  */
-public interface IModelUpdateListener {
+public interface IUpdateListener {
 
     /**
      * After Registration, the listener is informed about its id.

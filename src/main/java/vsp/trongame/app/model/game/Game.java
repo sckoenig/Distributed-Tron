@@ -1,7 +1,7 @@
 package vsp.trongame.app.model.game;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.IModelUpdateListener;
+import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.gamemanagement.IGameManager;
 import vsp.trongame.app.model.datatypes.*;
 
@@ -18,15 +18,13 @@ public class Game implements IGame {
     private static final int COUNTDOWN_LENGTH = 3;
     private final List<IPlayer> players;
     private final Set<IGameManager> gameManagers; //listeners be related to the same manager
-    private final List<IModelUpdateListener> updateListeners;
+    private final List<IUpdateListener> updateListeners;
     private final ICollisionDetector collisionDetector;
     private ExecutorService gameExecutor;
     private int speed;
     private int preparationTime;
     private int endingTime;
     private IArena arena;
-    private int rows;
-    private int columns;
     private int playerCount;
     private int registeredPlayerCount;
     private GameState currentState;
@@ -41,8 +39,6 @@ public class Game implements IGame {
 
     @Override
     public void initialize(GameModus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
-        this.rows = rows;
-        this.columns = columns;
         this.speed = speed;
         this.preparationTime = waitingTimer;
         this.endingTime = endingTimer;
@@ -59,7 +55,7 @@ public class Game implements IGame {
     }
 
     @Override
-    public void register(IGameManager gameManager, IModelUpdateListener gameListener, int listenerId, int managedPlayerCount) {
+    public void register(IGameManager gameManager, IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
         if (isRegistrationAllowed(managedPlayerCount)) {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
@@ -201,7 +197,7 @@ public class Game implements IGame {
             player.addCoordinate(coordinate);
             player.setDirection(arena.calculateStartingDirection(coordinate));
         }
-        updateListeners.forEach(gl -> gl.updateOnArena(rows, columns));
+        updateListeners.forEach(gl -> gl.updateOnArena(arena.getRows(), arena.getColumns()));
         updateListeners.forEach(gl -> gl.updateOnField(updatePlayerMap()));
         transitionState(GameState.RUNNING);
     }
@@ -210,13 +206,13 @@ public class Game implements IGame {
 
         for (int i = COUNTDOWN_LENGTH; i > 0; i--) {
             long startTime = System.currentTimeMillis();
-            for (IModelUpdateListener listeners : updateListeners) {
+            for (IUpdateListener listeners : updateListeners) {
                 listeners.updateOnCountDown(i);
             }
             long time = System.currentTimeMillis() - startTime;
             sleep(ONE_SECOND - time);
         }
-        updateListeners.forEach(IModelUpdateListener::updateOnGameStart);
+        updateListeners.forEach(IUpdateListener::updateOnGameStart);
     }
 
     /**
