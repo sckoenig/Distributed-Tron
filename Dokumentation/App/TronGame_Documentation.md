@@ -21,38 +21,36 @@ Weitere Anforderungen:
 - Das Spiel soll über eine Konfigurationsdatei konfiguriert werden können.
 - Das Spiel kann entweder lokal (LOCAL) oder im Netzwerk (NETWORK) gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein.
 
-Details siehe [Anforderungsdetails](#anforderungsdetails).
-
-
 ## 1.2 Qualitätsziele
 
 | Ziel                          | Beschreibung                                                                                            |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|
 | Wohldefinierte Schnittstellen | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern :)                                        |
-| Fehlertoleranz                | Ein Spiel soll ungestört durchspielbar sein. Auch wenn ein Teilnehmer abstürzt, läuft das Spiel weiter. |
 | Kompatibilität                | Mindestens 2 Teams müssen miteinander spielen können.                                                   |
+| Fehlertoleranz                | Ein Spiel soll ungestört durchspielbar sein. Auch wenn ein Teilnehmer abstürzt, läuft das Spiel weiter. |
 | Fairness                      | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln.   |
 | Bedienbarkeit                 | Spieler sollen das Spiel einfach bedienen können und Spaß haben.                                        |
 
 ## 1.3 Stakeholders
 
-| Rolle      | Kontakt | Erwartungen |
-| ----------- | ----------- | ----------- |
-| Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de |  Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler |
-| Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf lernen, gutes Time handling, JavaFX Kenntnisse verbessern|
-| Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Stabile Anwendung, Spaß am Spielen |
+| Rolle      | Kontakt | Erwartungen                                                                                          |
+| ----------- | ----------- |------------------------------------------------------------------------------------------------------|
+| Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de | Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler   |
+| Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf üben, Verteilte Systeme besser verstehen, Zeitmanagement |
+| Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Stabile Anwendung, Spaß am Spielen                                                                   |
 
 
 # 2. Randbedingungen
 
-| Technische Randbedingung        | Beschreibung |
-| ----------- | ----------- |
-| Java in der Version 17 | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.65 passen. <br/> Es wird Java in der Version 17 verwendet, da es sich um die neueste LTS-Version handelt. |
-| View Library | Es wird die zur Verfügung gestellte JavaFX View Library verwendet, um Zeit in der UI-Erstellung zu sparen. |
+| Technische Randbedingung     | Beschreibung                                                                                                                                                                                                                                                                                      |
+|------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Java in der Version 17       | Zur Implementierung wird Java verwendet, da das ganze Team die Sprache beherrscht. <br/> Die Version muss zum Image der Rechner im Raum 7.65 passen. <br/> Es wird Java in der Version 17 verwendet, da es sich um die neueste LTS-Version handelt.                                               |
+| View Library                 | Es wird die zur Verfügung gestellte JavaFX View Library verwendet, um Zeit in der UI-Erstellung zu sparen.                                                                                                                                                                                        |
+| Versionsverwaltung in GitLab | Alle Dateien dieses Projektes werden über Git verwaltet. Das zentrale Remote Repository befindet sich im GitLab der HAW. Wegen technischer Störung der HAW wurde am 30.12.2022 auf gitlab.com gewechselt (zu finden unter: https://gitlab.com/noaelx/wise22-23-vs-2582106-2279123-2576932_extern) |
 
-| Konventionen | Beschreibung |
-| ----------- | ----------- |
-| Dokumentation | Gliederung nach dem deutschen arc42-Template, um Struktur zu wahren. |
+| Konventionen | Beschreibung                                                                                                                                    |
+| ----------- |-------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dokumentation | Gliederung erfolgt nach dem deutschen arc42-Template, um Struktur zu wahren.                                                                    |
 | Sprache | Die Dokumentation erfolgt auf deutsch, während die Diagramme auf Englisch gehalten werden, um die Umsetzung in (englischen) Code zu erleichern. |
 
 
@@ -341,25 +339,25 @@ Standardfall:
         waitingTimer (Sekunden)
         endingTimer (Sekunden)
         defaultPlayerNumber (Ganzzahl zwischen 2-6)
-        speed (Ganzzahl zwischen 1-100)
-        windowHeight (Ganzzahl)
-        windowWidth (Ganzzahl)
-        rasterX (Anzahl in X Richtung)
-        rasterY (Anzahl in y Richtung)
-        controllsPlayer1-6 (bsp: W,A,S,D)
-        gameMode (LOCAL, REMOTE, REMOTE_HOST)
+        speed (Ganzzahl zwischen 1-500)
+        height (Ganzzahl)
+        width (Ganzzahl)
+        rows (Ganzzahl)
+        columns (Ganzzahl)
+        controlls p1-6 (bsp: W,A)
+        gameMode (LOCAL, NETWORK)
         nameServer (IP:Port)
+        nameServerHost (TRUE, FALSE)
     2. Der Benutzer speichert die Datei.
     3. Der Benutzer startet das System.
     4. Das System lädt die Daten aus der Konfigurationsdatei.
     5. Das System überprüft die Daten der Konfigurationsdatei auf Fehler.
-    6. Das System zeigt den Starting Screen an.
+    6. Das System zeigt den Menu Screen an.
 
 Fehlerfälle:
 
     6.a. Das System findet einen Fehler in der Konfigurationsdatei oder findet die Konfigurationsdatei nicht.
-        6.a.1 Das System zeigt eine Fehlermeldung "Konfigurationsdaten fehlerhaft".
-        6.a.2 Das System erstellt eine neue .properties-Datei und ersetzt die alte.
+        6.a.1 Das System erstellt eine neue .properties-Datei mit default Werten.
 
 <br/>
 
@@ -375,7 +373,7 @@ Standardfall:
     1. Das System zeigt den Starting Screen mit der defaultPlayerNumber und einen "Spiel starten" Button an.
     2. Der Spieler betätigt den Button.
     3. Das System wechselt in den Waiting-Screen.
-    4. Das System initialisiert ein Tron-Game mit der defaultPlayerNumber und konfigurierten Arenagröße.
+    4. Das System initialisiert ein Game mit der defaultPlayerNumber.
     5. Das System startet den Waiting-Timer.
     6. Das System registriert die Spieler beim Game.
     7. Das System berechnet die Startpositionen und die Startrichtung der Spieler.
@@ -410,13 +408,13 @@ Standardfall:
 
     1. Das System zeigt das Spielfeld in der konfigurierten Größe an.
     2. Das System zeigt einen Countdown(3-2-1) an, der 3 Sekunden lang ist.
-    3. Das System zeigt während des Countdowns die Farben und ID der Spieler an ihrer Startposition an.
+    3. Das System zeigt während des Countdowns die Farben der Spieler und die Steuerung an.
     4. Das System bewegt die Bikes stetig in die aktuelle Richtung in der konfigurierten Geschwindigkeit vorwärts.
     5. Das System vergrößert den Schatten des Bikes mit jeder Vorwärtsbewegung.
     6. Der / Die Mitspieler stirbt / sterben bei Kollision.
     7. Das System zeigt die Schatten der gestorbenen Spieler nicht mehr an.
     8. Das System beendet das Spiel, wenn nur noch einer oder kein Spieler mehr am Leben ist.
-    9. Das System aktualisiert die Ergebnisdaten des Spiels.
+    9. Ausführung UC-4: See Results
 
 Erweiterungsfälle:
 
@@ -436,5 +434,6 @@ Nachbedingungen: Die Applikation ist in den Starting-Screen zurückgekehrt.\
 Standardfall:
 
     1. Das System startet den Ending-Timer.
-    2. Das System zeigt den Ending-Screen an, in dem das Ergebnis des Spiels ("Gewinner ist ..." oder "Unentschieden!") und die Farbe des Gewinners, falls es einen gibt.
+    2. Das System zeigt den Ending-Screen an, in dem das Ergebnis des Spiels ("Gewinner ist ..." oder "Unentschieden!")
+       und die Farbe des Gewinners, falls es einen gibt, angezeigt wird.
     3. Das System wechselt zurück zum Starting Screen, wenn der konfigurierte End-Timer angelaufen ist.
