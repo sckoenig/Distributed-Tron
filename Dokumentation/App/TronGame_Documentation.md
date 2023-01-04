@@ -36,7 +36,7 @@ Details siehe [Anforderungsdetails](#anforderungsdetails).
 
 ## 1.3 Stakeholders
 
-| Rolle      | Kontakt | Erwartungen
+| Rolle      | Kontakt | Erwartungen |
 | ----------- | ----------- | ----------- |
 | Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de |  Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler |
 | Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf lernen, gutes Time handling, JavaFX Kenntnisse verbessern|
@@ -68,17 +68,7 @@ Details siehe [Use Cases](#use-cases).
 
 # 4. Lösungsstrategie
 
-## 4.1 Allgemein
-
-| Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
-| ----------- | ----------- |----------- |
-| Fachliche Komponenten Trennung | Funktionalität, Wartbarkeit, Übertragbarkeit | Die Einführung vom MVC-Pattern soll die Bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.  |
-| Grenzen der Konfiguration | Stabilität | Wir wollen vermeiden, dass Spieler die Konfigurationsdatei auf eine nicht vorgesehene Art und Weise manipulieren können. Um dies zu gewährleisten, überprüfen wir die Konfigurationsdatei bei jedem Start der Tron Anwendung und erstellen im Fall einer Beschädigung eine neu.  |
-| Gleichmäßige Geschwindigkeit für alle Spieler | Zuverlässigkeit | Die generelle Spielgeschwindigkeit wird über die Konfigurationsdatei festgelegt. Jeder Spieler erhält in einem "Steuerungs-Intervall" die gleiche Anzahl an Bewegungen. |
-| Faire konfigurierbare Steuerung | Benutzbarkeit | Jeder Spieler soll die Möglichkeit haben seine favoritisierte Steuerung in der Konfigurationsdatei zu hinterlegen. Vor jedem Match wird den Spieler die Steuerung nochmal angezeigt. Doppelte Tastenbelegungen werden nicht zugelassen. |
-| Stabilität bei Absturz anderer Teilnehmer | Stabilität | Ein Spieler, welcher als nicht mehr erreichbar identifiziert wurde, wird aus dem Spiel entfernt. Dazu gehört sein Bike, sowie der Schatten, welchen er im Laufe des Spiels gelegt hat. |
-
-## 4.2 Funktionale Zerlegung anhand der Use Cases
+## 4.1 Funktionale Zerlegung anhand der Use Cases
 Details siehe [Use Cases](#use-cases).
 
 | Objekt | Erklärung |
@@ -99,9 +89,9 @@ Details siehe [Use Cases](#use-cases).
 | IUpdateListener | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend. |
 
  
-### 4.2.1 Model
+### 4.1.1 Model
 
-### 4.2.1.1 Config
+### 4.1.1.1 Config
 <!-- CONFIG -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -112,25 +102,36 @@ Details siehe [Use Cases](#use-cases).
 | UC-1 | `getAttribute(key : String) : String`                                              | Config | Es existiert ein Properties-Objekt mit validen Daten. | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
 | UC-3.1 | `getSteer(key : KeyCode) : Steer`                                                  | Config | KeyMappings wurden erfolgreich erstellt. | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
 
-### 4.2.1.2 IGame & Game
+### 4.1.1.2 IGame & Game
 <!-- GAME -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-2 | `prepare(waitingTimer : int, playerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
-| UC-2 | `register(viewObserver: ITronView, stateObserver: IGameManager, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING" | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
-| UC-2 | `handleTimeOut() : void` | IGame | Game State == PREPARING | Game State == COUNTDOWN oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im PREPARING State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück. | - |
-| UC-2 | `start() : void` | IGame | Preparation war erfolgreich | Game-Thread wurde gestartet. | Startet den Game-Thread, in dem `countdown` und `gameloop` ausgeführt wird. | - |
-| UC-3 | `countDown() : void`                                                               | Game | Es muss ein Game-Objekt erstellt worden sein und das 'Game' wurde erfolgreich initialisiert. Der GameManager befindet sich im State 'COUNTDOWN' | Der GameManager ändert seinen State zu "PLAYING"| Ein CountDown welcher für drei Sekunden runter zählt. In jeder Sekunde wird der Counter des GameManagers um einen heruntergezählt | Der GameManager befindet sich im falschen State. Er ignoriert den CountDown. |
-| UC-3 | `gameLoop() : void`                                                                | Game | Es muss ein Game-Objekt erstellt und das 'Game' erfolgreich vorbereitet worden sein && Der Countdown ist abgelaufen. | Es ist ein oder kein Spieler am Leben. | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie berechnet in jedem Takt die neue Koordinate der Spieler anhand deren Direction (`calculateNextCoordinate()`). Ebenfalls überprüft sie, ob Spieler kollidieren oder ob ein Spiel zuende ist (isGameOver()). | - |
-| UC-2 | `calculateFairStartingCoordinates(int playerCount) : List<Coordinate>`             | Game | playerCount > 1 | Es existieren genau soviele faire Startpositionen wie es Player gibt. | Anhand der Spielerzahl wird eine faire Aufteilung der Startposition in der Arena berechnet. Jeder Spieler soll gleich viel Abstand zu den Rändern der Arena und zu den Anderen Spielern haben. | - |
-| UC-2 | `calculateStartingDirection(coordinate : Coordinate ) : Direction`                | Game | Coordinate darf nicht NULL sein. |Es wurde eine Strartposition errechnet.| Es wird eine Direction zurückgegeben, welche Richtung Spielfeldmitte zeigt. | - |
-| UC-3 | `calculateNextCoordinate(direction : Direction) : Coordinate`                    | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
-| UC-3 | `isGameOver() : boolean`                                                           | Game | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
-| UC-3.1 | `handleSteer(steer : Steer ) : void`                                              | IGame | Player muss noch am Leben sein. | Der Player hat eine neue Direction.| Anhand der ausgelesenen Player-ID und Direction eines Steer-Objekts, wird die Fahrtrichtung des Players angepasst. | - |
-| UC-3 | `reset() : void `                                                                    | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand.  | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde.| - |
-| UC-3 | `finish() : void `                                                                    | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert.  | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `reset()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
+| UC | Funktion                                                                                                                                        | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- | |-------|----------- |----------- |----------- |----------- |
+| | `initialize(modus : GameModus, speed : int, rows : int, columns : int, waitingTimer : int, endingTimer : int, executorService : ExecutorService` | IGame |  |  |  |  |
+| UC-2 | `prepareForRegistration(playerCount : int) : void`                              | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
+| UC-2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING" | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
+| | `handleSteer(steer : Steer) : void` | IGame |  |  |  |  |
+| | `transitionState(newState : GameState) : void` | Game |  |  |  |  |
+| | `executeState() : void` | Game |  |  |  |  |
+| | `startTimer(waitingTimer : int, startedAt, GameState) : void` | Game |  |  |  |  |
+| UC-2 | `handleTimeOut(startedAt : GameState) : void` | -------Game | Game State == PREPARING | Game State == COUNTDOWN oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im PREPARING State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück. | - |
+| | `isGameReady() : boolean` | Game |  |  |  |  |
+| | `isGameFull() : boolean` | Game |  |  |  |  |
+| | `isRegistrationAllowed(playerCountToRegister : int) : boolean` | Game |  |  |  |  |
+| | `createPlayers(count : int) : List<Integer>` | Game |  |  |  |  |
+| UC-2 | `startGame() : void` | --------Game | Preparation war erfolgreich | Game-Thread wurde gestartet. | Startet den Game-Thread, in dem `countdown` und `gameloop` ausgeführt wird. | - |
+| UC-3 | `countDown() : void` | Game  | Es muss ein Game-Objekt erstellt worden sein und das 'Game' wurde erfolgreich initialisiert. Der GameManager befindet sich im State 'COUNTDOWN' | Der GameManager ändert seinen State zu "PLAYING"| Ein CountDown welcher für drei Sekunden runter zählt. In jeder Sekunde wird der Counter des GameManagers um einen heruntergezählt | Der GameManager befindet sich im falschen State. Er ignoriert den CountDown. |
+| | `runGame() : void` | Game |  |  |  |  |
+| UC-3 | `gameLoop() : void` | Game  | Es muss ein Game-Objekt erstellt und das 'Game' erfolgreich vorbereitet worden sein && Der Countdown ist abgelaufen. | Es ist ein oder kein Spieler am Leben. | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie berechnet in jedem Takt die neue Koordinate der Spieler anhand deren Direction (`calculateNextCoordinate()`). Ebenfalls überprüft sie, ob Spieler kollidieren oder ob ein Spiel zuende ist (isGameOver()). | - |
+| | `movePlayers() : void` | Game |  |  |  |  |
+| | `updateField() : void` | Game |  |  |  |  |
+| | `updatePlayerMap() : Map<Integer, List<Coordinate>>` | Game |  |  |  |  |
+| UC-3 | `calculateNextCoordinate(coordinate : Coordinate, direction : Direction) : Coordinate` | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
+| UC-3 | `isGameOver() : boolean` | Game  | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
+| UC-3 | `finishGame() : void` | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert. | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `resetGame()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
+| UC-3 | `resetGame() : void ` | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand. | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde. | - |
 
-### 4.2.1.3 IGameManager & GameManager
+
+### 4.1.1.3 IGameManager & GameManager
 <!-- GAMEMANAGER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -139,7 +140,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setGameResult(result : String, color : Color) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis (Gewinner-Farbe, Ergebnis-Text) wurde gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
 
-### 4.2.1.4 IArena & Arena
+### 4.1.1.4 IArena & Arena
 <!-- ARENA -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -148,10 +149,10 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `detectCollision(coordinate : Coordinate) : boolean` | IArena | Die coordinate darf nicht NULL sein. |  | Es wird geschaut ob sich die Koordinate außerhalb der Arena befindet und ob sich an der Koordinate bereits der Schatten oder auch anderer Spieler befindet. Falls eine Kollision entdeckt wird, geben wir true zurück, ansonsten false. |  |
 | | `calculateFairStartingCoordinate(playerCount : int) : List<Coordinate>` | IArena | Der playerCount muss zwischen 2 und 6 liegen. | Es wurden playerCount viele Startpositionen berechnet. | Es werden je nach Spieleranzahl und Arenagröße die fairsten Startpositionen berechnet. |  |
 | | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena | Die coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Für die coordinate wurde eine Startrichtung berechnet. | Abhänging von der übergeben Koodinate wird die Startrichtung berechnet. |  |
-| | `` |  |  |  |  |  |
 
 
-### 4.2.1.5 ICollisionDetector & CollisionDetector
+
+### 4.1.1.5 ICollisionDetector & CollisionDetector
 <!-- COLLISION -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -159,18 +160,16 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `detectHeadCollision(players: List<Player>) : boolean` | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kollidiert. | - |
 
 
-### 4.2.1.6 IPlayer
+### 4.1.1.6 IPlayer 
 <!-- PLAYER -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `getHeadPosition() : Coordinate`                                                   | IPlayer | Die Liste der Koordinaten eines Spielers darf nicht leer sein. | die Head-Position wird zurückgeben. | Die letzte Position in der Liste ist immer die headPosition, welche durch die Methode getHeadPosition abgefragt wird. | - |
-| UC-3 | `addCoordinate(coordinate : Coordinate) : void `                                 | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
-| UC-3 | `isAlive() : boolean`                                                              | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| |
-| UC-3 | `crash() : void`                                                                   | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
-| UC-3.1 | `setNextDirectionChange(directionChange : DirectionChange) : void`                                                                   | IPlayer | Ein Spieler hat per Tastenanschlag gelenkt | Der Player merkt hat sich seine nächste Action gemerkt. | Wenn der Spieler eine Taste drückt, erhält das Player Objekt eine neue Action, die im nächsten Takt ausgeführt werden kann. Tritt ein ActionChange im selben Takt erneut auf, wird die alte Action überschrieben. | - |
-| UC-2,3 | `performDirectionChange() : Direction`                                     | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
+| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik| Fehlersemantik |
+| ---- |---------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------------|
+| UC-3 | `addCoordinate(coordinate : Coordinate) : void` | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
+| UC-3 | `isAlive() : boolean` | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| - |
+| UC-3 | `crash() : void` | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
+| UC-2,3 | `performDirectionChange() : Direction` | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 
-### 4.2.1.7 ITronModel
+### 4.1.1.7 ITronModel
 <!-- ITRONMODEL -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -181,15 +180,15 @@ Details siehe [Use Cases](#use-cases).
 | UC-2 | `getPlayerCountObservable(): IntegerProperty`                                      | ITronModel | Der GameManager wurde initialisiert. | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt. | |
 | UC-2 | `initializeGame(playerNumber : int) : void`                                        | ITronModel | Der GameManager wurde initialisiert. | Der GameManager befindet sich im State "WAITING" | Im Model wird ein Game vorbereitet, in dem dann auch die Arena und die Spieler initialisiert werden. | - |
 
-### 4.2.2 Controller
+### 4.1.2 Controller
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
 | UC-2 | `btnStartGame(event : ActionEvent) : void` | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
 | UC-3 | `initKeyEventHandler(scene : Scene) : void` | ITronController | Scene nicht null, TronController wurde erstellt | Der Controller handelt die KeyEvents auf der übergebenen Scene. | Bei Start der Applikation wird der Controller als EventHandler für die Scene der View initialisiert, damit er KeyEvents des Users erhält und verarbeitet. | - |
-| UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert.
+| UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. |
 
-### 4.2.3 View
-### 4.2.3.1 ITronView 
+### 4.1.3 View
+### 4.1.3.1 ITronView 
 Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Interface wird um folgende Methoden ergänzt:
 
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
@@ -197,7 +196,7 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 | UC-3 | `updateView(players : Map<Color, List<Coordinates>>) : void ` | ITronView | - | - | Die Positionen der Spieler werden in der übergebenen Farbe auf den Screen gezeichnet.  | - |
 | UC-2 | `setArenaSize(rows : int, columns : int) : void` | ITronView | TrownView wurde initialisiert. | TronView kennt Arena Größen | Das Game informiert die View über die Größen der Arena. | - | 
 
-### 4.2.3.2 IUpdateListener & UpdateListener 
+### 4.1.3.2 IUpdateListener & UpdateListener 
 | UC | Funktion | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
 | -- | -------- | ------ | ------------ | ------------- | -------------- | -------------- |
 | | `updateOnRegistration(id : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. | UpdateListener kennt danach seine Id. | Der UpdateListener wird vom Model über die vergebene Id informiert. |  |
@@ -219,9 +218,14 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ## 5.3 Ebene 3 : Application
 
 ## 5.2 Ebene 3 : ApplicationStub
-
-Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
 ![image info](./diagrams/baustein/bs_layer3_stub_model.png)
+Für *name* ∈ {IGameManager, IGame, IUpdateListener} gibt es im ApplicationStub eine Komponente der oben beschriebenen Form.
+Die Stubs verwenden darüber hinaus folgende Klassen:
+- `RemoteId`: Stellt eine einzigartige ID für diesen Application Stub dar.
+- `Service`: Enhtält die Services, die Remote Objekte dieses Application Stubs bereitstellen können.
+
+Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das lediglich dazu dient, die RemoteId zu setzen.
+
 
 # 6. Laufzeitsicht
 ## 6.1 Ebene 1
@@ -251,70 +255,69 @@ Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine
 # 7. Verteilungssicht
 
 # 8. Querschnittliche Konzepte
+## 8.1 Application
+### 8.1.1 Registration-ID
+Um zu ermöglichen, dass mehrere Views mit dem Model kommunizieren können, registriert sich die View als Listener beim Model
+und erhält anschließend eine Registration-ID vom Model. Kommunikation, die über den Controller ans Model geht, muss
+anschließend diese ID enthalten. Dadurch kann das Model sicherstellen, dass nur Views über den Controller ein Spiel starten
+können, die registriert sind. Darüber hinaus merkt sich das Model, welche Spieler zu welcher Registration-ID gehören, sodass
+nur berechtigte Tastenanschläge vom Model verarbeitet werden.
+
+## 8.2 ApplicationStub
+### 8.2.1 RemoteId
+In manchen Fällen kann es notwendig sein, den Service einen konkreten ApplicationStubs anzufragen. Dazu erhält
+jeder ApplicationStub eine `RemoteId`, über die er eindeutig identifiziert werden kann.
+
+### 8.2.2 Namensraum
+Zur Identifizierung der vom ApplicationStub angebotenen Services wird ein hierarchischer Namensraum verwendet.
+Jeder Service kann eindeutig über die Kombination aus ServiceId und RemoteId des anbietenden ApplicationStubs bestimmt werden.
+
+### 8.2.3 Service Call Protokoll
+Die Anfrage, einen angebotenen Service auszuführen, besteht aus folgenden Bestandteilen:
+- `serviceId`: die Id des Services
+- `intParameters` : Parameter des Services vom Typ int
+- `stringParameters`: Parameter des Servcies vom Typ String
+
+Services können nach folgenden Regeln angefragt werden:
+
+| Service                  | ServiceId | intParameters                         | stringParameters                                                                      |
+|--------------------------|-----------|---------------------------------------|---------------------------------------------------------------------------------------|
+| `PREPARE               ` | 0         | playercount für das Spiel             | keine                                                                                 | 
+| `REGISTER              ` | 1         | registrationId, managedPlayerCount    | RemoteId des IGameManager Remote Objekts, RemoteId des IUpdateListener Remote Objekts | 
+| `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange | keine                                                                                 | 
+| `HANDLE_MANAGED_PLAYERS` | 3         | TODO                                  | keine                                                                                 | 
+| `HANDLE_GAME_STATE     ` | 4         | TODO                                  | keine                                                                                 | 
+| `UPDATE_ARENA          ` | 5         | TODO                                  | keine                                                                                 | 
+| `UPDATE_STATE          ` | 6         | TODO                                  | keine                                                                                 | 
+| `UPDATE_START          ` | 7         | TODO                                  | keine                                                                                 | 
+| `UPDATE_RESULT         ` | 8         | TODO                                  | keine                                                                                 | 
+| `UPDATE_COUNTDOWN      ` | 9         | TODO                                  | keine                                                                                 | 
+| `UPDATE_FIELD          ` | 10        | TODO                                  | keine                                                                                 | 
+
 
 # 9. Architekturentscheidungen
 
+| Entscheidung         | Qualitätsmerkmale                                                                           | Beschreibung                                                                                                                                                                                               |
+|----------------------|---------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Komponenten nach MVC | Erweiterbarkeit, Wartbarkeit, Übertragbarkeit                                               | Die Einführung vom MVC-Pattern soll die Bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.                                                                 |
+| Factory Method       | Lose Kopplung, Erweiterbarkeit, Wartbarkeit                                                 | An vielen Stellen werden Factories verwendet, um die Objekterzeugung vom Rest der Implementierung löszulösen und eine Implementierung gegen Schnittstellen anstatt gegen konkrete Objekte zu unterstützen  | 
+| Singleton Pattern    | Lose Kopplung                                                                               | Einige Objekte werden als Singleton realisiert, da sie an unterschiedlichen Stellen gebraucht werden und dies das erfüllen von Dependencies erleichtert.                                                   | 
+
 # 10. Qualitätsanforderungen
+siehe Abschnitt 1.2.
 
 # 11. Risiken und technische Schulden
 
+| Entscheidung            | Beschreibung                                                                                                                                                                            |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dependencies per Hand   | Dependencies werden derzeit manuell über initialize-Methoden oder Konstruktoren realisiert. In dem kleinen Umfang ist dies noch machbar, bei Wachstum allerdings nicht mehr handhabbar. |
+| Singleton Pattern       | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                                     | 
+
+
 # 12. Glossar
 # 13. Anhang
-## Anforderungsdetails
+## ## Storyboard
 ![image info](./diagrams/storyboard.jpg )
-**1: Starting Screen**
-- Ermöglicht die Wahl der Spieleranzahl.
-    - Es wird ein Defaultwert angezeigt.
-    - Es kann zwischen 2-6 Spielern ausgewählt werden.
-- Enthält einen “Spiel starten” Button.
-- Wird der Button betätigt, erscheint Bildschirm 2.
-
-**2: Waiting Screen**
-- Wird solange angezeigt, bis die vorher eingestellte Spielerzahl erreicht ist.
-    - unter waiting wird angezeigt wie viele Spieler bereits warten
-- Timer: Wird nach Ablauf des Timers die Spielerzahl nicht erreicht, wird
-    - das Spiel gestartet, wenn > 2 Spieler bereit sind, damit die Spieler nicht so lange warten müssen.
-    - der Starting Screen wieder angezeigt, wenn < 2 Spieler bereit sind.
-- Ist der Timer  mit > 2 Spieler oder die eingestellte Spielerzahl erreicht, erscheint Bildschirm 3.
-
-**3: Arena**
-- Zuerst wird ein Countdown (3-2-1-go) angezeigt.
-- Die Arena besteht aus einem Raster, auf dem die Motorräder fahren.
-- Hier gelten die oben genannten Spielregeln.
-- Alle Motorräder sollen “faire” Startkondition haben. (”Fair” ist nicht näher definiert und den Entwicklern überlassen).
-- Die Entwickler sollen sich eine “geeignete Logik” überlegen, durch die die Spieler wissen, welche Figur sie steuern.
-- Wenn das Spiel zu Ende ist, wird Screen 4 angezeigt.
-- Das Spiel ist beendet, wenn:
-    - Es ist nur noch ein Spieler übrig und es gibt einen Gewinner.
-    - Die letzten beiden Spieler sterben gleichzeitig. Das Spiel ist unentschieden
-
-**4: End Screen**
-- Anzeige “Spiel ist zu Ende”
-- Anzeige des Gewinners oder “Unentschieden”. Identifikation des Gewinners ist den Entwicklern überlassen.
-- Dieser Screen wird für eine gewisse Zeit angezeigt, danach geht es zurück zum Bildschirm 1.
-
-**Konfiguration**
-
-Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein:
-- Timer des Waiting Screens.
-- Timer des Endscreens
-- Defaultwert für Spieleranzahl
-- Geschwindigkeit der Motorräder
-    - Auf einer Skala von 1%-100%, gemessen in Bewegungen pro Sekunde b/s
-    - 1% = 1 b/s, 100% = 500 b/s
-- Größe der Arena anhand von 3 Werten:
-    - Größe der Rasterpunkte/-zellen, z.B. in Pixel.
-    - Anzahl der Rasterpunkte/-zellen in x-Richtung und y-Richtung.
-- Tastenkombinationen für die Bewegung der Spieler
-
-Die Konfiguration greift dabei nur bei Neustart der Applikation.
-
-**Weitere Aspekte**
-- Das Motorrad muss nicht konfigurierbar sein (Farbe einstellen oder ähnliches).
-- Es gibt kein Punktesystem oder ähnliches. Jedes Spiel wird für sich gespielt.
-- Die Multiplayer-Anzeige (Splitscreen mit mehreren Arenen oder eine Arena für alle) ist den Entwicklern überlassen.
-- Spieler können ein Spiel weder pausieren noch beenden.
-- Zum Schließen des Spiels reicht der Standard "x"-Button.
 
 ## Use Cases
 
