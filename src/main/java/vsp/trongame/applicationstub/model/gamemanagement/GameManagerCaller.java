@@ -1,13 +1,12 @@
 package vsp.trongame.applicationstub.model.gamemanagement;
 
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
-import vsp.trongame.app.model.gamemanagement.IGameManager;
+import vsp.trongame.application.model.datatypes.GameState;
+import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.ICaller;
-import vsp.trongame.middleware.IRemoteInvocation;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.IRemoteInvocation;
+import vsp.middleware.Middleware;
 
-import java.util.Map;
+import java.util.List;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
@@ -27,13 +26,13 @@ public class GameManagerCaller implements IGameManager, ICaller {
     }
 
     @Override
-    public void handleManagedPlayers(int id, Map<Integer, TronColor> managedPlayers) {
-        int[] parameters = new int[managedPlayers.size()*2+1];
+    public void handleManagedPlayers(int id, List<Integer> managedPlayers) {
+        int[] parameters = new int[managedPlayers.size()+1];
         parameters[0] = id;
+
         int index = 1;
-        for (Map.Entry<Integer, TronColor> entry: managedPlayers.entrySet()) {
-            parameters[index++] = entry.getKey();
-            parameters[index++] = entry.getValue().ordinal();
+        for (Integer playerId: managedPlayers) {
+            parameters[index++] = playerId;
         }
         middleware.invoke(remoteId, HANDLE_MANAGED_PLAYERS.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }

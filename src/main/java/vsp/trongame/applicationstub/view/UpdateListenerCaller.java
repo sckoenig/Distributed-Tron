@@ -1,14 +1,13 @@
 package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.IUpdateListener;
-import vsp.trongame.app.model.datatypes.GameResult;
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
+import vsp.trongame.application.model.IUpdateListener;
+import vsp.trongame.application.model.datatypes.GameResult;
+import vsp.trongame.application.model.datatypes.GameState;
 import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRemoteInvocation;
+import vsp.middleware.IRemoteInvocation;
 import vsp.trongame.applicationstub.util.ICaller;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.Middleware;
 
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class UpdateListenerCaller implements IUpdateListener, ICaller {
     }
 
     @Override
-    public void updateOnKeyMappings(Map<String, String> mappings) {
+    public void updateOnKeyMappings(Map<String, Integer> mappings) {
         //not needed
     }
 
@@ -58,9 +57,9 @@ public class UpdateListenerCaller implements IUpdateListener, ICaller {
     }
 
     @Override
-    public void updateOnGameResult(String color, String result) {
+    public void updateOnGameResult(Integer id, String result) {
         int[] parameters = new int[2];
-        parameters[0] = TronColor.getTronColorByHex(color).ordinal();
+        parameters[0] = id;
         parameters[1] = GameResult.getGameResultByText(result).ordinal();
         middleware.invoke(remoteId, Service.UPDATE_RESULT.ordinal(), IRemoteInvocation.InvocationType.RELIABLE, parameters);
     }
@@ -73,17 +72,17 @@ public class UpdateListenerCaller implements IUpdateListener, ICaller {
     }
 
     @Override
-    public void updateOnField(Map<String, List<Coordinate>> field) {
+    public void updateOnField(Map<Integer, List<Coordinate>> field) {
         List<Integer> parametersList = new ArrayList<>();
         parametersList.add(field.size()); //playercount
-        for (Map.Entry<String, List<Coordinate>> entry : field.entrySet()) {
+        for (Map.Entry<Integer, List<Coordinate>> entry : field.entrySet()) {
             int skipValue = 0;
             if (entry.getValue().size() > COORDINATE_DELTA) {
                 skipValue = entry.getValue().size() - COORDINATE_DELTA;
             }
 
             List<Coordinate> lastFour = entry.getValue().stream().skip(skipValue).toList();
-            parametersList.add(TronColor.getTronColorByHex(entry.getKey()).ordinal());
+            parametersList.add(entry.getKey());
             lastFour.forEach(coordinate -> {
                 parametersList.add(coordinate.x);
                 parametersList.add(coordinate.y);

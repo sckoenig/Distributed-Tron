@@ -6,7 +6,7 @@ package vsp.trongame.applicationstub.util;
 public enum Service {
     PREPARE,
     REGISTER,
-    HANDLE_STEERS,
+    HANDLE_STEER,
     HANDLE_MANAGED_PLAYERS,
     HANDLE_GAME_STATE,
     UPDATE_ARENA,

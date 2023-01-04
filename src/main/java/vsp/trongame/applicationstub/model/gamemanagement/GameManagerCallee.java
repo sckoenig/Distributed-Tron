@@ -1,16 +1,15 @@
 package vsp.trongame.applicationstub.model.gamemanagement;
 
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
-import vsp.trongame.app.model.gamemanagement.IGameManager;
+import vsp.trongame.application.model.datatypes.GameState;
+import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRegister;
-import vsp.trongame.middleware.IRemoteObject;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.IRegister;
+import vsp.middleware.IRemoteObject;
+import vsp.middleware.Middleware;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import static vsp.trongame.applicationstub.util.Service.*;
 
@@ -35,16 +34,14 @@ public class GameManagerCallee implements IRemoteObject {
                     gameManager.handleGameState(GameState.getByOrdinal(parameters[0]));
                 }
             }
-            //1. Parameter ist die id; 2.Parameter ist die Map der Farben mit den Spielern
             case HANDLE_MANAGED_PLAYERS -> {
-                int straight = parameters.length % 2;
-                if(parameters.length < 13 && parameters.length > 0 && straight > 0){
+                if(parameters.length <= 7 && parameters.length > 0){
                     int id = parameters[0];
-                    Map<Integer, TronColor> playerMap = new HashMap<>();
-                    for(int i = 1; i < parameters.length; i+=2){
-                        playerMap.put(parameters[i], TronColor.getByOrdinal(parameters[i+1]));
+                    List<Integer> playerIds = new ArrayList<>();
+                    for(int i = 1; i < parameters.length; i++){
+                        playerIds.add(parameters[i]);
                     }
-                    gameManager.handleManagedPlayers(id, playerMap);
+                    gameManager.handleManagedPlayers(id, playerIds);
                 }
             }
             default -> {}
