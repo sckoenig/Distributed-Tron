@@ -32,6 +32,10 @@ public interface ITronViewWrapper {
      */
     Scene getScene();
 
+    /**
+     * Gets the UpdateListener.
+     * @return the UpdateListener
+     */
     IUpdateListener getListener();
 
 }
