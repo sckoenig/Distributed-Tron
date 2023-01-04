@@ -239,6 +239,7 @@ Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das
 
 ## 6.2 Ebene 2: Model
 ### 6.2.1 States
+Die in den States beschriebenen Aktivitäten sind in Abschnitt [Activities im Model](#6.2.3-Activities-im-Model) näher beschrieben.
 ![image info](./diagrams/laufzeit/States.png)
 
 ### 6.2.2 Details der Use Cases im Model
@@ -247,11 +248,13 @@ Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das
 ![image info](./diagrams/laufzeit/model_UC3.2_seeKeyMappings.png)
 
 ### 6.2.3 Activities im Model
-### 6.2.3.1 
+### 6.2.3.1 Start 
 ![image info](./diagrams/laufzeit/activity_start1.png)
 ![image info](./diagrams/laufzeit/activity_start2.png)
+### 6.2.3.2 Play 
 ![image info](./diagrams/laufzeit/activity_runGame_loop.png)
 ![image info](./diagrams/laufzeit/activity_runGame_collision.png)
+### 6.2.3.3 End 
 ![image info](./diagrams/laufzeit/activity_end.png)
 
 # 7. Verteilungssicht

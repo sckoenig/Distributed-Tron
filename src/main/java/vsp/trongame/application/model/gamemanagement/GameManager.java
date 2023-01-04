@@ -29,11 +29,11 @@ public class GameManager implements IGameManager, ITronModel {
     private IGame game;
     private boolean singleView;
     private ModelState currentState;
-    private boolean handleGameEvents;
+    private boolean handleSteerEvents;
 
     public GameManager() {
         this.currentState = ModelState.MENU;
-        this.handleGameEvents = false;
+        this.handleSteerEvents = false;
         this.listenersMap = new HashMap<>();
         this.listenersToPlayersMap = new HashMap<>();
     }
@@ -94,7 +94,7 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void handleSteerEvent(int id, String key) {
-        if (handleGameEvents) {
+        if (handleSteerEvents) {
             Steer steer = config.getSteer(key);
             if(steer != null) {
                 int playerId = steer.playerId();
@@ -119,7 +119,8 @@ public class GameManager implements IGameManager, ITronModel {
      */
     private void executeState() {
         if (currentState != ModelState.PLAYING) updateListeners();
-        if (currentState == ModelState.PLAYING) handleGameEvents = true;
+        if (currentState == ModelState.PLAYING) handleSteerEvents = true;
+        if (currentState == ModelState.ENDING) handleSteerEvents = false;
         if (currentState == ModelState.MENU) reset();
     }
 
@@ -134,7 +135,6 @@ public class GameManager implements IGameManager, ITronModel {
      * Resetting management data after ending state.
      */
     private void reset() {
-        handleGameEvents = false;
         listenersToPlayersMap.clear();
     }
 
