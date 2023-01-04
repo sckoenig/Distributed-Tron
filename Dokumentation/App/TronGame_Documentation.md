@@ -68,17 +68,7 @@ Details siehe [Use Cases](#use-cases).
 
 # 4. Lösungsstrategie
 
-## 4.1 Allgemein
-
-| Lösungsstrategie | Qualitätsmerkmale | Umsetzung |
-| ----------- | ----------- |----------- |
-| Fachliche Komponenten Trennung | Funktionalität, Wartbarkeit, Übertragbarkeit | Die Einführung vom MVC-Pattern soll die Bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.  |
-| Grenzen der Konfiguration | Stabilität | Wir wollen vermeiden, dass Spieler die Konfigurationsdatei auf eine nicht vorgesehene Art und Weise manipulieren können. Um dies zu gewährleisten, überprüfen wir die Konfigurationsdatei bei jedem Start der Tron Anwendung und erstellen im Fall einer Beschädigung eine neu.  |
-| Gleichmäßige Geschwindigkeit für alle Spieler | Zuverlässigkeit | Die generelle Spielgeschwindigkeit wird über die Konfigurationsdatei festgelegt. Jeder Spieler erhält in einem "Steuerungs-Intervall" die gleiche Anzahl an Bewegungen. |
-| Faire konfigurierbare Steuerung | Benutzbarkeit | Jeder Spieler soll die Möglichkeit haben seine favoritisierte Steuerung in der Konfigurationsdatei zu hinterlegen. Vor jedem Match wird den Spieler die Steuerung nochmal angezeigt. Doppelte Tastenbelegungen werden nicht zugelassen. |
-| Stabilität bei Absturz anderer Teilnehmer | Stabilität | Ein Spieler, welcher als nicht mehr erreichbar identifiziert wurde, wird aus dem Spiel entfernt. Dazu gehört sein Bike, sowie der Schatten, welchen er im Laufe des Spiels gelegt hat. |
-
-## 4.2 Funktionale Zerlegung anhand der Use Cases
+## 4.1 Funktionale Zerlegung anhand der Use Cases
 Details siehe [Use Cases](#use-cases).
 
 | Objekt | Erklärung |
@@ -214,9 +204,13 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ![image info](./diagrams/baustein/bs_layer3_model.png)
 ![image info](./diagrams/baustein/bs_layer3_view.png)
 ## 5.2 Ebene 3 : ApplicationStub
-
-Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
 ![image info](./diagrams/baustein/bs_layer3_stub_model.png)
+Für *name* ∈ {IGameManager, IGame, IUpdateListener} gibt es im ApplicationStub eine Komponente der oben beschriebenen Form.
+Die Stubs verwenden darüber hinaus folgende Klassen:
+- `RemoteId`: Stellt eine einzigartige ID für diesen Application Stub dar.
+- `Service`: Enhtält die Services, die Remote Objekte dieses Application Stubs bereitstellen können.
+
+Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das lediglich dazu dient, die RemoteId zu setzen. 
 
 # 6. Laufzeitsicht
 ## 6.1 Ebene 1
@@ -246,70 +240,69 @@ Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine
 # 7. Verteilungssicht
 
 # 8. Querschnittliche Konzepte
+## 8.1 Application
+### 8.1.1 Registration-ID
+Um zu ermöglichen, dass mehrere Views mit dem Model kommunizieren können, registriert sich die View als Listener beim Model
+und erhält anschließend eine Registration-ID vom Model. Kommunikation, die über den Controller ans Model geht, muss 
+anschließend diese ID enthalten. Dadurch kann das Model sicherstellen, dass nur Views über den Controller ein Spiel starten
+können, die registriert sind. Darüber hinaus merkt sich das Model, welche Spieler zu welcher Registration-ID gehören, sodass
+nur berechtigte Tastenanschläge vom Model verarbeitet werden.
+
+## 8.2 ApplicationStub
+### 8.2.1 RemoteId
+In manchen Fällen kann es notwendig sein, den Service einen konkreten ApplicationStubs anzufragen. Dazu erhält
+jeder ApplicationStub eine `RemoteId`, über die er eindeutig identifiziert werden kann.
+
+### 8.2.2 Namensraum
+Zur Identifizierung der vom ApplicationStub angebotenen Services wird ein hierarchischer Namensraum verwendet. 
+Jeder Service kann eindeutig über die Kombination aus ServiceId und RemoteId des anbietenden ApplicationStubs bestimmt werden. 
+
+### 8.2.3 Service Call Protokoll
+Die Anfrage, einen angebotenen Service auszuführen, besteht aus folgenden Bestandteilen:
+- `serviceId`: die Id des Services
+- `intParameters` : Parameter des Services vom Typ int
+- `stringParameters`: Parameter des Servcies vom Typ String
+
+Services können nach folgenden Regeln angefragt werden: 
+
+| Service                  | ServiceId | intParameters                         | stringParameters                                                                      |
+|--------------------------|-----------|---------------------------------------|---------------------------------------------------------------------------------------|
+| `PREPARE               ` | 0         | playercount für das Spiel             | keine                                                                                 | 
+| `REGISTER              ` | 1         | registrationId, managedPlayerCount    | RemoteId des IGameManager Remote Objekts, RemoteId des IUpdateListener Remote Objekts | 
+| `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange | keine                                                                                 | 
+| `HANDLE_MANAGED_PLAYERS` | 3         | TODO                                  | keine                                                                                 | 
+| `HANDLE_GAME_STATE     ` | 4         | TODO                                  | keine                                                                                 | 
+| `UPDATE_ARENA          ` | 5         | TODO                                  | keine                                                                                 | 
+| `UPDATE_STATE          ` | 6         | TODO                                  | keine                                                                                 | 
+| `UPDATE_START          ` | 7         | TODO                                  | keine                                                                                 | 
+| `UPDATE_RESULT         ` | 8         | TODO                                  | keine                                                                                 | 
+| `UPDATE_COUNTDOWN      ` | 9         | TODO                                  | keine                                                                                 | 
+| `UPDATE_FIELD          ` | 10        | TODO                                  | keine                                                                                 | 
+
 
 # 9. Architekturentscheidungen
 
+| Entscheidung         | Qualitätsmerkmale                                                                           | Beschreibung                                                                                                                                                                                               |
+|----------------------|---------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Komponenten nach MVC | Erweiterbarkeit, Wartbarkeit, Übertragbarkeit                                               | Die Einführung vom MVC-Pattern soll die Bearbeitung an der Applikation vereinfachen und der Applikation eine verständliche Struktur geben.                                                                 |
+| Factory Method       | Lose Kopplung, Erweiterbarkeit, Wartbarkeit                                                 | An vielen Stellen werden Factories verwendet, um die Objekterzeugung vom Rest der Implementierung löszulösen und eine Implementierung gegen Schnittstellen anstatt gegen konkrete Objekte zu unterstützen  | 
+| Singleton Pattern    | Lose Kopplung                                                                               | Einige Objekte werden als Singleton realisiert, da sie an unterschiedlichen Stellen gebraucht werden und dies das erfüllen von Dependencies erleichtert.                                                   | 
+
 # 10. Qualitätsanforderungen
+siehe Abschnitt 1.2.
 
 # 11. Risiken und technische Schulden
 
+| Entscheidung            | Beschreibung                                                                                                                                                                            |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dependencies per Hand   | Dependencies werden derzeit manuell über initialize-Methoden oder Konstruktoren realisiert. In dem kleinen Umfang ist dies noch machbar, bei Wachstum allerdings nicht mehr handhabbar. |
+| Singleton Pattern       | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                                     | 
+
+
 # 12. Glossar
 # 13. Anhang
-## Anforderungsdetails
+## Storyboard
 ![image info](./diagrams/storyboard.jpg )
-**1: Starting Screen**
-- Ermöglicht die Wahl der Spieleranzahl.
-    - Es wird ein Defaultwert angezeigt.
-    - Es kann zwischen 2-6 Spielern ausgewählt werden.
-- Enthält einen “Spiel starten” Button.
-- Wird der Button betätigt, erscheint Bildschirm 2.
-
-**2: Waiting Screen**
-- Wird solange angezeigt, bis die vorher eingestellte Spielerzahl erreicht ist.
-    - unter waiting wird angezeigt wie viele Spieler bereits warten
-- Timer: Wird nach Ablauf des Timers die Spielerzahl nicht erreicht, wird
-    - das Spiel gestartet, wenn > 2 Spieler bereit sind, damit die Spieler nicht so lange warten müssen.
-    - der Starting Screen wieder angezeigt, wenn < 2 Spieler bereit sind.
-- Ist der Timer  mit > 2 Spieler oder die eingestellte Spielerzahl erreicht, erscheint Bildschirm 3.
-
-**3: Arena**
-- Zuerst wird ein Countdown (3-2-1-go) angezeigt.
-- Die Arena besteht aus einem Raster, auf dem die Motorräder fahren.
-- Hier gelten die oben genannten Spielregeln.
-- Alle Motorräder sollen “faire” Startkondition haben. (”Fair” ist nicht näher definiert und den Entwicklern überlassen).
-- Die Entwickler sollen sich eine “geeignete Logik” überlegen, durch die die Spieler wissen, welche Figur sie steuern.
-- Wenn das Spiel zu Ende ist, wird Screen 4 angezeigt.
-- Das Spiel ist beendet, wenn:
-    - Es ist nur noch ein Spieler übrig und es gibt einen Gewinner.
-    - Die letzten beiden Spieler sterben gleichzeitig. Das Spiel ist unentschieden
-
-**4: End Screen**
-- Anzeige “Spiel ist zu Ende”
-- Anzeige des Gewinners oder “Unentschieden”. Identifikation des Gewinners ist den Entwicklern überlassen.
-- Dieser Screen wird für eine gewisse Zeit angezeigt, danach geht es zurück zum Bildschirm 1.
-
-**Konfiguration**
-
-Folgende Aspekte sollen über eine Konfigurationsdatei einstellbar sein:
-- Timer des Waiting Screens.
-- Timer des Endscreens
-- Defaultwert für Spieleranzahl
-- Geschwindigkeit der Motorräder
-    - Auf einer Skala von 1%-100%, gemessen in Bewegungen pro Sekunde b/s
-    - 1% = 1 b/s, 100% = 500 b/s
-- Größe der Arena anhand von 3 Werten:
-    - Größe der Rasterpunkte/-zellen, z.B. in Pixel.
-    - Anzahl der Rasterpunkte/-zellen in x-Richtung und y-Richtung.
-- Tastenkombinationen für die Bewegung der Spieler
-
-Die Konfiguration greift dabei nur bei Neustart der Applikation.
-
-**Weitere Aspekte**
-- Das Motorrad muss nicht konfigurierbar sein (Farbe einstellen oder ähnliches).
-- Es gibt kein Punktesystem oder ähnliches. Jedes Spiel wird für sich gespielt.
-- Die Multiplayer-Anzeige (Splitscreen mit mehreren Arenen oder eine Arena für alle) ist den Entwicklern überlassen.
-- Spieler können ein Spiel weder pausieren noch beenden.
-- Zum Schließen des Spiels reicht der Standard "x"-Button.
 
 ## Use Cases
 

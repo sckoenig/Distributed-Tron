@@ -5,7 +5,6 @@ import vsp.trongame.Modus;
 import vsp.trongame.application.model.datatypes.Steer;
 import vsp.trongame.application.model.game.IGame;
 import vsp.trongame.application.model.gamemanagement.IGameManager;
-import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.middleware.IRemoteInvocation;
@@ -15,9 +14,9 @@ import static vsp.middleware.IRemoteInvocation.*;
 
 import java.util.concurrent.ExecutorService;
 
-public class GameCaller implements IGame, ICaller {
+public class GameCaller implements IGame {
 
-    private String remoteId; //id of the remote Object I want to call
+    private final String remoteId; //id of the remote Object I want to call
     private final IRemoteInvocation middleware;
 
     public GameCaller() {
@@ -43,12 +42,7 @@ public class GameCaller implements IGame, ICaller {
 
     @Override
     public void handleSteer(Steer steer) {
-        middleware.invoke(remoteId, Service.HANDLE_STEERS.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
+        middleware.invoke(remoteId, Service.HANDLE_STEER.ordinal(), IRemoteInvocation.InvocationType.UNRELIABLE,
                 new int[]{steer.playerId(), steer.directionChange().ordinal()});
-    }
-
-    @Override
-    public void setRemoteId(String remoteId) {
-     this.remoteId = remoteId;
     }
 }

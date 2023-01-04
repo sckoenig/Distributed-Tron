@@ -40,7 +40,7 @@ public class GameCallee implements IRemoteObject {
         IRegister middleware = Middleware.getInstance();
         middleware.registerRemoteObject(PREPARE.ordinal(),RemoteId.STRING_ID, this);
         middleware.registerRemoteObject(REGISTER.ordinal(), RemoteId.STRING_ID, this);
-        middleware.registerRemoteObject(HANDLE_STEERS.ordinal(), RemoteId.STRING_ID, this);
+        middleware.registerRemoteObject(HANDLE_STEER.ordinal(), RemoteId.STRING_ID, this);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class GameCallee implements IRemoteObject {
                     localGame.register(managerCaller, listenerCaller, intParameters[0], intParameters[1]);
                 }
             }
-            case HANDLE_STEERS -> {
+            case HANDLE_STEER -> {
                 if (intParameters.length == 2){
                     Steer steer = new Steer(intParameters[0], DirectionChange.getByOrdinal(intParameters[1]));
                     localGame.handleSteer(steer);
