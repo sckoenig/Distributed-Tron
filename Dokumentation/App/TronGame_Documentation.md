@@ -139,13 +139,17 @@ Details siehe [Use Cases](#use-cases).
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setGameResult(result : String, color : Color) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis (Gewinner-Farbe, Ergebnis-Text) wurde gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
 
-### 4.2.1.4 Arena
+### 4.2.1.4 IArena & Arena
 <!-- ARENA -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
 | UC-3 | `addPlayerPosition(playerId : int, coordinate : Coordinate) : void`               | IArena | Player muss noch am leben sein. Coordinate darf nicht NULL sein und die Coordinate muss sich innerhalb der Arena befinden. | Die Arena wurde aktualisiert | Die aktuell Head-Koordinate des übergebenen Players wird in die Arena eingetragen. | - |
 | UC-3 | `deletePlayerPositions(playerIds : List<Integer>) : void`                          | IArena | Liste mit den ID´s darf nicht leer sein.| | Alle koordinaten der übergebenen ID´s werden aus der Arena entfernt. | Wenn die Liste der ID´s leer ist, wird die Methode abgebrochen.|
-| UC-3 | detectWallCollision(coordinate : Coordinate) : boolean                           | IArena | Die Coordinate muss innerhalb des Arena-Arrays sein. Coordinate darf nicht null sein. | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | - |
+| UC-3 | `detectCollision(coordinate : Coordinate) : boolean` | IArena |  |  |  |  |
+| | `calculateFairStartingCoordinate(playerCount : int) : List<Coordinate>` | IArena |  |  |  |  |
+| | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena |  |  |  |  |
+| | `` |  |  |  |  |  |
+
 
 ### 4.2.1.5 ICollisionDetector
 <!-- COLLISION -->
