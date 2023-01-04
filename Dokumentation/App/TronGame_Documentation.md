@@ -86,6 +86,7 @@ Details siehe [Use Cases](#use-cases).
 | WaitingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Waiting befindet. |
 | CountingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Countdown befindet. |
 | EndingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Finished befinded. |
+| IUpdateListener | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend. |
 
  
 ### 4.2.1 Model
@@ -128,13 +129,17 @@ Details siehe [Use Cases](#use-cases).
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setGameResult(result : String, color : Color) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis (Gewinner-Farbe, Ergebnis-Text) wurde gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
 
-### 4.2.1.4 Arena
+### 4.2.1.4 IArena & Arena
 <!-- ARENA -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
 | UC-3 | `addPlayerPosition(playerId : int, coordinate : Coordinate) : void`               | IArena | Player muss noch am leben sein. Coordinate darf nicht NULL sein und die Coordinate muss sich innerhalb der Arena befinden. | Die Arena wurde aktualisiert | Die aktuell Head-Koordinate des übergebenen Players wird in die Arena eingetragen. | - |
 | UC-3 | `deletePlayerPositions(playerIds : List<Integer>) : void`                          | IArena | Liste mit den ID´s darf nicht leer sein.| | Alle koordinaten der übergebenen ID´s werden aus der Arena entfernt. | Wenn die Liste der ID´s leer ist, wird die Methode abgebrochen.|
-| UC-3 | detectWallCollision(coordinate : Coordinate) : boolean                           | IArena | Die Coordinate muss innerhalb des Arena-Arrays sein. Coordinate darf nicht null sein. | Variable ist wahr wenn der Spieler zusammengestoßen ist und falsch wenn keine Kollision entdeckt wurde. | Bei jeden Zug wird überprüft ob der Spieler in den Schatten eines weiteren Spieler, die Arenawand oder in seinen eigenen Schatten gefahren ist. | - |
+| UC-3 | `detectCollision(coordinate : Coordinate) : boolean` | IArena |  |  |  |  |
+| | `calculateFairStartingCoordinate(playerCount : int) : List<Coordinate>` | IArena |  |  |  |  |
+| | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena |  |  |  |  |
+| | `` |  |  |  |  |  |
+
 
 ### 4.2.1.5 ICollisionDetector
 <!-- COLLISION -->
@@ -184,15 +189,15 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ### 4.2.3.2 IUpdateListener & UpdateListener 
 | UC | Funktion | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
 | -- | -------- | ------ | ------------ | ------------- | -------------- | -------------- |
-| | `updateOnRegistration(id : int) : void` | IUpdateListener |  |  |  |  |
-| | `updateOnKeyMappings(mappings : Map<String, String>) : void` | IUpdateListener |  |  |  |  |
-| | `updateOnArena(rows : int, columns : int) : void` | IUpdateListener |  |  |  |  |
-| | `updateOnState(state : String): void` | IUpdateListener |  |  |  |  |
-| | `updateOnGameStart() : void` | IUpdateListener |  |  |  |  |
-| | `updateOnGameResult(color : String, result : String)` | IUpdateListener |  |  |  |  |
-| | `updateOnCountDown(value : int) : void` | IUpdateListener |  |  |  |  |
-| | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener |  |  |  |  |
-| | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener |  |  |  |  |
+| | `updateOnRegistration(id : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. | UpdateListener kennt danach seine Id. | Der UpdateListener wird vom Model über die vergebene Id informiert. |  |
+| | `updateOnKeyMappings(mappings : Map<String, String>) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über die Keys die im CountdownOverlay angezeigt werden sollen informiert und setzt diese im CountdownOverlay. |  |
+| | `updateOnArena(rows : int, columns : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Informiert den UpdateListener über die Größe der Arena, die entsprechende View wird angepasst. |  |
+| | `updateOnState(state : String): void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den State des Model informiert und setzt die View auf das zum State passende Overlay. |  |
+| | `updateOnGameStart() : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Infomiert den UpdateListener über den start des Spieles, alle Overlays werden versteckt, sodass kein Overlay mehr angezeigt wird. |  |
+| | `updateOnGameResult(color : String, result : String)` | IUpdateListener | Der UpdateListener wurde informiert. |  | Informiert den UpdateListener über das Ende des Spiels, der Sieger wird angezeigt, das CoundownOverlay wird zurückgesetzt und alle Koordinaten werden auf der View gelöscht. |  |
+| | `updateOnCountDown(value : int) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über den nächsten Schritt im Countdown informiert und setzt das CoundownOverlay auf den übergebenen Wert. |  |
+| | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den aktuellen Zustand des Spielfeldes informiert und der aktuelle Zustand wird in die View übertragen. |  |
+| | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird initialisiert. |  |
 
 
 # 5. Bausteinsicht
@@ -201,8 +206,7 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ## 5.2 Ebene 2 : Application
 ![image info](./diagrams/baustein/bs_layer2_view_controller.png)
 ## 5.3 Ebene 3 : Application
-![image info](./diagrams/baustein/bs_layer3_model.png)
-![image info](./diagrams/baustein/bs_layer3_view.png)
+
 ## 5.2 Ebene 3 : ApplicationStub
 ![image info](./diagrams/baustein/bs_layer3_stub_model.png)
 Für *name* ∈ {IGameManager, IGame, IUpdateListener} gibt es im ApplicationStub eine Komponente der oben beschriebenen Form.
