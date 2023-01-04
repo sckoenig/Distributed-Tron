@@ -61,6 +61,7 @@ public class Game implements IGame {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
+            gameManager.handleGameState(currentState);
 
             if (isGameFull()) {
                 transitionState(GameState.STARTING);
@@ -241,10 +242,10 @@ public class Game implements IGame {
             updateField();
             long timeDiff = System.currentTimeMillis() - whileStart;
 
-            long waitingTime = (ONE_SECOND / speed) - timeDiff;
-            if (waitingTime >= 0) {
+            long sleepTime = (ONE_SECOND / speed) - timeDiff;
+            if (sleepTime >= 0) {
                 // noinspection BusyWait: tickrate here
-                sleep(waitingTime);
+                sleep(sleepTime);
             }
         }
     }
@@ -310,7 +311,7 @@ public class Game implements IGame {
         }).orElse(null);
 
         GameResult result;
-        Integer winnerId;
+        int winnerId;
         if (winner != null) {
             arena.deletePlayerPositions(List.of(winner.getId()));
             result = GameResult.WON;

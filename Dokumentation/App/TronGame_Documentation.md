@@ -216,7 +216,8 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ## 5.2 Ebene 2 : Application
 ![image info](./diagrams/baustein/bs_layer2_view_controller.png)
 ## 5.3 Ebene 3 : Application
-
+![image info](./diagrams/baustein/bs_layer3_model.png)
+![image info](./diagrams/baustein/bs_layer3_view.png)
 ## 5.2 Ebene 3 : ApplicationStub
 ![image info](./diagrams/baustein/bs_layer3_stub_model.png)
 Für *name* ∈ {IGameManager, IGame, IUpdateListener} gibt es im ApplicationStub eine Komponente der oben beschriebenen Form.
@@ -228,29 +229,30 @@ Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das
 
 
 # 6. Laufzeitsicht
-## 6.1 Ebene 1
-### 6.1.1 UC-2: Spiel starten
-
-### 6.1.2 UC-3: Spiel spielen
-
-### 6.1.3 UC-3.1: Lenken
-
-### 6.1.4 UC-4: Ergebnisse ansehen
+## 6.1 Ebene 1: Use Cases auf MVC-Ebene
+![image info](./diagrams/laufzeit/UC2_startGame.png)
+![image info](./diagrams/laufzeit/UC2.1_seeKeyMappings.png)
+![image info](./diagrams/laufzeit/UC3_playGame.png)
+![image info](./diagrams/laufzeit/UC3.1_steerBike.png)
+![image info](./diagrams/laufzeit/UC4_seeResults.png)
+![image info](./diagrams/laufzeit/UC5_changeScenes.png)
 
 ## 6.2 Ebene 2: Model
-### 6.2.1 Model States
+### 6.2.1 States
+![image info](./diagrams/laufzeit/States.png)
 
-### 6.2.2 UC-1: Spiel konfigurieren
+### 6.2.2 Details der Use Cases im Model
+![image info](./diagrams/laufzeit/UC1_configure.png)
+![image info](./diagrams/laufzeit/model_UC3.1_steerBike.png)
+![image info](./diagrams/laufzeit/model_UC3.2_seeKeyMappings.png)
 
-### 6.2.3 UC-2: Spiel starten
-
-### 6.2.4 UC-3: Spiel spielen
-
-### 6.2.5 UC-4: Spiel beenden & Ergebnisse ansehen
-
-### 6.2.5 UC-3.1: Lenken
-
-### 6.2.6 UC-3.1: Lenken-States
+### 6.2.3 Activities im Model
+### 6.2.3.1 
+![image info](./diagrams/laufzeit/activity_start1.png)
+![image info](./diagrams/laufzeit/activity_start2.png)
+![image info](./diagrams/laufzeit/activity_runGame_loop.png)
+![image info](./diagrams/laufzeit/activity_runGame_collision.png)
+![image info](./diagrams/laufzeit/activity_end.png)
 
 # 7. Verteilungssicht
 

@@ -61,31 +61,27 @@ public class GameManager implements IGameManager, ITronModel {
 
     @Override
     public void playGame(int listenerID, int playerCount) {
-
         if (currentState == ModelState.MENU) {
-            game.prepareForRegistration(playerCount);
-            handleGameState(GameState.REGISTRATION);
-        }
 
-        executorService.execute(() -> {
-            int managedPlayerCount = singleView ? playerCount : 1;
-            if (listenersMap.containsKey(listenerID))
-                game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount);
-        });
+            game.prepareForRegistration(playerCount);
+            executorService.execute(() -> {
+                int managedPlayerCount = singleView ? playerCount : 1;
+                if (listenersMap.containsKey(listenerID))
+                    listenersMap.values().forEach(listener ->  game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount));
+            });
+        }
     }
 
     @Override
     public void registerUpdateListener(IUpdateListener listener) {
         int nextID = listenersMap.size();
         listenersMap.put(nextID, listener);
-        listenersToPlayersMap.put(nextID, new ArrayList<>());
         listener.updateOnRegistration(nextID);
         listener.updateOnState(currentState.toString());
     }
 
     @Override
     public void handleManagedPlayers(int id, List<Integer> managedPlayers) {
-
         Map<String, Integer> keyMapping = new HashMap<>();
 
         for (Integer playerID : managedPlayers) {
