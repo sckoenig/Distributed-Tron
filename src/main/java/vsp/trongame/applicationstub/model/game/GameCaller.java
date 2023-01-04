@@ -8,10 +8,10 @@ import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRemoteInvocation;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.IRemoteInvocation;
+import vsp.middleware.Middleware;
 
-import static vsp.trongame.middleware.IRemoteInvocation.*;
+import static vsp.middleware.IRemoteInvocation.*;
 
 import java.util.concurrent.ExecutorService;
 

@@ -5,9 +5,9 @@ import vsp.trongame.application.model.IUpdateListener;
 import vsp.trongame.application.model.datatypes.GameResult;
 import vsp.trongame.application.model.datatypes.GameState;
 import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRemoteInvocation;
+import vsp.middleware.IRemoteInvocation;
 import vsp.trongame.applicationstub.util.ICaller;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.Middleware;
 
 
 import java.util.ArrayList;

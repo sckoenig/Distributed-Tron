@@ -1,10 +1,10 @@
-package vsp.trongame.middleware;
+package vsp.middleware;
 
-import vsp.trongame.middleware.clientstub.Marshaller;
-import vsp.trongame.middleware.namingservice.INamingService;
-import vsp.trongame.middleware.namingservice.NameResolver;
-import vsp.trongame.middleware.namingservice.NameServer;
-import vsp.trongame.middleware.serverstub.Unmarshaller;
+import vsp.middleware.clientstub.Marshaller;
+import vsp.middleware.namingservice.INamingService;
+import vsp.middleware.namingservice.NameResolver;
+import vsp.middleware.namingservice.NameServer;
+import vsp.middleware.serverstub.Unmarshaller;
 
 import java.net.InetSocketAddress;
 import java.net.SocketException;

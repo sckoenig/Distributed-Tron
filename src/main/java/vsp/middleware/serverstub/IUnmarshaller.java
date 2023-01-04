@@ -1,4 +1,4 @@
-package vsp.trongame.middleware.serverstub;
+package vsp.middleware.serverstub;
 
 public interface IUnmarshaller {
 

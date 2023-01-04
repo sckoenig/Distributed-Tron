@@ -1,4 +1,4 @@
-package vsp.trongame.middleware;
+package vsp.middleware;
 
 /**
  * Represents a Register for instances of type {@link IRemoteObject}, so they can be called.

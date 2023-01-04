@@ -1,10 +1,10 @@
-package vsp.trongame.middleware.serverstub;
+package vsp.middleware.serverstub;
 
 import com.google.gson.Gson;
-import vsp.trongame.middleware.IRegister;
-import vsp.trongame.middleware.IRemoteObject;
-import vsp.trongame.middleware.namingservice.INamingService;
-import vsp.trongame.middleware.ServiceCall;
+import vsp.middleware.IRegister;
+import vsp.middleware.IRemoteObject;
+import vsp.middleware.namingservice.INamingService;
+import vsp.middleware.ServiceCall;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;

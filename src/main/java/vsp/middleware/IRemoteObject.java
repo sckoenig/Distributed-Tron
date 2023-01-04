@@ -1,4 +1,4 @@
-package vsp.trongame.middleware;
+package vsp.middleware;
 
 /**
  * Represents an Object, that can be called by the middleware.

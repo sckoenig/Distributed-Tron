@@ -13,9 +13,9 @@ import vsp.trongame.application.view.listener.IUpdateListenerFactory;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
-import vsp.trongame.middleware.IRegister;
-import vsp.trongame.middleware.IRemoteObject;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.IRegister;
+import vsp.middleware.IRemoteObject;
+import vsp.middleware.Middleware;
 
 import java.util.concurrent.ExecutorService;
 

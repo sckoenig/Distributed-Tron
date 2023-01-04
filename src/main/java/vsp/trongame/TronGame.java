@@ -13,7 +13,7 @@ import vsp.trongame.application.view.IViewWrapperFactory;
 import vsp.trongame.applicationstub.model.game.GameCallee;
 import vsp.trongame.applicationstub.model.gamemanagement.GameManagerCallee;
 import vsp.trongame.applicationstub.view.UpdateListenerCallee;
-import vsp.trongame.middleware.Middleware;
+import vsp.middleware.Middleware;
 
 import java.io.IOException;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package vsp.trongame.middleware.clientstub;
+package vsp.middleware.clientstub;
 
 import java.io.IOException;
 import java.io.OutputStream;

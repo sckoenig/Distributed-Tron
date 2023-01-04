@@ -1,4 +1,4 @@
-package vsp.trongame.middleware.namingservice;
+package vsp.middleware.namingservice;
 
 import com.google.gson.Gson;
 

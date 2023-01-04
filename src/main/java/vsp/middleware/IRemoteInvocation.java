@@ -1,4 +1,4 @@
-package vsp.trongame.middleware;
+package vsp.middleware;
 
 /**
  * Represents remote method invocations.

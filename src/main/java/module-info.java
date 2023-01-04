@@ -16,10 +16,10 @@ module vsp.trongame {
     exports vsp.trongame.application.view.overlays;
     opens vsp.trongame.application.view.overlays to javafx.fxml;
     exports vsp.trongame.application.model.gamemanagement;
-    exports vsp.trongame.middleware;
+    exports vsp.middleware;
     exports vsp.trongame.application.model.datatypes;
-    exports vsp.trongame.middleware.clientstub;
-    exports vsp.trongame.middleware.namingservice;
+    exports vsp.middleware.clientstub;
+    exports vsp.middleware.namingservice;
     opens vsp.trongame.application.view to javafx.fxml;
     exports vsp.trongame.application.view.listener;
     opens vsp.trongame.application.view.listener to javafx.fxml;
