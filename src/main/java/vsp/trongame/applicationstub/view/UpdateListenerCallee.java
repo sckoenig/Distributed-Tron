@@ -1,10 +1,9 @@
 package vsp.trongame.applicationstub.view;
 
 import edu.cads.bai5.vsp.tron.view.Coordinate;
-import vsp.trongame.app.model.IUpdateListener;
-import vsp.trongame.app.model.datatypes.*;
-import vsp.trongame.app.model.datatypes.GameState;
-import vsp.trongame.app.model.datatypes.TronColor;
+import vsp.trongame.application.model.IUpdateListener;
+import vsp.trongame.application.model.datatypes.*;
+import vsp.trongame.application.model.datatypes.GameState;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.trongame.middleware.IRegister;
@@ -53,9 +52,9 @@ public class UpdateListenerCallee implements IRemoteObject {
 
             case UPDATE_RESULT -> {
                 if (parameters.length >= 2) {
-                    String color = TronColor.getByOrdinal(parameters[0]).getHex();
+                    Integer id = parameters[0];
                     String result = GameResult.getByOrdinal(parameters[1]).getResultText();
-                    updateListener.updateOnGameResult(color, result);
+                    updateListener.updateOnGameResult(id, result);
                 }
             }
             case UPDATE_COUNTDOWN -> {
@@ -67,14 +66,14 @@ public class UpdateListenerCallee implements IRemoteObject {
                 int playerCount = parameters[0];
                 if (parameters.length > 1) {
                     int coordinatesCount = ((((parameters.length - 1) - playerCount) / playerCount) / 2);
-                    Map<String, List<Coordinate>> updateCoordinates = new HashMap<>();
+                    Map<Integer, List<Coordinate>> updateCoordinates = new HashMap<>();
                     for (int i = 1; i < parameters.length; i += coordinatesCount * 2 + 1) {
                         List<Coordinate> coordinates = new ArrayList<>();
-                        String color = TronColor.getByOrdinal(parameters[i]).getHex();
+                        Integer id = parameters[i];
                         for (int j = 1; j < coordinatesCount; j+=2) {
                             coordinates.add(new Coordinate(parameters[i+j], parameters[i+j+1]));
                         }
-                        updateCoordinates.put(color, coordinates);
+                        updateCoordinates.put(id, coordinates);
                     }
                     updateListener.updateOnField(updateCoordinates);
                 }

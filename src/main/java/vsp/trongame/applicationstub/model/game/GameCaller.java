@@ -1,10 +1,10 @@
 package vsp.trongame.applicationstub.model.game;
 
-import vsp.trongame.app.model.IUpdateListener;
-import vsp.trongame.app.model.datatypes.GameModus;
-import vsp.trongame.app.model.datatypes.Steer;
-import vsp.trongame.app.model.game.IGame;
-import vsp.trongame.app.model.gamemanagement.IGameManager;
+import vsp.trongame.application.model.IUpdateListener;
+import vsp.trongame.Modus;
+import vsp.trongame.application.model.datatypes.Steer;
+import vsp.trongame.application.model.game.IGame;
+import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
@@ -26,7 +26,7 @@ public class GameCaller implements IGame, ICaller {
     }
 
     @Override
-    public void initialize(GameModus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
+    public void initialize(Modus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService) {
         //not needed
     }
 
