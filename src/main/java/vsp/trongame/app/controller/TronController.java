@@ -17,7 +17,7 @@ public class TronController implements ITronController {
 
     @Override
     public void handleKeyEvent(int id, KeyEvent event){
-        model.handleSteerEvent(id, event.getCode());
+        model.handleSteerEvent(id, event.getCode().getChar());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package vsp.trongame.app.model.gamemanagement;
 
-import javafx.scene.input.KeyCode;
 import vsp.trongame.app.model.datatypes.DirectionChange;
 import vsp.trongame.app.model.datatypes.GameModus;
 import vsp.trongame.app.model.datatypes.Steer;
@@ -57,7 +56,7 @@ public class Configuration {
     }
 
     private Properties properties;
-    private final Map<KeyCode, Steer> keyMappings;
+    private final Map<String, Steer> keyMappings;
 
     public Configuration() {
         this.properties = new Properties();
@@ -195,8 +194,8 @@ public class Configuration {
         for (int i = 1; i < 7; i++) {
             keys = properties.getProperty("p" + i);
             String[] temp = keys.split(",");
-            keyMappings.put(KeyCode.valueOf(temp[0]), new Steer(i, DirectionChange.LEFT_STEER));
-            keyMappings.put(KeyCode.valueOf(temp[1]), new Steer(i, DirectionChange.RIGHT_STEER));
+            keyMappings.put(temp[0], new Steer(i, DirectionChange.LEFT_STEER));
+            keyMappings.put(temp[1], new Steer(i, DirectionChange.RIGHT_STEER));
         }
     }
 
@@ -233,7 +232,7 @@ public class Configuration {
      * @param key to which we want the steer
      * @return the steer object
      */
-    public Steer getSteer(KeyCode key) {
+    public Steer getSteer(String key) {
         return keyMappings.get(key);
     }
 

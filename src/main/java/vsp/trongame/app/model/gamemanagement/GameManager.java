@@ -1,6 +1,5 @@
 package vsp.trongame.app.model.gamemanagement;
 
-import javafx.scene.input.KeyCode;
 import vsp.trongame.app.model.IUpdateListener;
 import vsp.trongame.app.model.datatypes.*;
 import vsp.trongame.app.model.ITronModel;
@@ -98,7 +97,7 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void handleSteerEvent(int id, KeyCode key) {
+    public void handleSteerEvent(int id, String key) {
         if (handleGameEvents) {
             Steer steer = config.getSteer(key);
             if(steer != null) {

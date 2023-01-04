@@ -15,9 +15,9 @@ public interface ITronModel {
      * Handles a steer event by accepting a KeyCode and processing it.
      *
      * @param id the initiator's registration id
-     * @param key keyCode of the key that initiated the steer event.
+     * @param key the key that initiated the steer event.
      */
-    void handleSteerEvent(int id, KeyCode key);
+    void handleSteerEvent(int id, String key);
 
     /**
      * Initializes the Model with necessary dependencies.
