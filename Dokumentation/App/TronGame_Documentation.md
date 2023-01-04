@@ -183,12 +183,27 @@ Details siehe [Use Cases](#use-cases).
 | UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert.
 
 ### 4.2.3 View
+### 4.2.3.1 ITronView 
 Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Interface wird um folgende Methoden ergänzt:
 
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `updateView(players : Map<Color, List<Coordinates>>) : void `                                                                    | ITronView | - | - | Die Positionen der Spieler werden in der übergebenen Farbe auf den Screen gezeichnet.  | - |
+| UC-3 | `updateView(players : Map<Color, List<Coordinates>>) : void ` | ITronView | - | - | Die Positionen der Spieler werden in der übergebenen Farbe auf den Screen gezeichnet.  | - |
 | UC-2 | `setArenaSize(rows : int, columns : int) : void` | ITronView | TrownView wurde initialisiert. | TronView kennt Arena Größen | Das Game informiert die View über die Größen der Arena. | - | 
+
+### 4.2.3.2 IUpdateListener & UpdateListener 
+| UC | Funktion | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
+| -- | -------- | ------ | ------------ | ------------- | -------------- | -------------- |
+| | `updateOnRegistration(id : int) : void` | IUpdateListener |  |  |  |  |
+| | `updateOnKeyMappings(mappings : Map<String, String>) : void` | IUpdateListener |  |  |  |  |
+| | `updateOnArena(rows : int, columns : int) : void` | IUpdateListener |  |  |  |  |
+| | `updateOnState(state : String): void` | IUpdateListener |  |  |  |  |
+| | `updateOnGameStart() : void` | IUpdateListener |  |  |  |  |
+| | `updateOnGameResult(color : String, result : String)` | IUpdateListener |  |  |  |  |
+| | `updateOnCountDown(value : int) : void` | IUpdateListener |  |  |  |  |
+| | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener |  |  |  |  |
+| | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener |  |  |  |  |
+
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
