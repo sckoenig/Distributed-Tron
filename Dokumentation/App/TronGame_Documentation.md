@@ -258,6 +258,7 @@ Die in den States beschriebenen Aktivitäten sind in Abschnitt [Activities im Mo
 ![image info](./diagrams/laufzeit/activity_end.png)
 
 # 7. Verteilungssicht
+Es sind beliebige Verteilungen möglich.
 
 # 8. Querschnittliche Konzepte
 ## 8.1 Application
@@ -313,10 +314,11 @@ siehe Abschnitt 1.2.
 
 # 11. Risiken und technische Schulden
 
-| Entscheidung            | Beschreibung                                                                                                                                                                            |
-|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Dependencies per Hand   | Dependencies werden derzeit manuell über initialize-Methoden oder Konstruktoren realisiert. In dem kleinen Umfang ist dies noch machbar, bei Wachstum allerdings nicht mehr handhabbar. |
-| Singleton Pattern       | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                                     | 
+| Entscheidung          | Beschreibung                                                                                                                                                                            |
+|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dependencies per Hand | Dependencies werden derzeit manuell über initialize-Methoden oder Konstruktoren realisiert. In dem kleinen Umfang ist dies noch machbar, bei Wachstum allerdings nicht mehr handhabbar. |
+| Singleton Pattern     | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                                     | 
+| Manuelles Testen      | Das Definieren einer Teststrategie mit automatisierten Tests wurde versäumt und erschwert zukünftiges Refaktoring, Erweiterungen sowie die Sicherstellung der Funktionalität.           | 
 
 
 # 12. Glossar
