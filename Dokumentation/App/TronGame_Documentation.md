@@ -196,7 +196,8 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 ## 5.2 Ebene 2 : Application
 ![image info](./diagrams/baustein/bs_layer2_view_controller.png)
 ## 5.3 Ebene 3 : Application
-
+![image info](./diagrams/baustein/bs_layer3_model.png)
+![image info](./diagrams/baustein/bs_layer3_view.png)
 ## 5.2 Ebene 3 : ApplicationStub
 
 Für *name* ∈ {IGameManager, IGame, ITronView} gibt es im ApplicationStub eine Komponente der Form:
