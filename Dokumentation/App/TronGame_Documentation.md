@@ -151,12 +151,13 @@ Details siehe [Use Cases](#use-cases).
 | | `` |  |  |  |  |  |
 
 
-### 4.2.1.5 ICollisionDetector
+### 4.2.1.5 ICollisionDetector & CollisionDetector
 <!-- COLLISION -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `detectHeadColision(players: List<Player>) : boolean`                       | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
-| UC-3 | `detectColision(players: List<Player>, arena : Arena) : void`                       | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kolidiert. | - |
+| UC-3 | `detectCollision(players: List<Player>, arena : Arena) : void` | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit einem anderen Player, dem Schatten eines anderen Player oder der Arenawand kollidiert. | - |
+| UC-3 | `detectHeadCollision(players: List<Player>) : boolean` | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kollidiert. | - |
+
 
 ### 4.2.1.6 IPlayer
 <!-- PLAYER -->
