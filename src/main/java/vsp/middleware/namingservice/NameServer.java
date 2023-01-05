@@ -26,10 +26,16 @@ public class NameServer implements INamingService {
         this.executorService = Executors.newSingleThreadExecutor();
     }
 
+    /**
+     * Starts the executor service.
+     */
     public void start() {
         executorService.execute(this::runServerSocket);
     }
 
+    /**
+     * Opens the server socket and starts to listen.
+     */
     private void runServerSocket() {
         try {
             this.tcpServerSocket = new ServerSocket(address.getPort());
@@ -52,6 +58,13 @@ public class NameServer implements INamingService {
         }
     }
 
+    /**
+     * Processes the message of the NamingServiceMessage
+     *
+     * @param message of type NamingServiceMessage which is processed
+     * @param clientSocket the socket to which the message is processed
+     * @throws IOException if an I/O error occurs
+     */
     private void processMessage(NamingServiceMessage message, Socket clientSocket) throws IOException {
 
         if (message.messageType() == LOOKUP) {
@@ -89,6 +102,9 @@ public class NameServer implements INamingService {
         }
     }
 
+    /**
+     * Closes the server socket and stops the executor service.
+     */
     public void stop() {
         try {
             tcpServerSocket.close();
