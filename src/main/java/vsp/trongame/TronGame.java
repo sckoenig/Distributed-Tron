@@ -54,6 +54,13 @@ public class TronGame extends Application {
         ITronController tronController = ITronControllerFactory.getTronController(Modus.LOCAL);
         ITronModel tronModel = ITronModelFactory.getTronModel(Modus.LOCAL);
 
+        /* assemble */
+        tronController.initialize(tronModel);
+        tronModel.initialize(config, gameModus, singleView, modelExecutor);
+        tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
+                Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
+                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
+
         /* middleware & stubs if not LOCAL */
         if (gameModus != Modus.LOCAL){
             boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
@@ -65,13 +72,6 @@ public class TronGame extends Application {
             new UpdateListenerCallee(tronView.getListener());
             new GameManagerCallee((IGameManager) tronModel);
         }
-
-        /* assemble */
-        tronController.initialize(tronModel);
-        tronModel.initialize(config, gameModus, singleView, modelExecutor);
-        tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
-                Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
-                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
 
         /* open stage */
         stage.setTitle("LightCycles");

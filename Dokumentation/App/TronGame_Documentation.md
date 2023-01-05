@@ -67,43 +67,58 @@ Details siehe [Use Cases](#use-cases).
 # 4. Lösungsstrategie
 
 ## 4.1 Funktionale Zerlegung anhand der Use Cases
-Details siehe [Use Cases](#use-cases).
+Aus den [Use Cases](#3.1-business-kontext) ergeben sich folgende benötigte Objekte, denen in folgenden Abschnitten Funktionen zugeordnet werden.
 
-| Objekt | Erklärung |
-| ----------- | ----------- |
-| Config | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit. |
-| IGame | Stellt die Spielelogik und startet die Spiel schleife. |
-| IGameManager | Managed die Spieler die mitspielen wollen sowie in welcher Phase sich das Spiel befindet.|
-| IArena | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler. |
-| ICollisionDetector | Ist für die Überprüfung ob ein Spieler, mit einem anderen Spieler, dessen Schatten oder einer Arenawand zusammengestoßen ist. |
-| IPlayer | Verwaltet einen einzelnen Spieler, mit den Coordinaten, der Richtung und der Farbe eines Spieler. |
-| ITronModel | Nimmt KeyEvents von dem Controller an und stellt der View die Observables zur Verfügung. |
-| ITronController | Verwaltet die Benutzereingaben. |
-| Steer | Steer ist ein Objekt das eine PlayerId eine dazugehörende Richtung speichert. |
-| StartingOverlay | Ist die Oberfläche wenn sich das Spiel im Zustand Menu befindet. |
-| WaitingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Waiting befindet. |
-| CountingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Countdown befindet. |
-| EndingOverlay | Ist die Oberfläche, wenn sich das Spiel im Zustand Finished befinded. |
-| IUpdateListener | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend. |
+| Objekt              | Erklärung                                                                                                                         |
+|---------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Configuration       | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit.                                                                 |
+| ITronView           | Stellt die Hauptkomponente der UI dar.                                                                                            |
+| ITronModel          | Verwaltet die gesamte Spielelogik.                                                                                                |
+| ITronController     | Verwaltet die Benutzereingaben.                                                                                                   |
+| IGame               | Stellt die Spielelogik und startet die Spielschleife.                                                                             |
+| IGameManager        | Managed die Spieler die, mitspielen wollen sowie in welcher Phase sich das Spiel befindet.                                        |
+| IArena              | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler.                 |
+| ICollisionDetector  | Ist für die Überprüfung ob ein Spieler, mit einem anderen Spieler, dessen Schatten oder einer Arenawand zusammengestoßen ist.     |
+| IPlayer             | Verwaltet einen einzelnen Spieler, mit den Coordinaten, der Richtung und der Farbe eines Spieler.                                 |
+| IUpdateListener     | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend.                                                 |
+| Overlay             | Eine Oberfläche, die in der UI angezeigt werden kann. Für jede Scene(Menu, Waiting, Countdown, Ending) wird ein Overlay benötigt. |
+| ITronViewWrapper    | Wrapperobjekt um die ITronView, Overlays und IUpdateListener, dass den Zusammenbau der View übernimmt.                            |
 
- 
-### 4.1.1 Model
-
-### 4.1.1.1 Config
+### 4.1.1 Configuration
 <!-- CONFIG -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-1 | `loadConfigFromFile() : void` | Config | Es existiert ein Config-Objekt. Es existiert eine TronConfig.properties File. | Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen. Das Config-Objetzt hält eine Referenz darauf.| Bei fehlender .properties-Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt (`reloadConfig()`) |
-| UC-1 | `isConfigValid() : boolean` | Config | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. Und ob die 'Values' sich im richtigen Wertebereich befinden. Sollte einer der beiden Fälle eintreffen, würde die Methode 'false' zurückgeben. | - |
-| UC-1 | `reloadConfig() : void `   |Config | Schreibrechte. | Properties mit 'default'-Werten wurde erzeugt. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal in Form einer .properties-Datei hinterlegt.  | Wenn keine Rechte bestehen, wird der Anwender darüber informiert. |
-| UC-1| `setKeyMappings() : void`                                                          | Config | Es existiert ein Properties-Objekt mit validen Daten | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als Value erhält die Map ein Steer-Objekt welches die Player-ID, sowie die Direction hält. | Die Methode zieht sich aus dem properties-Objekt die Tastenbelegungen aller Spieler. | - |
-| UC-1 | `getAttribute(key : String) : String`                                              | Config | Es existiert ein Properties-Objekt mit validen Daten. | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
-| UC-3.1 | `getSteer(key : KeyCode) : Steer`                                                  | Config | KeyMappings wurden erfolgreich erstellt. | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
+| UC | Funktion | Objekt        |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- |----------------------------------------------------------------------------------|---------------|----------- |----------- |----------- |----------- |
+| UC-1 | `loadConfigFromFile() : void` | Configuration | Es existiert ein Config-Objekt. Es existiert eine TronConfig.properties File. | Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen. Das Config-Objetzt hält eine Referenz darauf.| Bei fehlender .properties-Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt (`reloadConfig()`) |
+| UC-1 | `isConfigValid() : boolean` | Configuration        | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. Und ob die 'Values' sich im richtigen Wertebereich befinden. Sollte einer der beiden Fälle eintreffen, würde die Methode 'false' zurückgeben. | - |
+| UC-1 | `reloadConfig() : void `   | Configuration        | Schreibrechte. | Properties mit 'default'-Werten wurde erzeugt. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal in Form einer .properties-Datei hinterlegt.  | Wenn keine Rechte bestehen, wird der Anwender darüber informiert. |
+| UC-1| `setKeyMappings() : void`                                                          | Configuration        | Es existiert ein Properties-Objekt mit validen Daten | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als Value erhält die Map ein Steer-Objekt welches die Player-ID, sowie die Direction hält. | Die Methode zieht sich aus dem properties-Objekt die Tastenbelegungen aller Spieler. | - |
+| UC-1 | `getAttribute(key : String) : String`                                              | Configuration        | Es existiert ein Properties-Objekt mit validen Daten. | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
+| UC-3.1 | `getSteer(key : KeyCode) : Steer`                                                  | Configuration        | KeyMappings wurden erfolgreich erstellt. | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
 
-### 4.1.1.2 IGame & Game
+### 4.1.2. ITronView
+Es wird die zur Verfügung gestellte view library verwendet. Die ITronView wird lediglich um Setter für ROWS und COLUMNS erweitert.
+
+### 4.1.3 ITronModel
+<!-- ITRONMODEL -->
+| UC     | Funktion                                                                                                            | Objekt     | Vorbedingung                         | Nachbedingung                         | Ablaufsemantik                                      | Fehlersemantik |
+|--------|---------------------------------------------------------------------------------------------------------------------|------------|--------------------------------------|---------------------------------------|-----------------------------------------------------|----------------|
+| TODO   | `initialize(config : Configuration, modus : Modus, singleView : boolean, executorService : ExecutorService) : void` | ITronModel | Der GameManager wurde initialisiert. | TODO                                  | TODO                                                | TODO           |
+| UC-2   | `playGame(playerNumber : int) : void`                                                                               | ITronModel | Der GameManager wurde initialisiert. | TODO                                  | TODO                                                | TODO           |
+| UC-3.1 | `handleSteerEvent( key : KeyCode ) : void`                                                                          | ITronModel | Der GameManager wurde initialisiert. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben. | TODO           |
+| TODO   | `registerUpdateListener(listener : IUpdateListener) : void`                                                         | ITronModel | Der GameManager wurde initialisiert. | TODO                                  | TODO                                                | TODO           |
+
+### 4.1.4 ITronController
+| UC     | Funktion                                           | Objekt          | Vorbedingung                  | Nachbedingung                                        | Ablaufsemantik                                                                                                                                  | Fehlersemantik |
+|--------|----------------------------------------------------|-----------------|-------------------------------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| TODO   | `initialize(model : TronModel) : void`             | ITronController | TODO                          | TODO                                                 | TODO                                                                                                                                            | TODO           |
+| UC-2   | `playGame(id : int, playerCount : int) : void`     | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet.                 | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | TODO           |
+| UC-3.1 | `handleKeyEvent(id : int event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst    | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert.                                               | TODO           |
+
+
+### 4.1.5 IGame & Game
 <!-- GAME -->
-| UC | Funktion                                                                                                                                        | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- | |-------|----------- |----------- |----------- |----------- |
+| UC | Funktion  | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| -- | -- |-------|----------- |----------- |----------- |----------- |
 | | `initialize(modus : GameModus, speed : int, rows : int, columns : int, waitingTimer : int, endingTimer : int, executorService : ExecutorService` | IGame |  |  |  |  |
 | UC-2 | `prepareForRegistration(playerCount : int) : void`                              | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
 | UC-2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING" | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
@@ -128,8 +143,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `finishGame() : void` | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert. | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `resetGame()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
 | UC-3 | `resetGame() : void ` | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand. | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde. | - |
 
-
-### 4.1.1.3 IGameManager & GameManager
+### 4.1.6 IGameManager & GameManager
 <!-- GAMEMANAGER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -138,7 +152,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
 | UC-4 | `setGameResult(result : String, color : Color) : void`                                            | IGameManager | Es gibt einen Gewinner oder es ist unentschieden | Das Spielergebnis (Gewinner-Farbe, Ergebnis-Text) wurde gesetzt. | Setzt das Spielergebnis im Game Manager fest, sodass es dem Spieler angezeigt werden kann. | - |
 
-### 4.1.1.4 IArena & Arena
+### 4.1.7 IArena & Arena
 <!-- ARENA -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -149,8 +163,7 @@ Details siehe [Use Cases](#use-cases).
 | | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena | Die coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Für die coordinate wurde eine Startrichtung berechnet. | Abhänging von der übergeben Koodinate wird die Startrichtung berechnet. |  |
 
 
-
-### 4.1.1.5 ICollisionDetector & CollisionDetector
+### 4.1.8 ICollisionDetector & CollisionDetector
 <!-- COLLISION -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
@@ -158,7 +171,7 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `detectHeadCollision(players: List<Player>) : boolean` | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kollidiert. | - |
 
 
-### 4.1.1.6 IPlayer 
+### 4.1.9 IPlayer 
 <!-- PLAYER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik| Fehlersemantik |
 | ---- |---------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------------|
@@ -167,34 +180,8 @@ Details siehe [Use Cases](#use-cases).
 | UC-3 | `crash() : void` | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
 | UC-2,3 | `performDirectionChange() : Direction` | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 
-### 4.1.1.7 ITronModel
-<!-- ITRONMODEL -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-4 | `getWinnerObservable() : StringProperty`                                           | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Winner-Objekt. | - |
-| UC-3.1 | `handleSteerEvent( key : KeyCode ) : void`                                         | ITronModel | Der GameManager wurde initialisiert. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben. |  |
-| UC-4 | `getGameResultObservable() : StringProperty`                                       | ITronModel | Der GameManager wurde initialisiert. | Ein Observable StringProperty wurde zurückgegeben.  | Andere Komponenten(View) erhalten eine Referenz auf das Observable-GameResult-Objekt. | |
-| UC-3 | `getCounterObservable() : IntegerProperty`                                         | ITronModel | Der GameManager wurde initialisiert.  | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt.| |
-| UC-2 | `getPlayerCountObservable(): IntegerProperty`                                      | ITronModel | Der GameManager wurde initialisiert. | Ein Observable IntegerProperty wurde zurückgegeben. | Andere Komponenten(View) erhalten eine Referenz auf das Observable-Counter-Objekt. | |
-| UC-2 | `initializeGame(playerNumber : int) : void`                                        | ITronModel | Der GameManager wurde initialisiert. | Der GameManager befindet sich im State "WAITING" | Im Model wird ein Game vorbereitet, in dem dann auch die Arena und die Spieler initialisiert werden. | - |
 
-### 4.1.2 Controller
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
-| UC-2 | `btnStartGame(event : ActionEvent) : void` | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet. | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | |
-| UC-3 | `initKeyEventHandler(scene : Scene) : void` | ITronController | Scene nicht null, TronController wurde erstellt | Der Controller handelt die KeyEvents auf der übergebenen Scene. | Bei Start der Applikation wird der Controller als EventHandler für die Scene der View initialisiert, damit er KeyEvents des Users erhält und verarbeitet. | - |
-| UC-3.1 | `handleKeyEvent(event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert. |
-
-### 4.1.3 View
-### 4.1.3.1 ITronView 
-Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Interface wird um folgende Methoden ergänzt:
-
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- | ----------- | ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `updateView(players : Map<Color, List<Coordinates>>) : void ` | ITronView | - | - | Die Positionen der Spieler werden in der übergebenen Farbe auf den Screen gezeichnet.  | - |
-| UC-2 | `setArenaSize(rows : int, columns : int) : void` | ITronView | TrownView wurde initialisiert. | TronView kennt Arena Größen | Das Game informiert die View über die Größen der Arena. | - | 
-
-### 4.1.3.2 IUpdateListener & UpdateListener 
+### 4.1.10 IUpdateListener & UpdateListener 
 | UC | Funktion | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
 | -- | -------- | ------ | ------------ | ------------- | -------------- | -------------- |
 | | `updateOnRegistration(id : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. | UpdateListener kennt danach seine Id. | Der UpdateListener wird vom Model über die vergebene Id informiert. |  |
@@ -207,6 +194,13 @@ Es wird die zur Verfügung gestellte view library verwendet. Das ITronView Inter
 | | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den aktuellen Zustand des Spielfeldes informiert und der aktuelle Zustand wird in die View übertragen. |  |
 | | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird initialisiert. |  |
 
+### 4.1.11 ITronViewWrapper
+<!-- ITRONVIEWWRAPPER -->
+| UC   | Funktion                                                                                                                                                          | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
+|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|--------------|---------------|----------------|----------------|
+| TODO | `buildView(model : ITronModel, controller : ITronController, height : int, width : int, defaultPlayerCount : int, idOverlayMapping : Map<String, String>) : void` | TODO   | TODO         | TODO          | TODO           | TODO           |
+| TODO | `getScene() : Scene`                                                                                                                                              | TODO   | TODO         | TODO          | TODO           | TODO           |
+| TODO | `getListener() : IUpdateListener`                                                                                                                                 | TODO   | TODO         | TODO          | TODO           | TODO           |
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1

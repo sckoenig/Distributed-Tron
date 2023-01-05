@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 import static java.lang.Thread.*;
+import static vsp.trongame.Modus.LOCAL;
 
 /**
  * Implements the game logic.
@@ -43,12 +44,14 @@ public class Game implements IGame {
         this.speed = speed;
         this.registrationTime = waitingTimer;
         this.finishingTime = endingTimer;
-        this.arena = IArenaFactory.getArena(modus, rows, columns);
+        //this.arena = IArenaFactory.getArena(modus, rows, columns); //TODO REST
+        this.arena = IArenaFactory.getArena(LOCAL, rows, columns);
         this.gameExecutor = executorService;
     }
 
     @Override
     public void prepareForRegistration(int playerCount) {
+        System.out.println("PREPARE");
         if (currentState == GameState.INIT) {
             this.playerCount = playerCount;
             transitionState(GameState.REGISTRATION);
@@ -57,6 +60,7 @@ public class Game implements IGame {
 
     @Override
     public void register(IGameManager gameManager, IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
+        System.out.println("REGISTER");
         if (isRegistrationAllowed(managedPlayerCount)) {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
