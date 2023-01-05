@@ -1,18 +1,24 @@
 package vsp.middleware.serverstub;
 
+/**
+ * Represents an Unmarshaller, that unmarshalles byte[] messages.
+ */
 public interface IUnmarshaller {
 
     /**
-     * Adds a message to a queue.
-     *
-     * @param message which is added
+     * Adds a message to this unmarshaller's queue.
+     * @param message message to unmarshal
      */
     void addToQueue(byte[] message);
 
     /**
-     * Sets the given Port.
-     *
-     * @param port which is set
+     * Informs the unmarshaller about the receiver's port for NamingService-Registration.
+     * @param port the receiver's port.
      */
     void setPort(int port);
+
+    /**
+     * Stops this unmarshaller.
+     */
+    void stop();
 }

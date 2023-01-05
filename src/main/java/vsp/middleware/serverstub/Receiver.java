@@ -7,15 +7,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Receiver {
-    private static final int PACKAGE_SIZE = 1400;
-    private static final int MIN_PORT = 5555;
-    private static final int MAX_PORT = 49152;
+/**
+ * Enables message receiving via UDP and TCP.
+ */
+public class Receiver implements IReceiver{
     private DatagramSocket udpSocket;
     private ServerSocket tcpSocket;
     private final IUnmarshaller unmarshaller;
     private final BlockingQueue<Socket> tcpSocketQueue;
-    private final Random rand;
+    private final Random rand; // roll random port
     private final ExecutorService executorService;
 
     public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) {
@@ -25,12 +25,14 @@ public class Receiver {
         this.rand = new Random();
     }
 
+    @Override
     public void start() {
         createReceiverSockets();
         startTcpReceiver();
         startUdpReceiver();
     }
 
+    @Override
     public void stop() {
         try {
             tcpSocket.close();
@@ -40,6 +42,9 @@ public class Receiver {
         }
     }
 
+    /**
+     * Creates listening Sockets with random port.
+     */
     private void createReceiverSockets() {
         int port;
         boolean portAvailable = false;
@@ -60,6 +65,9 @@ public class Receiver {
         }
     }
 
+    /**
+     * Starts a thread for the TCP-ServerSocket.
+     */
     private void startTcpReceiver() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -76,6 +84,9 @@ public class Receiver {
         startTcpSocketHandler();
     }
 
+    /**
+     * Starts a thread that handles incoming Sockets from TCP-ServerSocket.
+     */
     private void startTcpSocketHandler() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -93,7 +104,9 @@ public class Receiver {
         });
     }
 
-
+    /**
+     * Starts a thread for the UDP-DatagramSocket.
+     */
     private void startUdpReceiver() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {

@@ -12,11 +12,13 @@ import java.util.concurrent.ExecutorService;
 
 import static java.lang.Thread.sleep;
 
+/**
+ * Represents a local name resolver for registration and lookup purposes.
+ */
 public class NameResolver implements INamingService {
     private static final int CACHE_CLEARANCE_INTERVAL = 15000;
     private static final int TIMEOUT = 3000;
     private final Map<Integer, Map<String, String>> cache;
-
     private final InetSocketAddress serverAddress;
     private final Gson gson;
     private final ExecutorService executorService;
@@ -35,30 +37,29 @@ public class NameResolver implements INamingService {
         String address = lookUpCache(remoteID, serviceId);
 
         if (address == null) {
-            return sendRequest(LOOKUP, serviceId, remoteID, null, true);
+            return sendRequest(NamingServiceMessage.LOOKUP, serviceId, remoteID, NamingServiceMessage.NO_ADDRESS, true);
         }
         return address;
     }
 
     @Override
     public void registerService(String remoteID, int serviceID, String address) {
-        sendRequest(REGISTER, serviceID, remoteID, address, false);
+        sendRequest(NamingServiceMessage.REGISTER, serviceID, remoteID, address, false);
     }
 
     @Override
     public void unregisterService(String remoteID) {
-        sendRequest(UNREGISTER, NO_SERVICE, remoteID, null, false);
+        sendRequest(NamingServiceMessage.UNREGISTER, NamingServiceMessage.NO_SERVICE, remoteID, NamingServiceMessage.NO_ADDRESS, false);
     }
 
     /**
-     * Sends request from message type to the name server.
-     *
-     * @param messageType of the request
-     * @param serviceId of the service
-     * @param remoteId of the remote object
-     * @param address of the remote object
-     * @param awaitResponse if we want a response
-     * @return the address or an empty string
+     * Sends a message to the name server.
+     * @param messageType the type of the message
+     * @param serviceId the serviceId or default
+     * @param remoteId the remoteId or default
+     * @param address the address or default
+     * @param awaitResponse true, if a response is necessary, false otherwise.
+     * @return the response, if awaitResponse was true, empty String otherwise.
      */
     private String sendRequest(byte messageType, int serviceId, String remoteId, String address, boolean awaitResponse){
 
@@ -92,7 +93,7 @@ public class NameResolver implements INamingService {
     }
 
     /**
-     * Clears the cache
+     * Clears the cache in regular intervals.
      */
     private void startClearCache() {
         executorService.execute(() -> {
@@ -109,11 +110,10 @@ public class NameResolver implements INamingService {
     }
 
     /**
-     * Looks if the remote object and the service is already saved in the cache.
-     *
-     * @param remoteId the id to the remote object
-     * @param serviceId the id to the service object
-     * @return the address where the service is found
+     * Looks for service information in cache.
+     * @param remoteId the service provider's remoteId
+     * @param serviceId the service's id.
+     * @return the service prodiver's address, if known, null otherwise.
      */
     private String lookUpCache(String remoteId, int serviceId){
         Map<String, String> serviceProvider = cache.get(serviceId);
