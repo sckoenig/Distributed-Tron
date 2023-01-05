@@ -12,12 +12,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Provides Remote Method Invocation.
+ */
 public class Marshaller implements IRemoteInvocation {
 
     private final BlockingQueue<InvocationTask> queue;
     private final ISender sender;
-    private final ExecutorService executorService;
-    private final Gson gson;
+    private final ExecutorService executorService; //for task handler for queue
+    private final Gson gson; //for marshalling
     private final INamingService namingService;
 
     public Marshaller(ExecutorService executorService, INamingService namingService) throws SocketException {
@@ -36,6 +39,9 @@ public class Marshaller implements IRemoteInvocation {
         queue.add(new InvocationTask(new ServiceCall(serviceID, intParameters, stringParameters), remoteID, protocol));
     }
 
+    /**
+     * Orders a thread from executorService to handle {@link InvocationTask} objects in queue.
+     */
     private void runInvocationTaskHandler(){
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){

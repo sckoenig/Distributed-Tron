@@ -7,12 +7,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Enables message receiving via UDP and TCP.
+ */
 public class Receiver implements IReceiver{
     private DatagramSocket udpSocket;
     private ServerSocket tcpSocket;
     private final IUnmarshaller unmarshaller;
     private final BlockingQueue<Socket> tcpSocketQueue;
-    private final Random rand;
+    private final Random rand; // roll random port
     private final ExecutorService executorService;
 
     public Receiver(IUnmarshaller unmarshaller, ExecutorService executorService) {
@@ -39,6 +42,9 @@ public class Receiver implements IReceiver{
         }
     }
 
+    /**
+     * Creates listening Sockets with random port.
+     */
     private void createReceiverSockets() {
         int port;
         boolean portAvailable = false;
@@ -59,6 +65,9 @@ public class Receiver implements IReceiver{
         }
     }
 
+    /**
+     * Starts a thread for the TCP-ServerSocket.
+     */
     private void startTcpReceiver() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -75,6 +84,9 @@ public class Receiver implements IReceiver{
         startTcpSocketHandler();
     }
 
+    /**
+     * Starts a thread that handles incoming Sockets from TCP-ServerSocket.
+     */
     private void startTcpSocketHandler() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -92,6 +104,9 @@ public class Receiver implements IReceiver{
         });
     }
 
+    /**
+     * Starts a thread for the UDP-DatagramSocket.
+     */
     private void startUdpReceiver() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
