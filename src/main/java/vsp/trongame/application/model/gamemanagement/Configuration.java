@@ -99,8 +99,7 @@ public class Configuration {
             return false;
         if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.NETWORK.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
-        //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555"); //TODO check for valid ip:port string
-        return true;
+        return isValidIpAddress(properties.getProperty(NAME_SERVER));
     }
 
     /**
@@ -164,6 +163,17 @@ public class Configuration {
                 tempStringArray[index].equalsIgnoreCase("Up") ||
                 tempStringArray[index].equalsIgnoreCase("Down") ||
                 !tempStringArray[index].matches(regex));
+    }
+
+    /**
+     * Checks of the string is a valid ip address.
+     *
+     * @param ipAddress which we want to validate
+     * @return if string is a valid ip address
+     */
+    private boolean isValidIpAddress(String ipAddress){
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{3,5}";
+        return ipAddress.matches(regex);
     }
 
     /**
