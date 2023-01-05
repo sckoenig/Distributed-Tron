@@ -156,6 +156,10 @@ Darüber hinaus werden im Diagramm nicht ausmodellierte Records für die Erleich
 
 # 6. Laufzeitsicht
 
+![image info](./diagrams/laufzeit_ns.png)
+![image info](./diagrams/laufzeit_cs_sv.png)
+
+
 # 7. Verteilungssicht
 
 # 8. Querschnittliche Konzepte
@@ -235,8 +239,8 @@ DRAW, 2 = REGISTER).
 **Standardfall**:
 
     1. Das System erstellt ein Remote Object.
-    2. Das System registriert das Remote Object beim ServerStub mit den Methoden, die es anbietet.
-    3. Das System speichert das RemoteObject mit Ordinal im ServerStub (HashMap).
+    2. Das System registriert das Remote Object beim ServerStub mit den ServiceIds der Services, die es anbietet.
+    3. Das System speichert das RemoteObject mit den ServiceIds im ServerStub.
 
 <br/>
 
@@ -251,11 +255,11 @@ DRAW, 2 = REGISTER).
 
 **Standardfall**:
 
-    1. Das Caller-Remote-Objekt ruft die invoke(...) Methode des ClientStubs 
+    1. ApplicationStub-Caller ruft die invoke(...) Methode der Middleware 
        mit der remoteId, der serviceId, den Parametern und dem InvocationType auf.
     2. Der ClientStub verpackt den Methodenaufruf in eine Nachricht (UC-4: Marshalling).
     3. Der ClientStub übersetzt den InvocationType aus der invoke-Methode in das zu verwendene Protokoll.
-    4. Der ClientStub führt einen Lookup nach der remoteId und ServiceId durch (UC-3: Lookup Service).
+    4. Der ClientStub führt einen Lookup nach der RemoteId und ServiceId durch (UC-3: Lookup Service).
     5. Der ClientStub versendet die Nachricht aus dem Marshalling an den Service aus Schritt 4 
        und dem Protokoll aus Schritt 3 (UC-5: Send over Network).
     6. Der angesprochene ServerStub erhält die Nachricht und liest sie aus (UC-6: Receive over Network)
@@ -275,7 +279,7 @@ DRAW, 2 = REGISTER).
 
 **Standardfall**:
 
-    1. Der Marshaller verpackt die Informationen der invoke(...) Methode in einen MethodCall.
+    1. Der Marshaller verpackt die Informationen der invoke(...) Methode in einen ServiceCall.
     2. Der Marshaller verpackt den MethodCall ins JSON-Format.
     3. Der Marshaller erzeugt aus dem JSON ein byte-Array.
 
@@ -294,10 +298,10 @@ aufgerufen\
 **Standardfall**:
 
     1. Der Marshaller führt einen LookUp bei seinem lokalen NameResolver durch 
-       mit den Parametern CalleeID und Methodenname des invoke(...) Aufrufs.
-    2. Der NameResolver sendet eine LookUp-Anfrage an den zentralen NamingServer mit den gleichen Daten.
+       mit den Parametern RemoteId und ServiceId des invoke(...) Aufrufs.
+    2. Der NameResolver sendet eine LookUp-Anfrage an den zentralen NameServer mit den gleichen Daten.
     3. Der NamingServer sucht in seiner Tabelle nach dem angefragten Service.
-    4. Der NamingServer antwortet mit Adresse und ID des Services.
+    4. Der NamingServer antwortet mit Adresse des Services.
     5. Der NameResolver merkt sich den Service in seinem Cache.
     6. Der NameResolver gibt dem Marshaller die Informationen über den Service zurück. 
 
@@ -399,8 +403,8 @@ Config).\
 
     1. Der ServerStub schickt einen Registrierungsaufruf an den lokalen NameResolver.
     2. Der NameResolver öffnet einen TCP-Socket mit der IP und dem Port zum NameServer.
-    3. Der NameResolver schickt eine Registrierungsnachricht mit der serviceId (Ordinal des Enums der angebotenen Methode) 
-       , seiner remoteID und der Adresse des ServerStubs.
+    3. Der NameResolver schickt eine Registrierungsnachricht mit der serviceId (Ordinal des Enums der angebotenen Methode),
+       seiner remoteID und der Adresse des ServerStubs.
     4. Der NameServer erhält die Nachricht.
     5. Der NameServer speichert den Service mit serviceId, remoteId und Adresse des ServerStubs.
 

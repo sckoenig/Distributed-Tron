@@ -40,8 +40,8 @@ public class Marshaller implements IRemoteInvocation {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
+
                     InvocationTask task = queue.take();
-                    System.out.println(gson.toJson(task.serviceCall()));
                     byte[] message  =  gson.toJson(task.serviceCall()).getBytes(StandardCharsets.UTF_8);
 
                     String result = namingService.lookupService(task.remoteId(), task.serviceCall().serviceId());
