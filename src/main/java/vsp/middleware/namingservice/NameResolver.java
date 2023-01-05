@@ -53,6 +53,7 @@ public class NameResolver implements INamingService {
     private String sendRequest(byte messageType, int serviceId, String remoteId, String address, boolean awaitResponse){
 
         NamingServiceMessage message = new NamingServiceMessage(messageType, serviceId, remoteId, address);
+        System.out.println(gson.toJson(message));
         byte[] byteMessage = gson.toJson(message).getBytes(StandardCharsets.UTF_8);
         String response = "";
 

@@ -23,7 +23,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     private final ExecutorService executorService;
     private final Gson gson;
     private final INamingService namingService;
-    private final Receiver receiver;
+    private final IReceiver receiver;
     private InetSocketAddress serverStubAddress;
 
     public Unmarshaller(ExecutorService executorService, INamingService namingService){
@@ -58,6 +58,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         });
     }
 
+    @Override
     public void stop() {
         receiver.stop();
     }
