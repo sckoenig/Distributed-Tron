@@ -50,6 +50,16 @@ public class NameResolver implements INamingService {
         sendRequest(UNREGISTER, NO_SERVICE, remoteID, null, false);
     }
 
+    /**
+     * Sends request from message type to the name server.
+     *
+     * @param messageType of the request
+     * @param serviceId of the service
+     * @param remoteId of the remote object
+     * @param address of the remote object
+     * @param awaitResponse if we want a response
+     * @return the address or an empty string
+     */
     private String sendRequest(byte messageType, int serviceId, String remoteId, String address, boolean awaitResponse){
 
         NamingServiceMessage message = new NamingServiceMessage(messageType, serviceId, remoteId, address);
@@ -81,6 +91,9 @@ public class NameResolver implements INamingService {
         return response;
     }
 
+    /**
+     * Clears the cache
+     */
     private void startClearCache() {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()) {
@@ -95,6 +108,13 @@ public class NameResolver implements INamingService {
         });
     }
 
+    /**
+     * Looks if the remote object and the service is already saved in the cache.
+     *
+     * @param remoteId the id to the remote object
+     * @param serviceId the id to the service object
+     * @return the address where the service is found
+     */
     private String lookUpCache(String remoteId, int serviceId){
         Map<String, String> serviceProvider = cache.get(serviceId);
 
