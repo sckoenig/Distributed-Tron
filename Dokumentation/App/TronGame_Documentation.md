@@ -126,16 +126,16 @@ Es wird die zur Verfügung gestellte view library verwendet. Die ITronView wird 
 | -- | -- |-------|----------- |----------- |----------- |----------- |
 | | `initialize(modus : GameModus, speed : int, rows : int, columns : int, waitingTimer : int, endingTimer : int, executorService : ExecutorService` | IGame |  |  |  |  |
 | UC-2 | `prepareForRegistration(playerCount : int) : void`                              | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
-| UC-2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING" | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
-| | `handleSteer(steer : Steer) : void` | IGame |  |  |  |  |
-| | `transitionState(newState : GameState) : void` | Game |  |  |  |  |
-| | `executeState() : void` | Game |  |  |  |  |
-| | `startTimer(waitingTimer : int, startedAt, GameState) : void` | Game |  |  |  |  |
-| UC-2 | `handleTimeOut(startedAt : GameState) : void` | -------Game | Game State == PREPARING | Game State == COUNTDOWN oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im PREPARING State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück. | - |
+| UC-2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING"???? wir nicht überprüft!!!!!! | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
+| | `handleSteer(steer : Steer) : void` | IGame | Steer ist nicht NULL. | Player hat eine neue Direction. | Dem Player mit der id aus dem Steer Object wird als neue Direction, die Direction steer eingetragen. |  |
+| | `transitionState(newState : GameState) : void` | Game | GameState ist nicht NULL. |  | Der newState wird gesetzt und der stateListener wird informiert (`executeState()`) | Wenn der newState dem currentState entspricht machen wir nichts. |
+| | `executeState() : void` | Game |  |  | Führt basierend auf dem currentState, die nächste Methode aus. |  |
+| | `startTimer(waitingTimer : int, startedAt, GameState) : void` | Game |  |  | Started ein Timer mit der Zeit des waiting Timers und ruft wenn der Timer um ist `handleState(startedAt)` auf. |  |
+| UC-2 | `handleTimeOut(startedAt : GameState) : void` | Game | GameState == REGISTRATION oder GameState == FINISHING | Game State == STARTING oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im REGISTRATION State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück, mit Methodenaufruf `transitionState()`. Befindet sich das Game im State FINISHING und der WaiingTimer ist abgelaufen, kehrt das Spiel ins Menü zurück | - |
 | | `isGameReady() : boolean` | Game |  |  |  |  |
 | | `isGameFull() : boolean` | Game |  |  |  |  |
 | | `isRegistrationAllowed(playerCountToRegister : int) : boolean` | Game |  |  |  |  |
-| | `createPlayers(count : int) : List<Integer>` | Game |  |  |  |  |
+| | `createPlayers(count : int) : List<Integer>` | Game !!!!! Kommentare im Code ändern | Count darf nicht größer sein als 6. |  | Erstellt die übergebene Anzahl an Spieler und speichert diese im Game. Gib eine Liste der Ids zurück. |  |
 | UC-2 | `startGame() : void` | --------Game | Preparation war erfolgreich | Game-Thread wurde gestartet. | Startet den Game-Thread, in dem `countdown` und `gameloop` ausgeführt wird. | - |
 | UC-3 | `countDown() : void` | Game  | Es muss ein Game-Objekt erstellt worden sein und das 'Game' wurde erfolgreich initialisiert. Der GameManager befindet sich im State 'COUNTDOWN' | Der GameManager ändert seinen State zu "PLAYING"| Ein CountDown welcher für drei Sekunden runter zählt. In jeder Sekunde wird der Counter des GameManagers um einen heruntergezählt | Der GameManager befindet sich im falschen State. Er ignoriert den CountDown. |
 | | `runGame() : void` | Game |  |  |  |  |
@@ -288,8 +288,8 @@ Services können nach folgenden Regeln angefragt werden:
 | `PREPARE               ` | 0         | playercount für das Spiel             | keine                                                                                 | 
 | `REGISTER              ` | 1         | registrationId, managedPlayerCount    | RemoteId des IGameManager Remote Objekts, RemoteId des IUpdateListener Remote Objekts | 
 | `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange | keine                                                                                 | 
-| `HANDLE_MANAGED_PLAYERS` | 3         | TODO                                  | keine                                                                                 | 
-| `HANDLE_GAME_STATE     ` | 4         | TODO                                  | keine                                                                                 | 
+| `HANDLE_MANAGED_PLAYERS` | 3         | regristationId, Liste mit managedPlayer ids | keine                                                                                 | 
+| `HANDLE_GAME_STATE     ` | 4         | GameState                             | keine                                                                                 | 
 | `UPDATE_ARENA          ` | 5         | TODO                                  | keine                                                                                 | 
 | `UPDATE_STATE          ` | 6         | TODO                                  | keine                                                                                 | 
 | `UPDATE_START          ` | 7         | TODO                                  | keine                                                                                 | 
