@@ -292,12 +292,12 @@ Services können nach folgenden Regeln angefragt werden:
 | `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange | keine                                                                                 | 
 | `HANDLE_MANAGED_PLAYERS` | 3         | regristationId, Liste mit managedPlayer ids | keine                                                                                 | 
 | `HANDLE_GAME_STATE     ` | 4         | GameState                             | keine                                                                                 | 
-| `UPDATE_ARENA          ` | 5         | TODO                                  | keine                                                                                 | 
-| `UPDATE_STATE          ` | 6         | TODO                                  | keine                                                                                 | 
-| `UPDATE_START          ` | 7         | TODO                                  | keine                                                                                 | 
-| `UPDATE_RESULT         ` | 8         | TODO                                  | keine                                                                                 | 
-| `UPDATE_COUNTDOWN      ` | 9         | TODO                                  | keine                                                                                 | 
-| `UPDATE_FIELD          ` | 10        | TODO                                  | keine                                                                                 | 
+| `UPDATE_ARENA          ` | 5         | Rows, Columns                                 | keine                                                                                 | 
+| `UPDATE_STATE          ` | 6         | Ordinal des GameState                                  | keine                                                                                 | 
+| `UPDATE_START          ` | 7         | Leeres Array                                  | keine                                                                                 | 
+| `UPDATE_RESULT         ` | 8         | Ordinal der Siegerfarbe, Ordinal des ResultTextes                                  | keine                                                                                 | 
+| `UPDATE_COUNTDOWN      ` | 9         | CountDown                                  | keine                                                                                 | 
+| `UPDATE_FIELD          ` | 10        | PlayerCount, PlayerColor 1, Coordinate X, Coordinate Y ... PlayerColor 2, Coordinate X, Coordinate Y ...                                 | keine                                                                                 | 
 
 
 # 9. Architekturentscheidungen
