@@ -1,5 +1,6 @@
 package vsp.trongame.applicationstub.model.rest;
 
+import com.google.gson.Gson;
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.Modus;
 import vsp.trongame.application.model.IUpdateListener;
@@ -14,32 +15,91 @@ import vsp.trongame.application.model.game.IGameFactory;
 import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.applicationstub.model.rest.ressources.*;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
+
 
 import static vsp.trongame.applicationstub.model.rest.AdapterState.*;
 
 public class RESTAdapter implements IGameManager, IGame, IArena {
 
+    public static final String REST_NAMESERVER_ADDRESS = "https://name-service.onrender.com/";
+    public static final String PUT_NAMESERVER_ROUTE = "/entry";
+    public static final String GET_NAMESERVER_ROUTE = "/entry/%s"; //entry/{name}
+    public static final String COORDINATOR_NAME = "tron.coordinator";
     private static final RESTAdapter INSTANCE = new RESTAdapter();
-    public static RESTAdapter getInstance() { return INSTANCE; }
 
-    private String address;
+    public static RESTAdapter getInstance() {
+        return INSTANCE;
+    }
+    private String localAddress; //our address
     private IGame localGame;
     private IArena localArena;
     private Map<String, RESTRegistration> restRegistrations;
     private List<RPCRegistration> rpcRegistrations;
     private int playerCount;
     private int registeredPlayerCount;
-    private Map<Coordinate,Direction> coordinateDirectionMapping;
+    private Map<Coordinate, Direction> coordinateDirectionMapping;
     private List<Coordinate> coordinates;
     private AdapterState currentState;
+    private final Gson gson;
+
+    private final RESTServer restServer;
     //nameServer ??
 
-    private RESTAdapter(){
+    private RESTAdapter() {
         currentState = INIT;
-        //TODO own get address?
+        gson = new Gson();
+        restServer = new RESTServer(this);
+        restServer.start();
+    }
+
+    public void setLocalAddress(String address) {
+        this.localAddress = address;
+    }
+
+    public AdapterState getCurrentState() {
+        return this.currentState;
+    }
+
+    public void stop(){
+        restServer.stop();
+    }
+
+    public String getRESTRessource(String route, String address) throws IOException {
+        URL url = new URL(address+route);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setConnectTimeout(1000);
+
+        StringBuilder response = new StringBuilder("");
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        while( (inputLine = in.readLine()) != null){
+            response.append(inputLine);
+        }
+        in.close();
+
+        return new String(response);
+    }
+
+    public int putRESTRessource(String route, String ressource, String address) throws IOException {
+
+        URL url = new URL(address+route);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("PUT");
+        connection.setConnectTimeout(1000);
+        connection.setDoOutput(true);
+        connection.getOutputStream().write(ressource.getBytes(StandardCharsets.UTF_8));
+        connection.getOutputStream().close();
+
+        return connection.getResponseCode();
     }
 
     /* ARENA */
@@ -88,7 +148,7 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
 
     @Override
     public void prepareForRegistration(int playerCount) {
-        if (currentState == INIT){
+        if (currentState == INIT) {
             this.playerCount = playerCount;
             transitionState(RPC_REGISTRATION);
         }
@@ -105,12 +165,16 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
         }
     }
 
-    private void handleTimeOut(){
+    private void handleTimeOut() {
 
     }
 
-    private boolean isRegistrationAllowed() {
+    /**
+     * @return
+     */
+    private synchronized boolean isRegistrationAllowed() {
         //TODO
+        //synchronized : can be used by server thread
         return false;
     }
 
@@ -122,7 +186,7 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
     /* GAME MANAGER */
     @Override
     public void handleGameState(GameState gameState) {
-        if(gameState == GameState.INIT){
+        if (gameState == GameState.INIT) {
             transitionState(AdapterState.INIT);
         }
     }
@@ -134,16 +198,17 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
 
     /* ADAPTER */
 
-    private void transitionState(AdapterState newState){
+    private void transitionState(AdapterState newState) {
         this.currentState = newState;
         executeState();
     }
 
     private void executeState() {
 
-        switch (currentState){
+        switch (currentState) {
             case INIT -> reset();
-            case RPC_REGISTRATION -> //startTimer
+            case RPC_REGISTRATION -> {
+            } //startTimer
             case REST_REGISTRATION -> registerAtCoordinator();
             case RUNNING -> startLocalGame();
         }
@@ -156,18 +221,18 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
         this.coordinateDirectionMapping.clear();
     }
 
-    public void setArenaSize(int rows, int columns){
+    public void setArenaSize(int rows, int columns) {
         this.localArena = IArenaFactory.getArena(Modus.LOCAL, rows, columns);
     }
 
-    public void handleRessource(Game game){
+    public void handleRessource(Game game) {
         List<LightCycle> allLightCycles = new ArrayList<>();
         for (SuperNode superNode : game.superNodes()) {
             RESTRegistration registration = new RESTRegistration(superNode.address(), superNode.lightCycles().size(), superNode.lightCycles().get(0).playerId());
             restRegistrations.put(superNode.address(), registration);
             allLightCycles.addAll(superNode.lightCycles());
         }
-        for (LightCycle lightCycle : allLightCycles){
+        for (LightCycle lightCycle : allLightCycles) {
             this.coordinates.add(lightCycle.position());
             this.coordinateDirectionMapping.put(lightCycle.position(), lightCycle.direction());
         }
@@ -175,31 +240,29 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
         transitionState(RUNNING);
     }
 
-    public void handleRessource(Steering steering){
-        DirectionChange directionChange = steering.turn().equals("RIGHT")? DirectionChange.RIGHT_STEER : DirectionChange.LEFT_STEER;
+    public void handleRessource(Steering steering) {
+        DirectionChange directionChange = steering.turn().equals("RIGHT") ? DirectionChange.RIGHT_STEER : DirectionChange.LEFT_STEER;
         localGame.handleSteer(new Steer(steering.playerId(), directionChange));
     }
 
-
-
-    public void startLocalGame(){
-        if(restRegistrations.isEmpty()){
+    private void startLocalGame() {
+        if (restRegistrations.isEmpty()) {
             this.localGame.prepareForRegistration(rpcRegistrations.size());
             for (RPCRegistration rpcRegistration : rpcRegistrations) {
                 this.localGame.register(rpcRegistration.gameManager(), rpcRegistration.updateListener(),
                         rpcRegistration.listenerId(), rpcRegistration.playerCount());
             }
         } else {
-            this.localGame.prepareForRegistration(playerCount); //ist das der playerCount
+            this.localGame.prepareForRegistration(registeredPlayerCount);
             List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
-            temp.stream().sorted(Map.Entry.comparingByValue());
-            for (Map.Entry<String, RESTRegistration> entry: temp) {
-                if(entry.getKey() != this.address){
+            temp.sort(Map.Entry.comparingByValue());
+            for (Map.Entry<String, RESTRegistration> entry : temp) {
+                if (!entry.getKey().equals(this.localAddress)) {
                     RESTRegistration restReg = entry.getValue();
-                    register(getInstance(), null, restReg.lowestPlayerId(), restReg.playerCount());
-                } else if (entry.getKey() == this.address) {
-                    for (RPCRegistration rpcReg: rpcRegistrations) {
-                        register(rpcReg.gameManager(), rpcReg.updateListener(), rpcReg.listenerId(), rpcReg.playerCount());
+                    localGame.register(getInstance(), null, 0, restReg.playerCount());
+                } else {
+                    for (RPCRegistration rpcReg : rpcRegistrations) {
+                        localGame.register(rpcReg.gameManager(), rpcReg.updateListener(), rpcReg.listenerId(), rpcReg.playerCount());
                     }
                 }
             }
@@ -207,15 +270,26 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
 
     }
 
-    public void registerAtCoordinator(){
+    private void registerAtCoordinator() throws IOException {
         //TODO
-        Registration registration = new Registration(this.address, rpcRegistrations.size());
-        //InetAddress coordinator = lookUpCoordinator();
-
+        Registration registration = new Registration(this.localAddress, rpcRegistrations.size());
+        String coordinator = lookUpCoordinator();
+        putRESTRessource(RESTServer.ROUTE_PUT_REGISTRATION, registration, coordinator.)
     }
 
-    public void handleRessource(Registration registration){
-        if(restRegistrations.isEmpty()){
+    private String lookUpCoordinator() throws IOException {
+        String response = getRESTRessource(String.format(GET_NAMESERVER_ROUTE, COORDINATOR_NAME), REST_NAMESERVER_ADDRESS);
+
+        if (response.isEmpty()){ // no coordinator found
+            String nameServerRessource = String.format("{\"name\":\"%s\", \"address\":\"%s\"}", COORDINATOR_NAME, localAddress);
+            putRESTRessource(PUT_NAMESERVER_ROUTE, nameServerRessource,REST_NAMESERVER_ADDRESS);
+        }
+
+        return getRESTRessource(String.format(GET_NAMESERVER_ROUTE, COORDINATOR_NAME), REST_NAMESERVER_ADDRESS);
+    }
+
+    public boolean handleRessource(Registration registration) {
+        /*if(restRegistrations.isEmpty()){
             //startTimer
         }
         if(currentState == REST_REGISTRATION
@@ -227,16 +301,18 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
             // buildGame Ressource
             Game game  = buildGame();
             //restRegistrations.entrySet().stream().forEach(e -> sendRessource(e.getValue(), game));
-    }
-
-    private void sendRessource(String address, Game game){
-
-    }
-
-    private void buildGame(){
+            */
+        return false;
 
     }
 
+    private void sendRessource(String address, Game game) {
+
+    }
+
+    private void buildGame() {
+
+    }
 
 
 }

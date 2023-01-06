@@ -7,6 +7,7 @@ module vsp.trongame {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires com.google.gson;
+    requires jdk.httpserver;
 
     opens vsp.trongame to javafx.fxml;
     exports vsp.trongame;

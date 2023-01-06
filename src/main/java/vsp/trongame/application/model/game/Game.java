@@ -62,7 +62,7 @@ public class Game implements IGame {
     public void register(IGameManager gameManager, IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
         System.out.println("REGISTER");
         if (isRegistrationAllowed(managedPlayerCount)) {
-            this.updateListeners.add(gameListener);
+            this.updateListeners.add(gameListener); //TODO check for null
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
             gameManager.handleGameState(currentState);
