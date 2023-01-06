@@ -4,5 +4,6 @@ public enum AdapterState {
     INIT,
     RPC_REGISTRATION,
     REST_REGISTRATION,
-    RUNNING
+    RUNNING,
+    BUILDING_GAME
 }
