@@ -190,11 +190,21 @@ public class RESTAdapter implements IGameManager, IGame, IArena {
                         rpcRegistration.listenerId(), rpcRegistration.playerCount());
             }
         } else {
-            this.localGame.prepareForRegistration(playerCount); //
+            this.localGame.prepareForRegistration(playerCount); //ist das der playerCount
             List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
-            //temp.so
-
+            temp.stream().sorted(Map.Entry.comparingByValue());
+            for (Map.Entry<String, RESTRegistration> entry: temp) {
+                if(entry.getKey() != this.address){
+                    RESTRegistration restReg = entry.getValue();
+                    register(getInstance(), null, restReg.lowestPlayerId(), restReg.playerCount());
+                } else if (entry.getKey() == this.address) {
+                    for (RPCRegistration rpcReg: rpcRegistrations) {
+                        register(rpcReg.gameManager(), rpcReg.updateListener(), rpcReg.listenerId(), rpcReg.playerCount());
+                    }
+                }
+            }
         }
+
     }
 
     public void registerAtCoordinator(){
