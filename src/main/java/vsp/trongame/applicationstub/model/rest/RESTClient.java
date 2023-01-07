@@ -4,44 +4,62 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.net.http.HttpTimeoutException;
+import java.time.Duration;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
 
 public class RESTClient {
 
-    public String getRESTRessource(String address, String route) throws IOException {
-        URL url = new URL(address + route);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-        connection.setConnectTimeout(1000);
+    private HttpClient client;
 
-        StringBuilder response = new StringBuilder("");
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        return new String(response);
+    public RESTClient(){
+        client = HttpClient.newHttpClient();
     }
 
-    public int putRESTRessource(String address, String route, byte[] ressource) throws IOException {
+    public String getRESTRessource(String address, String route) throws IOException {
 
-        URL url = new URL(address + route);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("PUT");
-        connection.setRequestProperty("Accpet", "application/json");
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setConnectTimeout(1000);
-        connection.setDoOutput(true);
-        connection.getOutputStream().write(ressource);
-        connection.getOutputStream().close();
+        String responseBody = "";
+        try {
+            HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).timeout(Duration.of(1, SECONDS)).GET().build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            responseBody = response.body();
+        } catch (HttpTimeoutException  | URISyntaxException | InterruptedException e){
+            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            // Coordinator no longer available
+        }
 
-        int responseCode = connection.getResponseCode();
+        return responseBody;
+    }
 
-        connection.disconnect();
+    public int putRESTRessource(String address, String route, String ressource) throws IOException {
 
-        return responseCode;
+        int statusCode = -1;
+
+        try {
+            HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).
+                    headers("Content-Type", "application/json", "accept", "application/json").
+                    timeout(Duration.of(1, SECONDS)).
+                    PUT(HttpRequest.BodyPublishers.ofString(ressource)).build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println(response);
+            statusCode = response.statusCode();
+
+        } catch (HttpTimeoutException  | URISyntaxException e){
+            // Coordinator no longer available
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+        return statusCode;
+
     }
 
 }

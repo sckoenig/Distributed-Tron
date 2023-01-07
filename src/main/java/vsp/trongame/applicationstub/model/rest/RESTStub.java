@@ -19,6 +19,7 @@ import vsp.trongame.applicationstub.model.rest.ressources.*;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -146,9 +147,9 @@ public class RESTStub implements IGameManager, IGame, IArena {
     private void registerAsCoordinator() throws IOException {
         System.out.println("registering as coordinator .. ");
         NameServerEntry coordinator = new NameServerEntry(COORDINATOR_NAME, localAddress);
-        byte[] newCoordinator = gson.toJson(coordinator, NameServerEntry.class).getBytes(StandardCharsets.UTF_8);
+        String newCoordinator = gson.toJson(coordinator, NameServerEntry.class);
         restClient.putRESTRessource(REST_NAMESERVER_ADDRESS, PUT_NAMESERVER_ROUTE, newCoordinator);
-        System.out.println("registration finished");
+        System.out.println("registration as coordinator finished");
     }
 
     /**
@@ -160,7 +161,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         System.out.println("REGISTERING at Coordinator ... ");
 
         Registration registration = new Registration(restServer.getPort(), rpcRegistrations.size());
-        byte[] registrationBytes = gson.toJson(registration, Registration.class).getBytes(StandardCharsets.UTF_8);
+        String registrationJson = gson.toJson(registration, Registration.class);
         boolean registrationSuccess = false;
         NameServerEntry coordinator;
 
@@ -168,17 +169,17 @@ public class RESTStub implements IGameManager, IGame, IArena {
             while (!registrationSuccess) {
 
                 String jsonCoordinator = lookUpCoordinator();
-                System.out.println(jsonCoordinator);
-                if (jsonCoordinator.equals("null")) {
+                System.out.println("Coordiantor from NameService: " + jsonCoordinator);
+                if (jsonCoordinator.equals("null") || jsonCoordinator.isEmpty()) {
                     System.out.println("no coordinator found...");
                     registerAsCoordinator();
                     break;
                 }
 
                 coordinator = gson.fromJson(jsonCoordinator, NameServerEntry.class);
-                int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationBytes);
+                int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
 
-                if (response == STATUS_NOT_AVAILABLE) registerAsCoordinator();
+                if (response == STATUS_NOT_AVAILABLE || response == -1) registerAsCoordinator();
                 if (response == STATUS_DENIED) {
                     transitionState(RUNNING);
                     registrationSuccess = true;
@@ -186,6 +187,8 @@ public class RESTStub implements IGameManager, IGame, IArena {
                 if (response == STATUS_OK) registrationSuccess = true;
 
             }
+
+            System.out.println("REGISTERING at Coordinator  successful... ");
         } catch (IOException e) {
             e.printStackTrace();
             //on name server problems we start game in rpc middleware only if possible.
@@ -251,9 +254,6 @@ public class RESTStub implements IGameManager, IGame, IArena {
                 }
             }
         }
-        if (restRegistrations.isEmpty()) {
-        }
-
         registrationLock.unlock();
     }
 
@@ -280,18 +280,19 @@ public class RESTStub implements IGameManager, IGame, IArena {
         /*if(restRegistrations.isEmpty()){
             //startTimer
         }
-        if(currentState == REST_REGISTRATION
-                && (registration.playerCount() + registeredPlayerCount < playerCount)){ //FLAG fehlt noch
-           restRegistrations.put(new RESTRegistration(registration.address(), registration.playerCount(), 0));
-            registeredPlayerCount += registration.playerCount();
+        if (isRegistrationAllowed(registration.playerCount())) {
+            String restAddress = "http://" + address + ":" + registration.port();
+            restRegistrations.put(restAddress, new RESTRegistration(restAddress, registration.playerCount(), 0));
+            restPlayerCount += registration.playerCount();
+            registrationAllowed = true;
+
         }
-        if(registeredPlayerCount == playerCount){
-            // buildGame Ressource
-            Game game  = buildGame();
-            //restRegistrations.entrySet().stream().forEach(e -> sendRessource(e.getValue(), game));
-            */
-        return false;
+        if (restPlayerCount == playerCount) {
+            transitionState(BUILDING_GAME);
+        }
+        return registrationAllowed;
     }
+
 
     /**
      * @param playerCountToRegister
@@ -302,7 +303,32 @@ public class RESTStub implements IGameManager, IGame, IArena {
     }
 
     private void buildGame() {
+        List<Coordinate> coordinates = localArena.calculateFairStartingCoordinates(restPlayerCount);
+        List<SuperNode> superNodes = new ArrayList<>();
+        int playerId = 0;
+        for (Map.Entry<String, RESTRegistration> restR : restRegistrations.entrySet()) {
+            List<LightCycle> lightCycles = new ArrayList<>();
+            for (int i = 0; i < restR.getValue().playerCount(); i++) {
+                LightCycle lightCycle = new LightCycle(playerId, coordinates.get(playerId), calculateStartingDirection(coordinates.get(playerId)));
+                lightCycles.add(lightCycle);
+                playerId++;
+            }
+            SuperNode superNode = new SuperNode(restR.getValue().address(), lightCycles);
+            superNodes.add(superNode);
+        }
+        Game game = new Game(superNodes);
+        String gameJson = gson.toJson(game, Game.class);
+        sendGame(gameJson);
 
+    }
+
+    private void sendGame(String game) {
+        for (String address : restRegistrations.keySet())
+            try {
+                restClient.putRESTRessource(address, ROUTE_PUT_GAME, game);
+            } catch (IOException e) {
+                //continue with next supernode
+            }
     }
 
     private void handleTimeOut() {
@@ -396,7 +422,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     @Override
     public void handleGameState(GameState gameState) {
         if (gameState == GameState.INIT) {
-            transitionState(RESTStubState.INIT);
+            transitionState(INIT);
         }
     }
 

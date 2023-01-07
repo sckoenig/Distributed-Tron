@@ -74,7 +74,7 @@ public class RESTServer {
                 if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
                     String body = readRequestBody(exchange);
                     Registration registration = gson.fromJson(body, Registration.class);
-                    boolean success = restAdapter.handleRessource(registration);
+                    boolean success = restAdapter.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
                     responseCode = success ? STATUS_OK : STATUS_DENIED;
                 }
             }
