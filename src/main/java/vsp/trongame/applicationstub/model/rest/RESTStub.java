@@ -18,10 +18,6 @@ import vsp.trongame.applicationstub.model.rest.registration.RPCRegistration;
 import vsp.trongame.applicationstub.model.rest.ressources.*;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URISyntaxException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -331,18 +327,11 @@ public class RESTStub implements IGameManager, IGame, IArena {
         }
         Game game = new Game(superNodes);
         String gameJson = gson.toJson(game, Game.class);
-        sendGame(gameJson);
+        sendToAllRestRegistrations(gameJson);
 
     }
 
-    private void sendGame(String game) {
-        for (String address : restRegistrations.keySet())
-            try {
-                restClient.putRESTRessource(address, ROUTE_PUT_GAME, game);
-            } catch (IOException e) {
-                //continue with next supernode
-            }
-    }
+
 
     private void handleTimeOut() {
         if (currentState == REST_REGISTRATION && restPlayerCount >= 2) {
@@ -431,6 +420,16 @@ public class RESTStub implements IGameManager, IGame, IArena {
     public void handleSteer(Steer steer) {
         localGame.handleSteer(steer);
     }
+
+    private void sendToAllRestRegistrations(String ressource) {
+        for (String address : restRegistrations.keySet())
+            try {
+                restClient.putRESTRessource(address, ROUTE_PUT_GAME, ressource);
+            } catch (IOException e) {
+                //continue with next supernode
+            }
+    }
+
 
     /* GAME MANAGER */
     @Override

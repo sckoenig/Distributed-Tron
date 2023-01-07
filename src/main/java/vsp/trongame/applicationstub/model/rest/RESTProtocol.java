@@ -12,6 +12,8 @@ public final class RESTProtocol {
     public static final String ROUTE_PUT_REGISTRATION = "/registration";
     public static final String ROUTE_PUT_GAME = "/game";
     public static final String ROUTE_PUT_STEERING = "/steering";
+    public static final String STEERING_LEFT = "LEFT";
+    public static final String STEERING_RIGHT = "RIGHT";
     public static final String SUPPORTED_METHOD = "PUT";
     public static final int STATUS_DENIED = 406;
     public static final int STATUS_NOT_AVAILABLE = 410;
