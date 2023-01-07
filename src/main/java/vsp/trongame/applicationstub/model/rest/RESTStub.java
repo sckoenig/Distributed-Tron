@@ -75,11 +75,12 @@ public class RESTStub implements IGameManager, IGame, IArena {
         this.restServer.start();
         this.restClient = new RESTClient();
 
-        try {
-            this.localAddress = String.format("http://%s:%s", InetAddress.getLocalHost().getHostAddress(), restServer.getPort());
-        } catch (UnknownHostException e) {
-            //
-        }
+        //try {
+        //    this.localAddress = String.format("http://%s:%s", InetAddress.getLocalHost().getHostAddress(), restServer.getPort());
+        //} catch (UnknownHostException e) {
+        //    //
+        //}
+        this.localAddress = String.format("http://%s:%s", "192.168.193.57", restServer.getPort());
         System.out.println(localAddress);
     }
 
@@ -202,8 +203,11 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * @param game the game from Coordinator
      */
     public void handleRessource(Game game) {
+        System.out.println(game);
+        restPlayerCount = 0;
         List<LightCycle> allLightCycles = new ArrayList<>();
         for (SuperNode superNode : game.superNodes()) {
+            restPlayerCount += superNode.lightCycles().size();
             RESTRegistration registration = new RESTRegistration(superNode.address(), superNode.lightCycles().size(), superNode.lightCycles().get(0).playerId());
             restRegistrations.put(superNode.address(), registration);
             allLightCycles.addAll(superNode.lightCycles());
@@ -235,6 +239,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         if (restRegistrations.isEmpty() && rpcRegistrations.size() > 1) {
             this.localGame.prepareForRegistration(rpcRegistrations.size());
             for (RPCRegistration rpcRegistration : rpcRegistrations) {
+                localGame.register(this, null, 0, 0);
                 this.localGame.register(rpcRegistration.gameManager(), rpcRegistration.updateListener(),
                         rpcRegistration.listenerId(), rpcRegistration.playerCount());
             }
@@ -277,6 +282,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     }
 
     public boolean handleRessource(Registration registration, String address) {
+        System.out.println(registration + " " +address);
 
         boolean registrationAllowed = false;
 
@@ -290,10 +296,14 @@ public class RESTStub implements IGameManager, IGame, IArena {
             registrationAllowed = true;
 
         }
+        System.out.println(registrationAllowed);
+        return registrationAllowed;
+    }
+
+    public void startGameIfFull(){
         if (restPlayerCount == playerCount) {
             transitionState(BUILDING_GAME);
         }
-        return registrationAllowed;
     }
 
 
@@ -407,9 +417,10 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
     @Override
     public void register(IGameManager gameManager, IUpdateListener listener, int listenerId, int managedPlayerCount) {
+        System.out.println("Received RPC registration");
         if (currentState == RPC_REGISTRATION && isRegistrationAllowed(managedPlayerCount)) {
             rpcRegistrations.add(new RPCRegistration(gameManager, listener, listenerId, managedPlayerCount));
-            if (this.playerCount == this.restPlayerCount) transitionState(RUNNING);
+            if (this.playerCount == this.rpcRegistrations.size()) transitionState(RUNNING);
 
         } else {
             gameManager.handleGameState(GameState.INIT);
@@ -424,6 +435,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     /* GAME MANAGER */
     @Override
     public void handleGameState(GameState gameState) {
+        System.out.println(gameState);
         if (gameState == GameState.INIT) {
             transitionState(INIT);
         }

@@ -22,8 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static vsp.trongame.Modus.LOCAL;
-import static vsp.trongame.Modus.REST;
+import static vsp.trongame.Modus.*;
 
 public class TronGame extends Application {
 
@@ -66,7 +65,8 @@ public class TronGame extends Application {
 
         /* assemble */
         tronController.initialize(tronModel);
-        tronModel.initialize(config, gameModus, singleView, modelExecutor);
+        Modus modelModus = gameModus==REST? NETWORK : gameModus;
+        tronModel.initialize(config, modelModus, singleView, modelExecutor);
         tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
                 Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);

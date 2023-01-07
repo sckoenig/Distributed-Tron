@@ -78,7 +78,9 @@ public class RESTServer {
                     responseCode = success ? STATUS_OK : STATUS_DENIED;
                 }
             }
-            exchange.sendResponseHeaders(responseCode, 0);
+            System.out.println(responseCode);
+            exchange.sendResponseHeaders(responseCode, -1);
+            restAdapter.startGameIfFull();
         });
     }
 

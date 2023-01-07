@@ -27,7 +27,7 @@ public class RESTClient {
 
         String responseBody = "";
         try {
-            HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).timeout(Duration.of(1, SECONDS)).GET().build();
+            HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).timeout(Duration.of(5, SECONDS)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             responseBody = response.body();
         } catch (HttpTimeoutException  | URISyntaxException | InterruptedException e){
