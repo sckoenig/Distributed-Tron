@@ -276,9 +276,12 @@ public class RESTStub implements IGameManager, IGame, IArena {
         this.localArena = IArenaFactory.getArena(Modus.LOCAL, rows, columns);
     }
 
-    public boolean handleRessource(Registration registration) {
-        /*if(restRegistrations.isEmpty()){
-            //startTimer
+    public boolean handleRessource(Registration registration, String address) {
+
+        boolean registrationAllowed = false;
+
+        if (restRegistrations.isEmpty()) {
+            startTimer(timer / 2);
         }
         if (isRegistrationAllowed(registration.playerCount())) {
             String restAddress = "http://" + address + ":" + registration.port();
