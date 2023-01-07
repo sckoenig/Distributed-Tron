@@ -13,7 +13,7 @@ public class IGameManagerFactory {
     public static IGameManager getGameManager(Modus modus){
         return switch (modus){
             case LOCAL -> new GameManager();
-            case NETWORK -> new GameManagerCaller();
+            case NETWORK, REST -> new GameManagerCaller();
         };
     }
 

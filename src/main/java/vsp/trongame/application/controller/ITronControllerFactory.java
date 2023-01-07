@@ -11,7 +11,7 @@ public class ITronControllerFactory {
      */
     public static ITronController getTronController(Modus modus) {
         return switch (modus) {
-            case LOCAL, NETWORK -> new TronController();
+            case LOCAL, NETWORK, REST -> new TronController();
             // no special implementation is needed for NETWORK right now
         };
     }
