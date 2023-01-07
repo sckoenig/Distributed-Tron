@@ -97,7 +97,7 @@ public class Configuration {
         if (isSteerValid(properties.getProperty(P_EINS), properties.getProperty(P_ZWEI), properties.getProperty(P_DREI),
                 properties.getProperty(P_VIER), properties.getProperty(P_FUENF), properties.getProperty(P_SECHS)))
             return false;
-        if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.NETWORK.toString())) return false;
+        if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.RPC.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
         return isValidIpAddress(properties.getProperty(NAME_SERVER));
     }

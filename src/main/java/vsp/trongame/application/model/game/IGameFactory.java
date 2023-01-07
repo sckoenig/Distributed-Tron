@@ -14,7 +14,7 @@ public class IGameFactory {
     public static IGame getGame(Modus modus){
         return switch (modus){
             case LOCAL -> new Game();
-            case NETWORK -> new GameCaller();
+            case RPC -> new GameCaller();
         };
     }
 

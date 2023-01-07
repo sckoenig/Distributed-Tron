@@ -30,7 +30,7 @@ public class GameCallee implements IRemoteObject {
 
     public GameCallee(Configuration config, ExecutorService executorService) {
         this.localGame = IGameFactory.getGame(Modus.LOCAL); //TODO rest wrapper here probably
-        this.localGame.initialize(Modus.NETWORK, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+        this.localGame.initialize(Modus.RPC, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
                 Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
                 Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),
@@ -57,7 +57,7 @@ public class GameCallee implements IRemoteObject {
                 if (intParameters.length == 2 && stringParameters.length == 2){
 
                     // Caller Objects that represent the remote Objects that want to register at the local game
-                    IGameManager managerCaller = IGameManagerFactory.getGameManager(Modus.NETWORK);
+                    IGameManager managerCaller = IGameManagerFactory.getGameManager(Modus.RPC);
                     IUpdateListener listenerCaller = new UpdateListenerCaller();
                     ((ICaller) managerCaller).setRemoteId(stringParameters[0]);
                     ((ICaller) listenerCaller).setRemoteId(stringParameters[1]);

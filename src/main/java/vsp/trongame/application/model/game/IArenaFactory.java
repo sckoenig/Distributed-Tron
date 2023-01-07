@@ -12,7 +12,7 @@ public class IArenaFactory {
     public static IArena getArena(Modus modus, int rows, int columns){
         return switch (modus){
             case LOCAL -> new Arena(rows, columns);
-            case NETWORK -> null; //TODO rest wrapper here
+            case RPC -> null; //TODO rest wrapper here
         };
     }
 

@@ -19,7 +19,7 @@ Allgemeine Spielprinzipien:
 
 Weitere Anforderungen:
 - Das Spiel soll über eine Konfigurationsdatei konfiguriert werden können.
-- Das Spiel kann entweder lokal (LOCAL) oder im Netzwerk (NETWORK) gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein.
+- Das Spiel kann entweder lokal oder im Netzwerk gespielt werden. Dies soll ebenfalls über die Konfigurationsdatei einstellbar sein.
 
 ## 1.2 Qualitätsziele
 
@@ -69,55 +69,54 @@ Details siehe [Use Cases](#use-cases).
 ## 4.1 Funktionale Zerlegung anhand der Use Cases
 Aus den [Use Cases](#3.1-business-kontext) ergeben sich folgende benötigte Objekte, denen in folgenden Abschnitten Funktionen zugeordnet werden.
 
-| Objekt              | Erklärung                                                                                                                         |
-|---------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Configuration       | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit.                                                                 |
-| ITronView           | Stellt die Hauptkomponente der UI dar.                                                                                            |
-| ITronModel          | Verwaltet die gesamte Spielelogik.                                                                                                |
-| ITronController     | Verwaltet die Benutzereingaben.                                                                                                   |
-| IGame               | Stellt die Spielelogik und startet die Spielschleife.                                                                             |
-| IGameManager        | Managed die Spieler die, mitspielen wollen sowie in welcher Phase sich das Spiel befindet.                                        |
-| IArena              | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler.                 |
-| ICollisionDetector  | Ist für die Überprüfung ob ein Spieler, mit einem anderen Spieler, dessen Schatten oder einer Arenawand zusammengestoßen ist.     |
-| IPlayer             | Verwaltet einen einzelnen Spieler, mit den Coordinaten, der Richtung und der Farbe eines Spieler.                                 |
-| IUpdateListener     | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend.                                                 |
-| Overlay             | Eine Oberfläche, die in der UI angezeigt werden kann. Für jede Scene(Menu, Waiting, Countdown, Ending) wird ein Overlay benötigt. |
-| ITronViewWrapper    | Wrapperobjekt um die ITronView, Overlays und IUpdateListener, dass den Zusammenbau der View übernimmt.                            |
+| Objekt             | Erklärung                                                                                                                         |
+|--------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Configuration      | Verwaltet die anpassenbaren Werte und stellt Defaultwerte bereit.                                                                 |
+| ITronView          | Stellt die Hauptkomponente der UI dar.                                                                                            |
+| ITronModel         | Verwaltet die gesamte Spielelogik.                                                                                                |
+| ITronController    | Verwaltet die Benutzereingaben.                                                                                                   |
+| IGame              | Stellt die Spielelogik und startet die Spielschleife.                                                                             |
+| IGameManager       | Managed die Spieler die, mitspielen wollen sowie in welcher Phase sich das Spiel befindet.                                        |
+| IArena             | Verwaltet die Spieler innerhalb der Arena, merkt sich die Positionen der Spieler, sowie die Schatten der Spieler.                 |
+| ICollisionDetector | Ist für die Überprüfung ob ein Spieler, mit einem anderen Spieler, dessen Schatten oder einer Arenawand zusammengestoßen ist.     |
+| IPlayer            | Verwaltet einen einzelnen Spieler, mit den Coordinaten, der Richtung und der Farbe eines Spieler.                                 |
+| IUpdateListener    | Bekommt von dem Model Aktualisierungen und aktualisiert die View dementsprechend.                                                 |
+| Overlay            | Eine Oberfläche, die in der UI angezeigt werden kann. Für jede Scene(Menu, Waiting, Countdown, Ending) wird ein Overlay benötigt. |
+| TronViewBuilder    | Builder-Objekt, das den Zusammenbau der View (aus ITronView, Overlays und IUpdateListener) übernimmt.                             |
 
 ### 4.1.1 Configuration
 <!-- CONFIG -->
-| UC | Funktion | Objekt        |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------|---------------|----------- |----------- |----------- |----------- |
-| UC-1 | `loadConfigFromFile() : void` | Configuration | Es existiert ein Config-Objekt. Es existiert eine TronConfig.properties File. | Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen. Das Config-Objetzt hält eine Referenz darauf.| Bei fehlender .properties-Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt (`reloadConfig()`) |
-| UC-1 | `isConfigValid() : boolean` | Configuration        | Es existiert ein Properties-Objekt. | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. Und ob die 'Values' sich im richtigen Wertebereich befinden. Sollte einer der beiden Fälle eintreffen, würde die Methode 'false' zurückgeben. | - |
-| UC-1 | `reloadConfig() : Properties `   | Configuration        | Schreibrechte. | Properties mit 'default'-Werten wurde erzeugt. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal in Form einer .properties-Datei hinterlegt.  | Wenn keine Rechte bestehen, wird der Anwender darüber informiert. |
-| UC-1| `setKeyMappings() : void`                                                          | Configuration        | Es existiert ein Properties-Objekt mit validen Daten | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als Value erhält die Map ein Steer-Objekt welches die Player-ID, sowie die Direction hält. | Die Methode zieht sich aus dem properties-Objekt die Tastenbelegungen aller Spieler. | - |
-| UC-1 | `getAttribute(key : String) : String`                                              | Configuration        | Es existiert ein Properties-Objekt mit validen Daten. | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
-| UC-3.1 | `getSteer(key : KeyCode) : Steer`                                                  | Configuration        | KeyMappings wurden erfolgreich erstellt. | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
-| UC-1 | `hasAllAtributes() : Steer`                                                  | Config | Es existiert ein Properties-Objekt. | Abhängig davon ob Einträge in der Properties fehlen wird ein boolean zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und vergleicht dieses mit der Default-Properties. Wenn Keys fehlen ist dies gleichzusetzen damit, das Attribute fehlen . | - |
-| UC-1 | `isNumber(strings : String...) : boolean`                                                  | Config | Es existiert ein Properties-Objekt. | Abhängig davon ob alle der Eingabestrings nummerisch sind oder nicht erhält man true oder false. | Es wird über die Eingabe-Strings iteriert und für jeden String geschaut ob er nummerischist oder nicht. Sollte auch nur einer nicht nummerischsein ist das gesamte Ergebniss false | - |
-| UC-1 | `isSteerValid(strings : String...) : boolean`                                                  | Config | Es existiert ein Properties-Objekt. |Abhängig davon ob die Eingabe-Strings zu einem Steer umgewandelt werden können erhält man true oder false | Anhand der Länge der Eingabe und des Inhalts wird überpfüft ob aus der Eingabe ein valides Steer-Objekt erstellt werden könnte. | - |
-| UC-1 | `isValidKey(tempStringArray : String[] , index : int) : boolean`                                                  | Config | Es existiert ein Properties-Objekt. |Abhängig davon ob die Player-Tasten valide sind erhält man true oder false |Es wird überpfüft ob es sich bei den Tasten für die Steuerung um valide Eingaben handelt. Als valide gelten alle Zahlen, Buchstaben mit Außnahme (ä,ö,ü) und alle Pfeiltasten. | - |
-| UC-3.2 | `getKeyMappingForPlayer(id : int) : String`                                                  | Config | Es existiert ein Properties-Objekt. |String mit Tasten für die Steuerung des Spielers in Tupel-Form Bsp.: "A,Z" |Die Eingabe-Id wird auf den Spieler in der Properties gemappt, sodass z.B. die ID = 1, den Value zum Eintrag P_EINS (Key) aus der Properties zieht. | - |
+| UC | Funktion                                                                          | Objekt          | Vorbedingung                                                                  | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+| ---- |-----------------------------------------------------------------------------------|-----------------|-------------------------------------------------------------------------------|----------- |----------- |----------- |
+| 1 | `loadConfigFromFile() : void`                                                     | Configuration   | Es existiert ein Config-Objekt. Es existiert eine TronConfig.properties File. | Properties-Objekt ist erzeugt. |Die Konfigurationsdatei ist ein '.properties' File, in Form: 'Key', 'Value' und wird in ein Properties-Objekt eingelesen. Das Config-Objetzt hält eine Referenz darauf.| Bei fehlender .properties-Datei an der erwarteten Speicheradresse, wird neue .properties-Datei erstellt (`reloadConfig()`) |
+| 1 | `isConfigValid() : boolean`                                                       | Configuration   | Es existiert ein Properties-Objekt.                                           | Das Ergebnis ist wahr oder falsch. | Der Inhalt des Properties-Objekt wird auf fehlende 'Keys' geprüft. Und ob die 'Values' sich im richtigen Wertebereich befinden. Sollte einer der beiden Fälle eintreffen, würde die Methode 'false' zurückgeben. | - |
+| 1 | `reloadConfig() : Properties `                                                    | Configuration   | Schreibrechte.                                                                | Properties mit 'default'-Werten wurde erzeugt. | Es wird eine neues Properties-Objekt auf Basis vom im Programmcode festgelegten 'Key-Value-Paaren' in der Config erstellt. Das Properties-Objekt wird auch an der hinterlegten Speicheradresse lokal in Form einer .properties-Datei hinterlegt.  | Wenn keine Rechte bestehen, wird der Anwender darüber informiert. |
+| 1| `setKeyMappings() : void`                                                         | Configuration   | Es existiert ein Properties-Objekt mit validen Daten                          | In dem Config-Objekt existiert eine Map, welche als 'Key' alle Tasten enthält, welche zum lenken genutz werden können. Als Value erhält die Map ein Steer-Objekt welches die Player-ID, sowie die Direction hält. | Die Methode zieht sich aus dem properties-Objekt die Tastenbelegungen aller Spieler. | - |
+| 1 | `getAttribute(key : String) : String`                                             | Configuration   | Es existiert ein Properties-Objekt mit validen Daten.                         | Es wurde der passende 'Value' zum 'Key' zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und zieht sich den ersten 'Value' welcher zu dem Eingabeparameter String passt. | - |
+| 3.1 | `getSteer(key : KeyCode) : Steer`                                                 | Configuration   | KeyMappings wurden erfolgreich erstellt.                                      | Steer-Objekt | Als 'Value' enthält die Map ein Steer-Objekt, welches die Player-ID und die Direction enthält. Die Methode gibt das zur Taste gehörende Steer-Objekts zurück. | Gibt null zurück, wenn es für die eingegebenen Taste kein Treffer gibt. |
+| 1 | `hasAllAtributes() : Steer`                                                       | Config          | Es existiert ein Properties-Objekt.                                           | Abhängig davon ob Einträge in der Properties fehlen wird ein boolean zurückgegeben.| Die Methode greift auf ein Properties-Objekt zu und vergleicht dieses mit der Default-Properties. Wenn Keys fehlen ist dies gleichzusetzen damit, das Attribute fehlen . | - |
+| 1 | `isNumber(strings : String...) : boolean`                                         | Config          | Es existiert ein Properties-Objekt.                                           | Abhängig davon ob alle der Eingabestrings nummerisch sind oder nicht erhält man true oder false. | Es wird über die Eingabe-Strings iteriert und für jeden String geschaut ob er nummerischist oder nicht. Sollte auch nur einer nicht nummerischsein ist das gesamte Ergebniss false | - |
+| 1 | `isSteerValid(strings : String...) : boolean`                                     | Config          | Es existiert ein Properties-Objekt.                                           |Abhängig davon ob die Eingabe-Strings zu einem Steer umgewandelt werden können erhält man true oder false | Anhand der Länge der Eingabe und des Inhalts wird überpfüft ob aus der Eingabe ein valides Steer-Objekt erstellt werden könnte. | - |
+| 1 | `isValidKey(tempStringArray : String[] , index : int) : boolean`                  | Config          | Es existiert ein Properties-Objekt.                                           |Abhängig davon ob die Player-Tasten valide sind erhält man true oder false |Es wird überpfüft ob es sich bei den Tasten für die Steuerung um valide Eingaben handelt. Als valide gelten alle Zahlen, Buchstaben mit Außnahme (ä,ö,ü) und alle Pfeiltasten. | - |
+| 3.2 | `getKeyMappingForPlayer(id : int) : String`                                       | Config          | Es existiert ein Properties-Objekt.                                           |String mit Tasten für die Steuerung des Spielers in Tupel-Form Bsp.: "A,Z" |Die Eingabe-Id wird auf den Spieler in der Properties gemappt, sodass z.B. die ID = 1, den Value zum Eintrag P_EINS (Key) aus der Properties zieht. | - |
 
 ### 4.1.2. ITronView
 Es wird die zur Verfügung gestellte view library verwendet. Die ITronView wird lediglich um Setter für ROWS und COLUMNS erweitert.
 
 ### 4.1.3 ITronModel
 <!-- ITRONMODEL -->
-| UC     | Funktion                                                                                                            | Objekt     | Vorbedingung                         | Nachbedingung                         | Ablaufsemantik                                      | Fehlersemantik |
-|--------|---------------------------------------------------------------------------------------------------------------------|------------|--------------------------------------|---------------------------------------|-----------------------------------------------------|----------------|
-| UC-2   | `initialize(config : Configuration, modus : Modus, singleView : boolean, executorService : ExecutorService) : void` | ITronModel | Der GameManager-Objekt existiert wurde initialisiert. | GameManager wurde initialisiert.                                  | Das Modell wird mit den erforderlichen Abhängigkeiten gespeist.                                                 | - |
-| UC-2   | `playGame(playerNumber : int) : void`                                                                               | ITronModel | Der GameManager wurde initialisiert. | GameManager beim Spiel registriert.                                  | Der Initiator des Spiels registriert sich beim game mit der Anzahl der von ihm gemanagten Spielern.                                          | Wenn der ModelState sich nicht im Status MENU befindet, erfolgt keine Registrierung.           |
-| UC-3.1 | `handleSteerEvent( key : KeyCode ) : void`                                                                          | ITronModel | Der GameManager wurde initialisiert. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben. | Falls Key nicht bekannt ist oder kein Steer ermittelt werden kann wird der Tastenanschlag verworfen.           |
-| UC-2   | `registerUpdateListener(listener : IUpdateListener) : void`                                                         | ITronModel | Der GameManager wurde initialisiert. | UpdateListener wird bei Veränderung informiert.                                  | Registriert einen UpdateListener am Modell für Updates.                                                | -           |
+| UC     | Funktion                                                                                                            | Objekt     | Vorbedingung                                                                  | Nachbedingung                         | Ablaufsemantik                                                                        | Fehlersemantik                                                                                        |
+|--------|---------------------------------------------------------------------------------------------------------------------|------------|-------------------------------------------------------------------------------|---------------------------------------|---------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------|
+| 2   | `initialize(config : Configuration, modus : Modus, singleView : boolean, executorService : ExecutorService) : void` | ITronModel | Der GameManager-Objekt existiert wurde instaniziiert.                         | GameManager wurde initialisiert.                                  | Das Model wird mit den erforderlichen Abhängigkeiten gespeist.                        | -                                                                                                     |
+| 2   | `playGame(listener : IUpdateListener, playerNumber : int) : void`                                                   | ITronModel | Der GameManager wurde instanziiert.                                           | GameManager beim Spiel registriert.                                  | Der Initiator des Spiels startet beim Model ein Spiel mit der gewünschten Spielerzahl | Wenn der ModelState nicht dem Status MENU oder WAITING entspricht, wird der Aufruf ignoriert.         |
+| 3.1 | `handleSteerEvent(registrationId : int, key : String ) : void`                                                      | ITronModel | Der GameManager wurde instanziiert. Die registrationId ist dem Model bekannt. | Das Model hat auf das Event reagiert. | Ein Tastenanschlag wird an das Model weitergegeben.                                   | Falls Key nicht bekannt ist oder die registrationId unbekannt ist, wird der Tastenanschlag verworfen. |
 
 ### 4.1.4 ITronController
-| UC     | Funktion                                           | Objekt          | Vorbedingung                  | Nachbedingung                                        | Ablaufsemantik                                                                                                                                  | Fehlersemantik |
-|--------|----------------------------------------------------|-----------------|-------------------------------|------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
-| UC-2   | `initialize(model : TronModel) : void`             | ITronController | Model wurde initialisert.                          | Der Controller ist über sein Modell informiert.                                                 |  Legt das Modell des Controllers fest, an das er die Eingaben                                                                                                                                 | -           |
-| UC-2   | `playGame(id : int, playerCount : int) : void`     | ITronController | Click-Event in View ausgelöst | Es wird im Model ein Game gestartet.                 | Bei Klick auf den "Spiel starten" Button erhält der Controller ein Event, woraufhin er der Model-Komponente Bescheid sagt, ein Game zu starten. | -           |
-| UC-3.1 | `handleKeyEvent(id : int event : KeyEvent) : void` | ITronController | KeyEvent in View ausgelöst    | Das Model wurde über einen Tastenanschlag informiert | Tastenanschläge werden von der View an den Controller geleitet, der das Model darüber informiert.                                               | -           |
+| UC  | Funktion                                                         | Objekt          | Vorbedingung              | Nachbedingung                                         | Ablaufsemantik                                                                                                            | Fehlersemantik  |
+|-----|------------------------------------------------------------------|-----------------|---------------------------|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------|-----------------|
+| 2,3 | `initialize(model : TronModel) : void`                           | ITronController | Model wurde instanziiert. | Der Controller ist über sein Modell informiert.       | Legt das Modell des Controllers fest, an das er die Eingaben leitet.                                                      | -               |
+| 2   | `playGame(listener : IUpdateListener, playerCount : int) : void` | ITronController | -                         | Das Model reagiert auf den Aufruf.                    | Beauftragt das Model, ein Game zu starten.                                                                                | -               |
+| 3.1 | `handleKeyEvent(registrationId : int, event : KeyEvent) : void`  | ITronController | -                         | Das Model wurde über einen Tastenanschlag informiert  | Übersetzt ein KeyEvent zu dem dazugehörigen String und leitet diesen ans Model weiter.                                    | -               |
 
 
 ### 4.1.5 IGame & Game
@@ -125,89 +124,88 @@ Es wird die zur Verfügung gestellte view library verwendet. Die ITronView wird 
 | UC | Funktion  | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | -- | -- |-------|----------- |----------- |----------- |----------- |
 | | `initialize(modus : GameModus, speed : int, rows : int, columns : int, waitingTimer : int, endingTimer : int, executorService : ExecutorService` | IGame |  |  |  |  |
-| UC-2 | `prepareForRegistration(playerCount : int) : void`                              | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
-| UC-2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING"???? wir nicht überprüft!!!!!! | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
+| 2 | `prepareForRegistration(playerCount : int) : void`                              | IGame | Ein Game Objekt wurde erzeugt und im State INIT. PlayerCount ist zwischen 2 und 6. | Das Game Objekt ist bereit für den Spielstart. | Das Game wird für den Start vorbereitet: Es erstellt eine Arena und statet einen Timer, nach dem die Vorbereitung beendet wird (waitingTimer der Config-File). | - |
+| 2 | `register(gameManager : IGameManager, listener : IUpdateListener, listenerId : int, managedPlayerCount : int) : void` | IGame | Ein Game Objekt wurde erzeugt und befindet sich im State "PREPARING"???? wir nicht überprüft!!!!!! | Das Game speichert sich seine Observer und managedPlayerCount Player erstellt. | Das Game merkt sich seine Observer, die es über das Spielgeschehen informieren soll und erstellt so viele Spieler, wie übergeben wird. Es gibt die IDs der erstellten Spieler zurück. | - |
 | | `handleSteer(steer : Steer) : void` | IGame | Steer ist nicht NULL. | Player hat eine neue Direction. | Dem Player mit der id aus dem Steer Object wird als neue Direction, die Direction steer eingetragen. |  |
 | | `transitionState(newState : GameState) : void` | Game | GameState ist nicht NULL. |  | Der newState wird gesetzt und der stateListener wird informiert (`executeState()`) | Wenn der newState dem currentState entspricht machen wir nichts. |
 | | `executeState() : void` | Game |  |  | Führt basierend auf dem currentState, die nächste Methode aus. |  |
 | | `startTimer(waitingTimer : int, startedAt, GameState) : void` | Game |  |  | Started ein Timer mit der Zeit des waiting Timers und ruft wenn der Timer um ist `handleState(startedAt)` auf. |  |
-| UC-2 | `handleTimeOut(startedAt : GameState) : void` | Game | GameState == REGISTRATION oder GameState == FINISHING | Game State == STARTING oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im REGISTRATION State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück, mit Methodenaufruf `transitionState()`. Befindet sich das Game im State FINISHING und der WaiingTimer ist abgelaufen, kehrt das Spiel ins Menü zurück | - |
+| 2 | `handleTimeOut(startedAt : GameState) : void` | Game | GameState == REGISTRATION oder GameState == FINISHING | Game State == STARTING oder Game State == INIT | Ist der WaitingTimer abgelaufen und das Game befindet sich noch im REGISTRATION State, wird die Vorbereitung beendet. > 2 Spieler: Spiel wird gestartet, < 2 Spieler: Spiel kehrt ins Menü zurück, mit Methodenaufruf `transitionState()`. Befindet sich das Game im State FINISHING und der WaiingTimer ist abgelaufen, kehrt das Spiel ins Menü zurück | - |
 | | `isGameReady() : boolean` | Game |  |  |  |  |
 | | `isGameFull() : boolean` | Game |  |  |  |  |
 | | `isRegistrationAllowed(playerCountToRegister : int) : boolean` | Game |  |  |  |  |
 | | `createPlayers(count : int) : List<Integer>` | Game !!!!! Kommentare im Code ändern | Count darf nicht größer sein als 6. |  | Erstellt die übergebene Anzahl an Spieler und speichert diese im Game. Gib eine Liste der Ids zurück. |  |
-| UC-2 | `startGame() : void` | --------Game | Preparation war erfolgreich | Game-Thread wurde gestartet. | Startet den Game-Thread, in dem `countdown` und `gameloop` ausgeführt wird. | - |
-| UC-3 | `countDown() : void` | Game  | Es muss ein Game-Objekt erstellt worden sein und das 'Game' wurde erfolgreich initialisiert. Der GameManager befindet sich im State 'COUNTDOWN' | Der GameManager ändert seinen State zu "PLAYING"| Ein CountDown welcher für drei Sekunden runter zählt. In jeder Sekunde wird der Counter des GameManagers um einen heruntergezählt | Der GameManager befindet sich im falschen State. Er ignoriert den CountDown. |
+| 2 | `startGame() : void` | --------Game | Preparation war erfolgreich | Game-Thread wurde gestartet. | Startet den Game-Thread, in dem `countdown` und `gameloop` ausgeführt wird. | - |
+| 3 | `countDown() : void` | Game  | Es muss ein Game-Objekt erstellt worden sein und das 'Game' wurde erfolgreich initialisiert. Der GameManager befindet sich im State 'COUNTDOWN' | Der GameManager ändert seinen State zu "PLAYING"| Ein CountDown welcher für drei Sekunden runter zählt. In jeder Sekunde wird der Counter des GameManagers um einen heruntergezählt | Der GameManager befindet sich im falschen State. Er ignoriert den CountDown. |
 | | `runGame() : void` | Game |  |  |  |  |
-| UC-3 | `gameLoop() : void` | Game  | Es muss ein Game-Objekt erstellt und das 'Game' erfolgreich vorbereitet worden sein && Der Countdown ist abgelaufen. | Es ist ein oder kein Spieler am Leben. | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie berechnet in jedem Takt die neue Koordinate der Spieler anhand deren Direction (`calculateNextCoordinate()`). Ebenfalls überprüft sie, ob Spieler kollidieren oder ob ein Spiel zuende ist (isGameOver()). | - |
+| 3 | `gameLoop() : void` | Game  | Es muss ein Game-Objekt erstellt und das 'Game' erfolgreich vorbereitet worden sein && Der Countdown ist abgelaufen. | Es ist ein oder kein Spieler am Leben. | Die gameLoop() ist eine Schleife in der die primäre Spiellogik implementiert ist. Sie berechnet in jedem Takt die neue Koordinate der Spieler anhand deren Direction (`calculateNextCoordinate()`). Ebenfalls überprüft sie, ob Spieler kollidieren oder ob ein Spiel zuende ist (isGameOver()). | - |
 | | `movePlayers() : void` | Game |  |  |  |  |
 | | `updateField() : void` | Game |  |  |  |  |
 | | `updatePlayerMap() : Map<Integer, List<Coordinate>>` | Game |  |  |  |  |
-| UC-3 | `calculateNextCoordinate(coordinate : Coordinate, direction : Direction) : Coordinate` | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
-| UC-3 | `isGameOver() : boolean` | Game  | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
-| UC-3 | `finishGame() : void` | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert. | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `resetGame()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
-| UC-3 | `resetGame() : void ` | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand. | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde. | - |
+| 3 | `calculateNextCoordinate(coordinate : Coordinate, direction : Direction) : Coordinate` | Game |Direction darf nicht NULL sein. | Es wurde eine neue Coordinate berechnet | In Abhängigkeit von der Direction wird eine neue Coordinate berechnet. | |
+| 3 | `isGameOver() : boolean` | Game  | Das Game wurde gestartet. | Ergebnis ist wahr oder falsch | Wenn der Counter der aktiven Player < 2 dann gibt die Methode den Wert 'true' zurück andernfalls 'false' | - |
+| 3 | `finishGame() : void` | Game | Die Gameloop ist beendet. | Der GameManager wurde über das Spiel Resultat informiert. | Informiert den GameManager über das Spiel Resultat (`setGameResult`) und ruft `resetGame()`auf, um das Spiel in den Initial-Zustand zurückzuversetzen. | - |
+| 3 | `resetGame() : void ` | Game | Die Gameloop ist beendet oder PREPARING war nicht erfolgreich. | Der Zustand des Game-Objekts ist wieder im 'default'-Zustand. | Setzt alle Werte des Games zurück und leert die Arena, wenn ein Spiel vorbei ist oder die Vorbereitung abgebrochen wurde. | - |
 
 ### 4.1.6 IGameManager & GameManager
 <!-- GAMEMANAGER -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-2,3,4 | `handleManagedPlayers(id: int, managedPlayers : List<Integer>) : void` | IGameManager | Es existier ein GameManager-Objekt | Der GameManager hält einen bzw. mehrere neue Player die er verwaltet.  | Der GameManager wird über die Player informiert, welchen er verwalten soll. Intern erfolgt ein Mapping der Steuerung auf die playerId. | - | 
-| UC-2,3,4 | `handleGameState(gameState : GameState) : void`                                    | IGameManager | Der GameManager wurde über handleGameState(gameState:GameState) über eine Veränderung informiert. | Der ModelState des GameManagers hat sich gemäß des GameStates verändert. | Das Model wechselt vom aktuellen ModelState in den nächsten ModelState abhängig von der Nachricht. | Ist eine Nachricht nicht gültig im aktuellen ModelState, wird sie ignoriert. |
-| UC-2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
-| UC-2,3,4 | `transition(newState : ModelState) : void`                                                            | GameManager | - | Der Ablauf zum wechsel des Zustands wird initialisert und der neue Zustand wird intern abgespeichert. | Intern wird der neue übergebene ModelState gesettzt und `executeState()` wird aufgerufen. | - |
-| UC-2,3,4 | `updateListeners() : void`                                                            | GameManager | Es gab einen Zustandswechsel des ModelState. | Die UpdateListener wurden informiert. | Bei allen Zustandswechsel des ModelState´s außer bei PLAYING werden die listener über den neuen ModelState informiert.| - |
-| UC-4 | `reset() : void`                                                            | GameManager | Es existiert ein GameManager-Objekt. | GameManager hält keine Spieler Informationen mehr. | Der GameManager wird in einen Status gebracht, in dem er alle informationnen über seine  gehaltenen managment Daten verliert.| - |
+| UC    | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+|-------|----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
+| 2,3,4 | `handleManagedPlayers(id: int, managedPlayers : List<Integer>) : void` | IGameManager | Es existier ein GameManager-Objekt | Der GameManager hält einen bzw. mehrere neue Player die er verwaltet.  | Der GameManager wird über die Player informiert, welchen er verwalten soll. Intern erfolgt ein Mapping der Steuerung auf die playerId. | - | 
+| 2,3,4 | `handleGameState(gameState : GameState) : void`                                    | IGameManager | Der GameManager wurde über handleGameState(gameState:GameState) über eine Veränderung informiert. | Der ModelState des GameManagers hat sich gemäß des GameStates verändert. | Das Model wechselt vom aktuellen ModelState in den nächsten ModelState abhängig von der Nachricht. | Ist eine Nachricht nicht gültig im aktuellen ModelState, wird sie ignoriert. |
+| 2,3,4 | `executeState() : void`                                                            | GameManager | Es gab einen Zustandsübergang. | Die 'do's des States wurden durchgeführt. | In Abhängigkeit vom ModelState zeigt der GameManager Overlays an, initialisiert ein Game etc. (Verweis auf das State-Diagramm) | - |
+| 2,3,4 | `transition(newState : ModelState) : void`                                                            | GameManager | - | Der Ablauf zum wechsel des Zustands wird initialisert und der neue Zustand wird intern abgespeichert. | Intern wird der neue übergebene ModelState gesettzt und `executeState()` wird aufgerufen. | - |
+| 2,3,4 | `updateListeners() : void`                                                            | GameManager | Es gab einen Zustandswechsel des ModelState. | Die UpdateListener wurden informiert. | Bei allen Zustandswechsel des ModelState´s außer bei PLAYING werden die listener über den neuen ModelState informiert.| - |
+| 4     | `reset() : void`                                                            | GameManager | Es existiert ein GameManager-Objekt. | GameManager hält keine Spieler Informationen mehr. | Der GameManager wird in einen Status gebracht, in dem er alle informationnen über seine  gehaltenen managment Daten verliert.| - |
 
 ### 4.1.7 IArena & Arena
 <!-- ARENA -->
-| UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
-| ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `addPlayerPosition(playerId : int, coordinate : Coordinate) : void` | IArena | Der Spieler mit der playerId muss noch am leben sein. coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Die Arena wurde aktualisiert | Die aktuell Head-Koordinate des übergebenen Players wird in die Arena eingetragen. | - |
-| UC-3 | `deletePlayerPositions(playerIds : List<Integer>) : void` | IArena | Die Liste playerIds darf nicht leer sein. | Die Arena wurde akualisiert und die übergebenen Spieler rausgelöscht. | Alle Koordinaten der übergebenen ID´s werden aus der Arena entfernt. | Wenn die Liste der ID´s leer ist, wird die Methode abgebrochen.|
-| UC-3 | `detectCollision(coordinate : Coordinate) : boolean` | IArena | Die coordinate darf nicht NULL sein. |  | Es wird geschaut ob sich die Koordinate außerhalb der Arena befindet und ob sich an der Koordinate bereits der Schatten oder auch anderer Spieler befindet. Falls eine Kollision entdeckt wird, geben wir true zurück, ansonsten false. |  |
-| | `calculateFairStartingCoordinate(playerCount : int) : List<Coordinate>` | IArena | Der playerCount muss zwischen 2 und 6 liegen. | Es wurden playerCount viele Startpositionen berechnet. | Es werden je nach Spieleranzahl und Arenagröße die fairsten Startpositionen berechnet. |  |
-| | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena | Die coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Für die coordinate wurde eine Startrichtung berechnet. | Abhänging von der übergeben Koodinate wird die Startrichtung berechnet. |  |
+| UC  | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
+|-----|----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
+| 3   | `addPlayerPosition(playerId : int, coordinate : Coordinate) : void` | IArena | Der Spieler mit der playerId muss noch am leben sein. coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Die Arena wurde aktualisiert | Die aktuell Head-Koordinate des übergebenen Players wird in die Arena eingetragen. | - |
+| 3   | `deletePlayerPositions(playerIds : List<Integer>) : void` | IArena | Die Liste playerIds darf nicht leer sein. | Die Arena wurde akualisiert und die übergebenen Spieler rausgelöscht. | Alle Koordinaten der übergebenen ID´s werden aus der Arena entfernt. | Wenn die Liste der ID´s leer ist, wird die Methode abgebrochen.|
+| 3   | `detectCollision(coordinate : Coordinate) : boolean` | IArena | Die coordinate darf nicht NULL sein. |  | Es wird geschaut ob sich die Koordinate außerhalb der Arena befindet und ob sich an der Koordinate bereits der Schatten oder auch anderer Spieler befindet. Falls eine Kollision entdeckt wird, geben wir true zurück, ansonsten false. |  |
+| 2   | `calculateFairStartingCoordinate(playerCount : int) : List<Coordinate>` | IArena | Der playerCount muss zwischen 2 und 6 liegen. | Es wurden playerCount viele Startpositionen berechnet. | Es werden je nach Spieleranzahl und Arenagröße die fairsten Startpositionen berechnet. |  |
+| 2   | `calculateStartingDirection(coordinate : Coordinate) : Direction` | IArena | Die coordinate darf nicht NULL sein und muss sich innerhalb der Arena befinden. | Für die coordinate wurde eine Startrichtung berechnet. | Abhänging von der übergeben Koodinate wird die Startrichtung berechnet. |  |
 
 
 ### 4.1.8 ICollisionDetector & CollisionDetector
 <!-- COLLISION -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 | ---- |----------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------- |
-| UC-3 | `detectCollision(players: List<Player>, arena : Arena) : void` | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit einem anderen Player, dem Schatten eines anderen Player oder der Arenawand kollidiert. | - |
-| UC-3 | `detectHeadCollision(players: List<Player>) : boolean` | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kollidiert. | - |
+| 3 | `detectCollision(players: List<Player>, arena : Arena) : void` | ICollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit einem anderen Player, dem Schatten eines anderen Player oder der Arenawand kollidiert. | - |
+| 3 | `detectHeadCollision(players: List<Player>) : boolean` | CollisionDetector | Anzahl aktiver Spieler > 1 | - | Es wird überprüft ob ein Player mit dem head eines anderen Players kollidiert. | - |
 
 
 ### 4.1.9 IPlayer 
 <!-- PLAYER -->
 | UC | Funktion | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik| Fehlersemantik |
-| ---- |---------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------------|
-| UC-3 | `addCoordinate(coordinate : Coordinate) : void` | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
-| UC-3 | `isAlive() : boolean` | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| - |
-| UC-3 | `crash() : void` | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
-| UC-2,3 | `performDirectionChange() : Direction` | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
+| -- |---------------------------------------------------------------------------------| ----------- |----------- |----------- |----------- |----------------|
+| 3 | `addCoordinate(coordinate : Coordinate) : void` | IPlayer | Die Coordinate ist nicht NULL | Die Koordinatenliste ist um +1 gestiegen. | Dem Spieler wird eine neue Koordinate in seine List<Coordinate> hinzugefügt. | - |
+| 3 | `isAlive() : boolean` | IPlayer | - | - | Der Spieler kann entweder noch aktiv am Spiel beteiligt sein oder nicht. Dies wird mit der Funktion abgefragt. Ein wechsel dieses Status erfolgt durch eine Kollision mit Playern (inkl. sich selbst) oder der Arena-Wand.| - |
+| 3 | `crash() : void` | IPlayer | Der Spieler ist am Leben und in der aktuellen Spielrunde gecrashed | Der Spieler kann nicht mehr mitspielen | Setzt den alive-Status eines Spielers auf "false" nach einem Crash. | - |
+| 3 | `performDirectionChange() : Direction` | IPlayer | Neuer Takt hat begonnen. | Die Direction des Players wurde der Action entsprechend verändert. | Pro Takt wird die Richtung jedes Spielers entsprechend seiner Action verändert. Die Action wird danach auf NONE gesetzt. | - |
 
 
 ### 4.1.10 IUpdateListener & UpdateListener 
 | UC | Funktion | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
 | -- | -------- | ------ | ------------ | ------------- | -------------- | -------------- |
-| | `updateOnRegistration(id : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. | UpdateListener kennt danach seine Id. | Der UpdateListener wird vom Model über die vergebene Id informiert. |  |
-| | `updateOnKeyMappings(mappings : Map<String, String>) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über die Keys die im CountdownOverlay angezeigt werden sollen informiert und setzt diese im CountdownOverlay. |  |
-| | `updateOnArena(rows : int, columns : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Informiert den UpdateListener über die Größe der Arena, die entsprechende View wird angepasst. |  |
-| | `updateOnState(state : String): void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den State des Model informiert und setzt die View auf das zum State passende Overlay. |  |
-| | `updateOnGameStart() : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Infomiert den UpdateListener über den start des Spieles, alle Overlays werden versteckt, sodass kein Overlay mehr angezeigt wird. |  |
-| | `updateOnGameResult(color : String, result : String)` | IUpdateListener | Der UpdateListener wurde informiert. |  | Informiert den UpdateListener über das Ende des Spiels, der Sieger wird angezeigt, das CoundownOverlay wird zurückgesetzt und alle Koordinaten werden auf der View gelöscht. |  |
-| | `updateOnCountDown(value : int) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über den nächsten Schritt im Countdown informiert und setzt das CoundownOverlay auf den übergebenen Wert. |  |
-| | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den aktuellen Zustand des Spielfeldes informiert und der aktuelle Zustand wird in die View übertragen. |  |
-| | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird initialisiert. |  |
+| 2,3 | `updateOnRegistration(id : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. | UpdateListener kennt danach seine Id. | Der UpdateListener wird vom Model über die vergebene Id informiert. |  |
+| 3.2 | `updateOnKeyMappings(mappings : Map<String, String>) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über die Keys die im CountdownOverlay angezeigt werden sollen informiert und setzt diese im CountdownOverlay. |  |
+| 2 | `updateOnArena(rows : int, columns : int) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Informiert den UpdateListener über die Größe der Arena, die entsprechende View wird angepasst. |  |
+| 5 | `updateOnState(state : String): void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den State des Model informiert und setzt die View auf das zum State passende Overlay. |  |
+| 2 | `updateOnGameStart() : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Infomiert den UpdateListener über den start des Spieles, alle Overlays werden versteckt, sodass kein Overlay mehr angezeigt wird. |  |
+| 4 | `updateOnGameResult(color : String, result : String)` | IUpdateListener | Der UpdateListener wurde informiert. |  | Informiert den UpdateListener über das Ende des Spiels, der Sieger wird angezeigt, das CoundownOverlay wird zurückgesetzt und alle Koordinaten werden auf der View gelöscht. |  |
+| 3 | `updateOnCountDown(value : int) : void` | IUpdateListener | Der UpdateListener wurde initialisert. |  | Der UpdateListener wird über den nächsten Schritt im Countdown informiert und setzt das CoundownOverlay auf den übergebenen Wert. |  |
+| 3 | `updateOnField(field : Map<Color, List<Coordinate>>) : void` | IUpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird über den aktuellen Zustand des Spielfeldes informiert und der aktuelle Zustand wird in die View übertragen. |  |
+| 2-5 | `initialize(mainView : ITronView, countdownOverlay : CountdownOverlay, endingOverlay : EndingOverlay, mainController : ITronController) : void` | UpdateListener | Der UpdateListener wurde initialisiert. |  | Der UpdateListener wird initialisiert. |  |
 
-### 4.1.11 ITronViewWrapper
-<!-- ITRONVIEWWRAPPER -->
-| UC   | Funktion                                                                                                                                                          | Objekt | Vorbedingung | Nachbedingung | Ablaufsemantik | Fehlersemantik |
-|------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------|--------------|---------------|----------------|----------------|
-| TODO | `buildView(model : ITronModel, controller : ITronController, height : int, width : int, defaultPlayerCount : int, idOverlayMapping : Map<String, String>) : void` | TODO   | TODO         | TODO          | TODO           | TODO           |
-| TODO | `getScene() : Scene`                                                                                                                                              | TODO   | TODO         | TODO          | TODO           | TODO           |
-| TODO | `getListener() : IUpdateListener`                                                                                                                                 | TODO   | TODO         | TODO          | TODO           | TODO           |
+### 4.1.11 TronViewBuilder
+<!-- VIEWBUILDER -->
+| UC  | Funktion                                                                                                                                                                | Objekt          | Vorbedingung                                     | Nachbedingung                                                           | Ablaufsemantik                                                                        | Fehlersemantik |
+|-----|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|--------------------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------|----------------|
+| 2-5 | `buildView(controller : ITronController, height : int, width : int, defaultPlayerCount : int, idOverlayMapping : Map<String, String>, stage : Stage) : IUpdateListener` | TronViewBuilder | ITronController wurde instanziiert. | Instanzen von ITronView, IUpdateListener sowie Overlays wurden erzeugt. | Beauftragt den Builder, die View aus ihren verschiedenen Komponenten zusammenzubauen. | -              |
+
 
 # 5. Bausteinsicht
 ## 5.1 Ebene 1
@@ -261,16 +259,22 @@ Es sind beliebige Verteilungen möglich.
 
 # 8. Querschnittliche Konzepte
 ## 8.1 Application
-### 8.1.1 Registration-ID
+### 8.1.1 Modus
+Die Application kann in drei verschiedenen Modi gestartet werden: `LOCAL`, `RPC`, `REST`. Dies geschieht über die tronConfig.properties Datei.
+
+Der Modus wird aus der Datei gelesen und ein entsprechendes Enum zum instanziieren von Objekten in Factories verwendet. 
+Im RPC-Modus kommen die im ApplicationStub unter [5.2](#5.2-Ebene-3-:-ApplicationStub) beschriebenen Caller- und Callee-Stubs zum Einsatz.
+Im REST-Modus wird der im ApplicationStub unter [5.2](#5.2-Ebene-3-:-ApplicationStub) beschriebene RESTStub sowie die in RPC verwendeten Stubs verwendet.
+
+### 8.1.2 Registration-ID
 Um zu ermöglichen, dass mehrere Views mit dem Model kommunizieren können, registriert sich die View als Listener beim Model
 und erhält anschließend eine Registration-ID vom Model. Kommunikation, die über den Controller ans Model geht, muss
-anschließend diese ID enthalten. Dadurch kann das Model sicherstellen, dass nur Views über den Controller ein Spiel starten
-können, die registriert sind. Darüber hinaus merkt sich das Model, welche Spieler zu welcher Registration-ID gehören, sodass
+anschließend diese ID enthalten. Dadurch kann das Model speichern, welche Spieler zu welcher Registration-ID gehören, sodass
 nur berechtigte Tastenanschläge vom Model verarbeitet werden.
 
 ## 8.2 ApplicationStub
 ### 8.2.1 RemoteId
-In manchen Fällen kann es notwendig sein, den Service einen konkreten ApplicationStubs anzufragen. Dazu erhält
+Der ApplicationStub kann verschiedene Services anbieten. In manchen Fällen kann es notwendig sein, den Service eines konkreten ApplicationStubs anzufragen. Dazu erhält
 jeder ApplicationStub eine `RemoteId`, über die er eindeutig identifiziert werden kann.
 
 ### 8.2.2 Namensraum
@@ -285,20 +289,31 @@ Die Anfrage, einen angebotenen Service auszuführen, besteht aus folgenden Besta
 
 Services können nach folgenden Regeln angefragt werden:
 
-| Service                  | ServiceId | intParameters                         | stringParameters                                                                      |
-|--------------------------|-----------|---------------------------------------|---------------------------------------------------------------------------------------|
-| `PREPARE               ` | 0         | playercount für das Spiel             | keine                                                                                 | 
-| `REGISTER              ` | 1         | registrationId, managedPlayerCount    | RemoteId des IGameManager Remote Objekts, RemoteId des IUpdateListener Remote Objekts | 
-| `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange | keine                                                                                 | 
-| `HANDLE_MANAGED_PLAYERS` | 3         | regristationId, Liste mit managedPlayer ids | keine                                                                                 | 
-| `HANDLE_GAME_STATE     ` | 4         | GameState                             | keine                                                                                 | 
-| `UPDATE_ARENA          ` | 5         | Rows, Columns                                 | keine                                                                                 | 
-| `UPDATE_STATE          ` | 6         | Ordinal des GameState                                  | keine                                                                                 | 
-| `UPDATE_START          ` | 7         | Leeres Array                                  | keine                                                                                 | 
-| `UPDATE_RESULT         ` | 8         | Ordinal der Siegerfarbe, Ordinal des ResultTextes                                  | keine                                                                                 | 
-| `UPDATE_COUNTDOWN      ` | 9         | CountDown                                  | keine                                                                                 | 
-| `UPDATE_FIELD          ` | 10        | PlayerCount, PlayerColor 1, Coordinate X, Coordinate Y ... PlayerColor 2, Coordinate X, Coordinate Y ...                                 | keine                                                                                 | 
+| Service                  | ServiceId | intParameters                                               | stringParameters                                                                      |
+|--------------------------|-----------|-------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| `PREPARE               ` | 0         | playercount für das Spiel                                   | keine                                                                                 | 
+| `REGISTER              ` | 1         | registrationId, managedPlayerCount                          | RemoteId des IGameManager Remote Objekts, RemoteId des IUpdateListener Remote Objekts | 
+| `HANDLE_STEER          ` | 2         | playerId, Ordinal des DirectionChange                       | keine                                                                                 | 
+| `HANDLE_MANAGED_PLAYERS` | 3         | regristationId, Liste mit managedPlayer ids                 | keine                                                                                 | 
+| `HANDLE_GAME_STATE     ` | 4         | Ordinal des GameState                                       | keine                                                                                 | 
+| `UPDATE_ARENA          ` | 5         | Rows, Columns                                               | keine                                                                                 | 
+| `UPDATE_STATE          ` | 6         | Ordinal des GameState                                       | keine                                                                                 | 
+| `UPDATE_START          ` | 7         | keine                                                       | keine                                                                                 | 
+| `UPDATE_RESULT         ` | 8         | SpielerId des Gewinners, Ordinal des ResultTextes           | keine                                                                                 | 
+| `UPDATE_COUNTDOWN      ` | 9         | CountDown value                                             | keine                                                                                 | 
+| `UPDATE_FIELD          ` | 10        | PlayerCount, PlayerId, X, Y, ..., PlayerId, X, Y, ...       | keine                                                                                 | 
 
+
+### 8.2.4 Spiel mit den Implementierungen anderer Teams
+Für das Zusammenspiel mit anderen Teams wird eine Synchronisation des Spiels mittels REST gewählt.
+Dazu wurde unter allen teilnehmenden Teams ein REST-Protokoll erarbeitet, das von jeder Implementierung umgesetzt werden muss.
+Zentral in dem Protokoll ist, dass zunächst ein Coordinator bestimmt werden muss. Dies geschieht in Absprache mit den anderen
+Teams über einen Name Server, bei dem sich ein Coordinator als `tron.coordinator` anmeldet.
+Implementiert wird das Protokoll durch die rest-Komponente im Applicationstub, beschrieben in Abschnitt [5.2](#5.2-Ebene-3-:-ApplicationStub).
+
+Das REST-Protokoll ist zu finden unter: https://gitlab.com/jessyvere/rest-protocol
+
+Der verwendete Name Server: https://name-service.onrender.com/swagger/index.html
 
 # 9. Architekturentscheidungen
 
@@ -313,11 +328,11 @@ siehe Abschnitt 1.2.
 
 # 11. Risiken und technische Schulden
 
-| Entscheidung          | Beschreibung                                                                                                                                                                            |
-|-----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Dependencies per Hand | Dependencies werden derzeit manuell über initialize-Methoden oder Konstruktoren realisiert. In dem kleinen Umfang ist dies noch machbar, bei Wachstum allerdings nicht mehr handhabbar. |
-| Singleton Pattern     | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                                     | 
-| Manuelles Testen      | Das Definieren einer Teststrategie mit automatisierten Tests wurde versäumt und erschwert zukünftiges Refaktoring, Erweiterungen sowie die Sicherstellung der Funktionalität.           | 
+| Entscheidung           | Beschreibung                                                                                                                                                                  |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Dependencies           | Dependencies werden derzeit manuell über initialize-Methoden, Konstruktoren oder Singletons realisiert.                                                                       |
+| Singleton Pattern      | Singletons werden an einigen Stellen verwendet, um das Realisieren von Dependencies zu erleichtern.                                                                           | 
+| Manuelles Testen       | Das Definieren einer Teststrategie mit automatisierten Tests wurde versäumt und erschwert zukünftiges Refaktoring, Erweiterungen sowie die Sicherstellung der Funktionalität. | 
 
 
 # 12. Glossar
