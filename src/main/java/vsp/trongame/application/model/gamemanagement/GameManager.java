@@ -62,6 +62,7 @@ public class GameManager implements IGameManager, ITronModel {
     @Override
     public void playGame(int listenerID, int playerCount) {
         if (currentState == ModelState.MENU) {
+            handleGameState(GameState.REGISTRATION);
 
             game.prepareForRegistration(playerCount);
             executorService.execute(() -> {

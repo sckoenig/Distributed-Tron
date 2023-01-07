@@ -13,7 +13,7 @@ public class IViewWrapperFactory {
      */
     public static ITronViewWrapper getViewWrapper(Modus modus){
         return switch (modus) {
-            case LOCAL, NETWORK -> new TronViewWrapper();
+            case LOCAL, NETWORK, REST -> new TronViewWrapper();
             // for NETWORK there is no other implementation needed at the moment
         };
     }

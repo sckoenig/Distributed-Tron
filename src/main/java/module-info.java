@@ -24,4 +24,5 @@ module vsp.trongame {
     opens vsp.trongame.application.view to javafx.fxml;
     exports vsp.trongame.application.view.listener;
     opens vsp.trongame.application.view.listener to javafx.fxml;
+    exports vsp.trongame.applicationstub.model.rest.ressources to com.google.gson;
 }

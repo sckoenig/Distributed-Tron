@@ -5,5 +5,6 @@ package vsp.trongame;
  */
 public enum Modus {
     LOCAL,
-    NETWORK
+    NETWORK,
+    REST
 }

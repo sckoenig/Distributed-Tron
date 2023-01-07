@@ -44,8 +44,7 @@ public class Game implements IGame {
         this.speed = speed;
         this.registrationTime = waitingTimer;
         this.finishingTime = endingTimer;
-        //this.arena = IArenaFactory.getArena(modus, rows, columns); //TODO REST
-        this.arena = IArenaFactory.getArena(LOCAL, rows, columns);
+        this.arena = IArenaFactory.getArena(modus, rows, columns);
         this.gameExecutor = executorService;
     }
 
@@ -65,7 +64,6 @@ public class Game implements IGame {
             this.updateListeners.add(gameListener); //TODO check for null
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
-            gameManager.handleGameState(currentState);
 
             if (isGameFull()) {
                 transitionState(GameState.STARTING);

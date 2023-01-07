@@ -19,6 +19,8 @@ import vsp.middleware.Middleware;
 
 import java.util.concurrent.ExecutorService;
 
+import static vsp.trongame.Modus.LOCAL;
+import static vsp.trongame.Modus.REST;
 import static vsp.trongame.applicationstub.util.Service.*;
 
 /**
@@ -28,9 +30,10 @@ public class GameCallee implements IRemoteObject {
 
     private final IGame localGame;
 
-    public GameCallee(Configuration config, ExecutorService executorService) {
-        this.localGame = IGameFactory.getGame(Modus.LOCAL); //TODO rest wrapper here probably
-        this.localGame.initialize(Modus.NETWORK, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
+    public GameCallee(Modus modus, Configuration config, ExecutorService executorService) {
+        this.localGame = IGameFactory.getGame(modus);
+        Modus gameModus = modus == REST? REST : LOCAL;
+        this.localGame.initialize(gameModus, Integer.parseInt(config.getAttribut(Configuration.SPEED)),
                 Integer.parseInt(config.getAttribut(Configuration.ROWS)),
                 Integer.parseInt(config.getAttribut(Configuration.COLUMNS)),
                 Integer.parseInt(config.getAttribut(Configuration.WAITING_TIMER)),

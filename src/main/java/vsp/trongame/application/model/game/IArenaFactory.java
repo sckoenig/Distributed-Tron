@@ -1,7 +1,7 @@
 package vsp.trongame.application.model.game;
 
 import vsp.trongame.Modus;
-import vsp.trongame.applicationstub.model.rest.RESTAdapter;
+import vsp.trongame.applicationstub.model.rest.RESTStub;
 
 import static vsp.trongame.Modus.LOCAL;
 
@@ -17,8 +17,8 @@ public class IArenaFactory {
         if (modus == LOCAL) return new Arena(rows, columns);
 
         else {
-            RESTAdapter.getInstance().setArenaSize(rows, columns);
-            return RESTAdapter.getInstance(); //redirects to a local Arena
+            RESTStub.getInstance().createArena(rows, columns);
+            return RESTStub.getInstance(); //redirects to a local Arena
         }
     }
 

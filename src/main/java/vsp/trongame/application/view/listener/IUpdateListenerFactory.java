@@ -15,7 +15,7 @@ public class IUpdateListenerFactory {
     public static IUpdateListener getUpdateListener(Modus modus){
         return switch (modus) {
             case LOCAL -> new UpdateListener();
-            case NETWORK -> new UpdateListenerCaller();
+            case NETWORK, REST -> new UpdateListenerCaller();
         };
     }
 

@@ -1,4 +1,4 @@
-package vsp.trongame.applicationstub.model.rest;
+package vsp.trongame.applicationstub.model.rest.registration;
 
 import vsp.trongame.application.model.IUpdateListener;
 import vsp.trongame.application.model.gamemanagement.IGameManager;

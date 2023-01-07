@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.application.controller.ITronController;
 import vsp.trongame.application.controller.ITronControllerFactory;
+import vsp.trongame.application.model.IUpdateListener;
 import vsp.trongame.application.model.gamemanagement.Configuration;
 import vsp.trongame.application.model.ITronModel;
 import vsp.trongame.application.model.ITronModelFactory;
@@ -20,6 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static vsp.trongame.Modus.LOCAL;
+import static vsp.trongame.Modus.REST;
 
 public class TronGame extends Application {
 
@@ -45,14 +49,20 @@ public class TronGame extends Application {
 
         Configuration config = new Configuration();
         gameModus = Modus.valueOf(config.getAttribut("gameMode"));
-        boolean singleView = gameModus == Modus.LOCAL;
+        boolean singleView = gameModus == LOCAL;
+
+        if (gameModus != LOCAL) {
+            boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
+            String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
+            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
+        }
 
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
         /* local components */
-        ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(Modus.LOCAL);
-        ITronController tronController = ITronControllerFactory.getTronController(Modus.LOCAL);
-        ITronModel tronModel = ITronModelFactory.getTronModel(Modus.LOCAL);
+        ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(LOCAL);
+        ITronController tronController = ITronControllerFactory.getTronController(LOCAL);
+        ITronModel tronModel = ITronModelFactory.getTronModel(LOCAL);
 
         /* assemble */
         tronController.initialize(tronModel);
@@ -61,23 +71,21 @@ public class TronGame extends Application {
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
                 Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
 
-        /* middleware & stubs if not LOCAL */
-        if (gameModus != Modus.LOCAL){
-            boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
-            String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
-            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
-
-            //create stub
-            new GameCallee(config, modelExecutor);
-            new UpdateListenerCallee(tronView.getListener());
-            new GameManagerCallee((IGameManager) tronModel);
-        }
+        /* stubs if not LOCAL */
+        if (gameModus == Modus.NETWORK) createApplicationStub(LOCAL, config, tronView.getListener(), (IGameManager) tronModel);
+        if (gameModus == REST) createApplicationStub(REST, config, tronView.getListener(), (IGameManager) tronModel);
 
         /* open stage */
         stage.setTitle("LightCycles");
         stage.setScene(tronView.getScene());
         stage.show();
 
+    }
+
+    private void createApplicationStub(Modus modus, Configuration config, IUpdateListener listener, IGameManager gameManager){
+        new GameCallee(modus, config, modelExecutor);
+        new UpdateListenerCallee(listener);
+        new GameManagerCallee(gameManager);
     }
 
     /**
@@ -87,7 +95,7 @@ public class TronGame extends Application {
     public void stop() throws Exception {
         super.stop();
         modelExecutor.shutdownNow(); //shutdown any model threads
-        if (gameModus != Modus.LOCAL) Middleware.getInstance().stop(); //shutdown any middleware threads
+        if (gameModus != LOCAL) Middleware.getInstance().stop(); //shutdown any middleware threads
     }
 
 }

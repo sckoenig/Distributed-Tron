@@ -1,4 +1,4 @@
-package vsp.trongame.applicationstub.model.rest;
+package vsp.trongame.applicationstub.model.rest.registration;
 
 public record RESTRegistration(String address, int playerCount, int lowestPlayerId) implements Comparable<RESTRegistration>{
 

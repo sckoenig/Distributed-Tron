@@ -3,6 +3,7 @@ package vsp.trongame.application.model.game;
 
 import vsp.trongame.Modus;
 import vsp.trongame.applicationstub.model.game.GameCaller;
+import vsp.trongame.applicationstub.model.rest.RESTStub;
 
 public class IGameFactory {
 
@@ -15,6 +16,7 @@ public class IGameFactory {
         return switch (modus){
             case LOCAL -> new Game();
             case NETWORK -> new GameCaller();
+            case REST -> RESTStub.getInstance();
         };
     }
 
