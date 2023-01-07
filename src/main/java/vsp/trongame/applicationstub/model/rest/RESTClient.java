@@ -1,12 +1,8 @@
 package vsp.trongame.applicationstub.model.rest;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -15,14 +11,24 @@ import java.time.Duration;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
+/**
+ * Sends REST ressources over http.
+ */
 public class RESTClient {
 
-    private HttpClient client;
+    private final HttpClient client;
 
     public RESTClient(){
         client = HttpClient.newHttpClient();
     }
 
+    /**
+     * Http Request with "GET" method.
+     * @param address the receiver's address
+     * @param route the route
+     * @return response body as json string or an empty string, if there is no body
+     * @throws IOException on I/O Error
+     */
     public String getRESTRessource(String address, String route) throws IOException {
 
         String responseBody = "";
@@ -30,15 +36,23 @@ public class RESTClient {
             HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).timeout(Duration.of(5, SECONDS)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             responseBody = response.body();
-        } catch (HttpTimeoutException  | URISyntaxException | InterruptedException e){
+        } catch (HttpTimeoutException  | URISyntaxException e){
             e.printStackTrace();
-            Thread.currentThread().interrupt();
             // Coordinator no longer available
+        } catch (InterruptedException e){
+            Thread.currentThread().interrupt();
         }
-
         return responseBody;
     }
 
+    /**
+     * Http Request with "PUT" method.
+     * @param address the receiver's address
+     * @param route the route
+     * @param ressource the ressource to put as a json string
+     * @return the http response code
+     * @throws IOException on I/O Error
+     */
     public int putRESTRessource(String address, String route, String ressource) throws IOException {
 
         int statusCode = -1;
@@ -50,16 +64,14 @@ public class RESTClient {
                     PUT(HttpRequest.BodyPublishers.ofString(ressource)).build();
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response);
             statusCode = response.statusCode();
 
-        } catch (HttpTimeoutException  | URISyntaxException e){
+        } catch (HttpTimeoutException | URISyntaxException e){
             // Coordinator no longer available
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
         }
         return statusCode;
-
     }
 
 }

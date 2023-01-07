@@ -12,11 +12,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import static vsp.trongame.applicationstub.model.rest.RESTProtocol.*;
 import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
 
+/**
+ * Simple Server that receives REST ressources over http. Creates routes as defined in {@link RESTProtocol}.
+ */
 public class RESTServer {
 
     private final ExecutorService executorService;
@@ -31,6 +34,9 @@ public class RESTServer {
         this.gson = new Gson();
     }
 
+    /**
+     * Starts the server by creating a http server and the necessary routes.
+     */
     public void start() {
         try {
             server = HttpServer.create(new InetSocketAddress(0), 0);
@@ -48,10 +54,16 @@ public class RESTServer {
         }
     }
 
+    /**
+     * Stops this server by stopping the underlying http server.
+     */
     public void stop() {
         server.stop(1);
     }
 
+    /**
+     * Route for {@link Game} ressource.
+     */
     private void createGameRoute() {
         this.server.createContext(ROUTE_PUT_GAME, exchange -> {
             if (restAdapter.getCurrentState() == REST_REGISTRATION || restAdapter.getCurrentState() == BUILDING_GAME) {
@@ -64,9 +76,11 @@ public class RESTServer {
         });
     }
 
+    /**
+     * Route for {@link Registration} ressource.
+     */
     private void createRegistratioRoute() {
         server.createContext(ROUTE_PUT_REGISTRATION, exchange -> {
-            System.out.println("RECEIVED : Registration");
             int responseCode = STATUS_NOT_AVAILABLE;
 
             if (restAdapter.getCurrentState() == REST_REGISTRATION) { //else game is full or active
@@ -78,12 +92,14 @@ public class RESTServer {
                     responseCode = success ? STATUS_OK : STATUS_DENIED;
                 }
             }
-            System.out.println(responseCode);
             exchange.sendResponseHeaders(responseCode, -1);
             restAdapter.startGameIfFull();
         });
     }
 
+    /**
+     * Route for {@link Steering} ressource.
+     */
     private void createSteeringRoute() {
         server.createContext(ROUTE_PUT_STEERING, exchange -> {
             if (restAdapter.getCurrentState() == RUNNING) {
@@ -96,6 +112,12 @@ public class RESTServer {
         });
     }
 
+    /**
+     * Reads the request body from the http request.
+     * @param exchange the http request
+     * @return the Body as a String
+     * @throws IOException on I/O Error
+     */
     private String readRequestBody(HttpExchange exchange) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
         StringBuilder requestBody = new StringBuilder("");
@@ -105,7 +127,6 @@ public class RESTServer {
         }
         return new String(requestBody);
     }
-
 
     public int getPort() {
         return this.port;

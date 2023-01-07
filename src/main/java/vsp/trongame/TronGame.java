@@ -13,6 +13,7 @@ import vsp.trongame.application.view.ITronViewWrapper;
 import vsp.trongame.application.view.IViewWrapperFactory;
 import vsp.trongame.applicationstub.model.game.GameCallee;
 import vsp.trongame.applicationstub.model.gamemanagement.GameManagerCallee;
+import vsp.trongame.applicationstub.model.rest.RESTStub;
 import vsp.trongame.applicationstub.view.UpdateListenerCallee;
 import vsp.middleware.Middleware;
 
@@ -96,6 +97,7 @@ public class TronGame extends Application {
         super.stop();
         modelExecutor.shutdownNow(); //shutdown any model threads
         if (gameModus != LOCAL) Middleware.getInstance().stop(); //shutdown any middleware threads
+        if (gameModus == REST) RESTStub.getInstance().stop();
     }
 
 }
