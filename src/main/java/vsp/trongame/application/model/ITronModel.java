@@ -11,7 +11,7 @@ import java.util.concurrent.ExecutorService;
 public interface ITronModel {
 
     /**
-     * Handles a steer event by accepting a KeyCode and processing it.
+     * Handles a steer event by accepting a key String and processing it.
      *
      * @param id the initiator's registration id
      * @param key the key that initiated the steer event.
@@ -26,16 +26,9 @@ public interface ITronModel {
     /**
      * Registers the initiator at the game.
      *
-     * @param id the initiator's registration id
+     * @param listener the initiator's listener
      * @param playerNumber number of Players for the game.
      */
-    void playGame(int id, int playerNumber);
-
-    /**
-     * Registers a Listener at the model for updates.
-     * @param listener the listener.
-     */
-    void registerUpdateListener(IUpdateListener listener);
-
+    void playGame(IUpdateListener listener, int playerNumber);
 
 }

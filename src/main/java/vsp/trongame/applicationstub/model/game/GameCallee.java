@@ -9,13 +9,13 @@ import vsp.trongame.application.model.game.IGame;
 import vsp.trongame.application.model.gamemanagement.Configuration;
 import vsp.trongame.application.model.gamemanagement.IGameManager;
 import vsp.trongame.application.model.gamemanagement.IGameManagerFactory;
-import vsp.trongame.application.view.listener.IUpdateListenerFactory;
 import vsp.trongame.applicationstub.util.ICaller;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.middleware.IRegister;
 import vsp.middleware.IRemoteObject;
 import vsp.middleware.Middleware;
+import vsp.trongame.applicationstub.view.UpdateListenerCaller;
 
 import java.util.concurrent.ExecutorService;
 
@@ -58,7 +58,7 @@ public class GameCallee implements IRemoteObject {
 
                     // Caller Objects that represent the remote Objects that want to register at the local game
                     IGameManager managerCaller = IGameManagerFactory.getGameManager(Modus.NETWORK);
-                    IUpdateListener listenerCaller = IUpdateListenerFactory.getUpdateListener(Modus.NETWORK);
+                    IUpdateListener listenerCaller = new UpdateListenerCaller();
                     ((ICaller) managerCaller).setRemoteId(stringParameters[0]);
                     ((ICaller) listenerCaller).setRemoteId(stringParameters[1]);
 

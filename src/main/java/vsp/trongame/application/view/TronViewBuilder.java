@@ -4,10 +4,10 @@ import edu.cads.bai5.vsp.tron.view.ITronView;
 import edu.cads.bai5.vsp.tron.view.TronView;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.stage.Stage;
+import vsp.trongame.Modus;
 import vsp.trongame.application.controller.ITronController;
 import vsp.trongame.application.model.IUpdateListener;
-import vsp.trongame.application.model.ITronModel;
 import vsp.trongame.application.view.listener.UpdateListener;
 import vsp.trongame.application.view.overlays.*;
 
@@ -15,18 +15,21 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Represents a wrapper for the {@link ITronView}. Builds the view and the model listener.
+ * Builds the view and the view's listener.
  */
-public class TronViewWrapper implements ITronViewWrapper {
+public class TronViewBuilder {
 
-    private ITronView mainView;
-    private UpdateListener listener;
+    /**
+     * Creates Instances of {@link ITronController} depending on {@link Modus}.
+     *
+     * @return controller instance.
+     */
+    public static IUpdateListener buildView(ITronController mainController, int height, int width, int defaultPlayerCount,
+                                            Map<String, String> mapping, Stage stage) throws IOException {
 
-    @Override
-    public void buildView(ITronModel model, ITronController mainController, int height, int width, int defaultPlayerCount,
-                          Map<String, String> mapping) throws IOException {
-
-        this.mainView = new TronView();
+        ITronView mainView = new TronView();
+        stage.setScene(mainView.getScene());
+        UpdateListener listener = new UpdateListener();
         MenuOverlay menuOverlay;
         CountdownOverlay countdownOverlay = null;
         EndingOverlay endingOverlay = null;
@@ -37,7 +40,7 @@ public class TronViewWrapper implements ITronViewWrapper {
 
             String fxml = overlay.getValue();
             String identifier = overlay.getKey();
-            loader = new FXMLLoader(getClass().getResource(fxml));
+            loader = new FXMLLoader(TronViewBuilder.class.getResource(fxml));
             root = loader.load();
             root.minHeight(height);
             root.minWidth(width);
@@ -46,7 +49,7 @@ public class TronViewWrapper implements ITronViewWrapper {
             switch (overlay.getKey()) {
                 case MenuOverlay.IDENTIFIER -> {
                     menuOverlay = loader.getController();
-                    menuOverlay.initialize(mainController, defaultPlayerCount);
+                    menuOverlay.initialize(mainController, defaultPlayerCount, listener);
                 }
                 case CountdownOverlay.IDENTIFIER -> countdownOverlay = loader.getController();
                 case EndingOverlay.IDENTIFIER -> endingOverlay = loader.getController();
@@ -54,23 +57,17 @@ public class TronViewWrapper implements ITronViewWrapper {
                 }
             }
         }
-        mainView.clear(); // hide all overlays
 
-        this.listener = new UpdateListener();
-        this.listener.initialize(mainView, countdownOverlay, endingOverlay, mainController);
-        model.registerUpdateListener(listener);
+        mainView.init(); //hide all registered overlays
+        mainView.showOverlay(MenuOverlay.IDENTIFIER);
+        listener.initialize(mainView, countdownOverlay, endingOverlay, mainController);
+
+        return listener;
     }
 
-    @Override
-    public Scene getScene() {
-        return mainView.getScene();
-    }
-
-    @Override
-    public IUpdateListener getListener() {
-        return this.listener;
-    }
-
-
+    private TronViewBuilder(){}
 }
+
+
+
 

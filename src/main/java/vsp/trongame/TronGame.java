@@ -4,12 +4,12 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import vsp.trongame.application.controller.ITronController;
 import vsp.trongame.application.controller.ITronControllerFactory;
+import vsp.trongame.application.model.IUpdateListener;
 import vsp.trongame.application.model.gamemanagement.Configuration;
 import vsp.trongame.application.model.ITronModel;
 import vsp.trongame.application.model.ITronModelFactory;
 import vsp.trongame.application.model.gamemanagement.*;
-import vsp.trongame.application.view.ITronViewWrapper;
-import vsp.trongame.application.view.IViewWrapperFactory;
+import vsp.trongame.application.view.TronViewBuilder;
 import vsp.trongame.applicationstub.model.game.GameCallee;
 import vsp.trongame.applicationstub.model.gamemanagement.GameManagerCallee;
 import vsp.trongame.applicationstub.view.UpdateListenerCallee;
@@ -50,16 +50,16 @@ public class TronGame extends Application {
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
         /* local components */
-        ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(Modus.LOCAL);
+        //ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(Modus.LOCAL);
         ITronController tronController = ITronControllerFactory.getTronController(Modus.LOCAL);
         ITronModel tronModel = ITronModelFactory.getTronModel(Modus.LOCAL);
 
         /* assemble */
         tronController.initialize(tronModel);
         tronModel.initialize(config, gameModus, singleView, modelExecutor);
-        tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
+        IUpdateListener listener = TronViewBuilder.buildView(tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
-                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
+                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING, stage);
 
         /* middleware & stubs if not LOCAL */
         if (gameModus != Modus.LOCAL){
@@ -69,13 +69,12 @@ public class TronGame extends Application {
 
             //create stub
             new GameCallee(config, modelExecutor);
-            new UpdateListenerCallee(tronView.getListener());
+            new UpdateListenerCallee(listener);
             new GameManagerCallee((IGameManager) tronModel);
         }
 
         /* open stage */
         stage.setTitle("LightCycles");
-        stage.setScene(tronView.getScene());
         stage.show();
 
     }

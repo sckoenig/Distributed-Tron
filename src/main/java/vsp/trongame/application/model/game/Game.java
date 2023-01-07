@@ -19,7 +19,7 @@ public class Game implements IGame {
     private static final int ONE_SECOND = 1000;
     private static final int COUNTDOWN_LENGTH = 3;
     private final List<IPlayer> players;
-    private final Set<IGameManager> gameManagers; //listeners be related to the same manager
+    private final Set<IGameManager> gameManagers; //listeners may be related to the same manager
     private final List<IUpdateListener> updateListeners;
     private final ICollisionDetector collisionDetector;
     private ExecutorService gameExecutor;
@@ -51,7 +51,6 @@ public class Game implements IGame {
 
     @Override
     public void prepareForRegistration(int playerCount) {
-        System.out.println("PREPARE");
         if (currentState == GameState.INIT) {
             this.playerCount = playerCount;
             transitionState(GameState.REGISTRATION);
@@ -60,12 +59,10 @@ public class Game implements IGame {
 
     @Override
     public void register(IGameManager gameManager, IUpdateListener gameListener, int listenerId, int managedPlayerCount) {
-        System.out.println("REGISTER");
         if (isRegistrationAllowed(managedPlayerCount)) {
             this.updateListeners.add(gameListener);
             this.gameManagers.add(gameManager);
             gameManager.handleManagedPlayers(listenerId, createPlayers(managedPlayerCount));
-            gameManager.handleGameState(currentState);
 
             if (isGameFull()) {
                 transitionState(GameState.STARTING);
