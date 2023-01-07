@@ -40,12 +40,13 @@ public class RESTStub implements IGameManager, IGame, IArena {
     private static final Map<RESTStubState, List<RESTStubState>> TRANSITIONS = Map.of(
             INIT, List.of(RPC_REGISTRATION),
             RPC_REGISTRATION, List.of(REST_REGISTRATION, RUNNING),
-            REST_REGISTRATION, List.of(BUILDING_GAME, RUNNING),
+            REST_REGISTRATION, List.of(BUILDING_GAME, RUNNING, INIT),
             RUNNING, List.of(INIT),
             BUILDING_GAME, List.of(RUNNING)
     );
 
     private static final RESTStub INSTANCE = new RESTStub();
+    private static final int RESTSTUB_THREAD_POOL = 4;
 
     public static RESTStub getInstance() {
         return INSTANCE;
@@ -70,7 +71,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
     private RESTStub() {
         this.registrationLock = new ReentrantLock(true);
-        this.executorService = Executors.newFixedThreadPool(4);
+        this.executorService = Executors.newFixedThreadPool(RESTSTUB_THREAD_POOL);
         this.coordinates = new ArrayList<>();
         this.coordinateDirectionMapping = new HashMap<>();
         this.restRegistrations = new HashMap<>();
@@ -236,7 +237,6 @@ public class RESTStub implements IGameManager, IGame, IArena {
     public void handleRessource(Steering steering) {
         DirectionChange directionChange = steering.turn().equals("RIGHT") ? DirectionChange.RIGHT_STEER : DirectionChange.LEFT_STEER;
         localGame.handleSteer(new Steer(steering.playerId(), directionChange));
-
     }
 
     public boolean handleRessource(Registration registration, String address) {
@@ -327,7 +327,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         Game game = new Game(superNodes);
         String gameJson = gson.toJson(game, Game.class);
         handleRessource(game);
-        sendRessource(gameJson);
+        sendRessource(gameJson, ROUTE_PUT_GAME);
 
     }
 
@@ -419,15 +419,15 @@ public class RESTStub implements IGameManager, IGame, IArena {
         Steering steering = new Steering(steer.playerId(), turn);
         String steeringJson = gson.toJson(steering, Steering.class);
         handleRessource(steering);
-        sendRessource(steeringJson);
+        sendRessource(steeringJson, ROUTE_PUT_STEERING);
     }
 
-    private void sendRessource(String ressource) {
+    private void sendRessource(String ressource, String route) {
         executorService.execute(() -> {
             for (String address : restRegistrations.keySet())
                 if (!address.equals(localAddress))
                     try {
-                        restClient.putRESTRessource(address, ROUTE_PUT_GAME, ressource);
+                        restClient.putRESTRessource(address, route, ressource);
                     } catch (IOException e) {
                         //continue with next supernode
                     }
