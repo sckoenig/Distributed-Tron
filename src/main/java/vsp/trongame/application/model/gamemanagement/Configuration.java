@@ -172,7 +172,7 @@ public class Configuration {
      * @return if string is a valid ip address
      */
     private boolean isValidIpAddress(String ipAddress){
-        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:\\d{3,5}";
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:[1-9]\\d{3,4}";
         return ipAddress.matches(regex);
     }
 
