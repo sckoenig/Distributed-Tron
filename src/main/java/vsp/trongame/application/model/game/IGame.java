@@ -12,6 +12,16 @@ import java.util.concurrent.ExecutorService;
  */
 public interface IGame {
 
+    /**
+     * Initializes this Game with necessary dependencies.
+     * @param modus modus the game should use
+     * @param speed speed the game should use
+     * @param rows number of rows arena should have
+     * @param columns number of columns arena should have
+     * @param waitingTimer the time the game waits for registration
+     * @param endingTimer the time the game remains in its finishing state
+     * @param executorService executor service for threads to use
+     */
     void initialize(Modus modus, int speed, int rows, int columns, int waitingTimer, int endingTimer, ExecutorService executorService);
 
     /**
