@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import static vsp.trongame.applicationstub.model.rest.RESTProtocol.*;
 import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
@@ -23,14 +22,14 @@ import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
 public class RESTServer {
 
     private final ExecutorService executorService;
-    private final RESTStub restAdapter;
+    private final RESTStub restStub;
     private final Gson gson;
     private HttpServer server;
     private int port;
 
-    public RESTServer(RESTStub restAdapter, ExecutorService executorService) {
+    public RESTServer(RESTStub restStub, ExecutorService executorService) {
         this.executorService = executorService;
-        this.restAdapter = restAdapter;
+        this.restStub = restStub;
         this.gson = new Gson();
     }
 
@@ -43,7 +42,7 @@ public class RESTServer {
             this.port = server.getAddress().getPort();
 
             createGameRoute();
-            createRegistratioRoute();
+            createRegistrationRoute();
             createSteeringRoute();
 
             server.setExecutor(executorService);
@@ -66,11 +65,11 @@ public class RESTServer {
      */
     private void createGameRoute() {
         this.server.createContext(ROUTE_PUT_GAME, exchange -> {
-            if (restAdapter.getCurrentState() == REST_REGISTRATION || restAdapter.getCurrentState() == BUILDING_GAME) {
+            if (restStub.getCurrentState() == REST_REGISTRATION || restStub.getCurrentState() == BUILDING_GAME) {
                 if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
                     String body = readRequestBody(exchange);
                     Game game = gson.fromJson(body, Game.class);
-                    restAdapter.handleRessource(game);
+                    restStub.handleRessource(game);
                 }
             }
         });
@@ -79,21 +78,21 @@ public class RESTServer {
     /**
      * Route for {@link Registration} ressource.
      */
-    private void createRegistratioRoute() {
+    private void createRegistrationRoute() {
         server.createContext(ROUTE_PUT_REGISTRATION, exchange -> {
             int responseCode = STATUS_NOT_AVAILABLE;
 
-            if (restAdapter.getCurrentState() == REST_REGISTRATION) { //else game is full or active
+            if (restStub.getCurrentState() == REST_REGISTRATION) { //else game is full or active
 
                 if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
                     String body = readRequestBody(exchange);
                     Registration registration = gson.fromJson(body, Registration.class);
-                    boolean success = restAdapter.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
+                    boolean success = restStub.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
                     responseCode = success ? STATUS_OK : STATUS_DENIED;
                 }
             }
             exchange.sendResponseHeaders(responseCode, -1);
-            restAdapter.startGameIfFull();
+            restStub.startGameIfFull();
         });
     }
 
@@ -102,11 +101,11 @@ public class RESTServer {
      */
     private void createSteeringRoute() {
         server.createContext(ROUTE_PUT_STEERING, exchange -> {
-            if (restAdapter.getCurrentState() == RUNNING) {
+            if (restStub.getCurrentState() == RUNNING) {
                 if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
                     String body = readRequestBody(exchange);
                     Steering steering = gson.fromJson(body, Steering.class);
-                    restAdapter.handleRessource(steering);
+                    restStub.handleRessource(steering);
                 }
             }
         });

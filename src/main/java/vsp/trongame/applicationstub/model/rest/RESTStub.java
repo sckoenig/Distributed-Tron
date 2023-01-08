@@ -20,6 +20,7 @@ import vsp.trongame.applicationstub.model.rest.ressources.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.net.http.HttpTimeoutException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -81,16 +82,13 @@ public class RESTStub implements IGameManager, IGame, IArena {
         this.restServer = new RESTServer(this, executorService);
         this.restServer.start();
         this.restClient = new RESTClient();
-
-
-        try {
-            this.localAddress = String.format("http://%s:%s", InetAddress.getLocalHost().getHostAddress(), restServer.getPort());
-        } catch (UnknownHostException e) {
-            localAddress = "";
-        }
-        //localAddress = String.format("http://%s:%s", "192.168.193.57", restServer.getPort());
-        System.out.println(localAddress);
     }
+
+    public void setIpAddress(String ipAddress){
+        localAddress = String.format("http://%s:%s", ipAddress, restServer.getPort());
+        System.out.println("STUB: "+localAddress) ;
+    }
+
 
     /**
      * Stops the underlying {@link RESTServer} and any used threads.
@@ -166,7 +164,6 @@ public class RESTStub implements IGameManager, IGame, IArena {
                     registerAsCoordinator();
                     break;
                 }
-
                 coordinator = gson.fromJson(jsonCoordinator, NameServerEntry.class);
                 int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
 
@@ -176,11 +173,9 @@ public class RESTStub implements IGameManager, IGame, IArena {
                     registrationSuccess = true;
                 }
                 if (response == STATUS_OK) registrationSuccess = true;
-
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
             //on name server problems we start game in rpc middleware only if possible.
             transitionState(RUNNING);
         }
@@ -190,7 +185,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * Searches for a Coordinator as specified in protocol.
      *
      * @return json string of {@link NameServerEntry}
-     * @throws IOException on name server error
+     * @throws HttpTimeoutException on name server error
      */
     private String lookUpCoordinator() throws IOException {
         return restClient.getRESTRessource(REST_NAMESERVER_ADDRESS, String.format(GET_NAMESERVER_ROUTE, COORDINATOR_NAME));
@@ -240,6 +235,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     }
 
     public boolean handleRessource(Registration registration, String address) {
+        System.out.println("RECEIVED REST REGISTRATION");
 
         boolean registrationAllowed = false;
 
@@ -272,6 +268,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         }
         if (!restRegistrations.isEmpty() && restPlayerCount > 1) {
             this.localGame.prepareForRegistration(restPlayerCount);
+            localGame.register(this, null, 0, 0);
             List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
             temp.sort(Map.Entry.comparingByValue());
             for (Map.Entry<String, RESTRegistration> entry : temp) {
@@ -330,7 +327,6 @@ public class RESTStub implements IGameManager, IGame, IArena {
         sendRessource(gameJson, ROUTE_PUT_GAME);
 
     }
-
     private void handleTimeOut() {
         if (currentState == REST_REGISTRATION && restPlayerCount >= 2) {
             transitionState(BUILDING_GAME);
@@ -404,6 +400,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
     @Override
     public void register(IGameManager gameManager, IUpdateListener listener, int listenerId, int managedPlayerCount) {
+        System.out.println("RECEIVED RPC REGISTRATION");
         if (currentState == RPC_REGISTRATION && isRegistrationAllowed(managedPlayerCount)) {
             rpcRegistrations.add(new RPCRegistration(gameManager, listener, listenerId, managedPlayerCount));
             if (this.playerCount == this.rpcRegistrations.size()) transitionState(RUNNING);

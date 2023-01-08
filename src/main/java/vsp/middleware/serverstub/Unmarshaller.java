@@ -25,8 +25,10 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     private final INamingService namingService;
     private final Receiver receiver;
     private InetSocketAddress serverStubAddress;
+    private final String ip;
 
-    public Unmarshaller(ExecutorService executorService, INamingService namingService){
+    public Unmarshaller(ExecutorService executorService, String ip, INamingService namingService){
+        this.ip = ip;
         this.namingService = namingService;
         this.gson = new Gson();
         this.executorService = executorService;
@@ -69,13 +71,8 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
 
     @Override
     public void setPort(int port) {
-        try {
-            //TODO Network Interfaces
-            this.serverStubAddress = new InetSocketAddress(InetAddress.getLocalHost(), port);
-            //this.serverStubAddress = new InetSocketAddress("192.168.193.57", port);
-        } catch (UnknownHostException e){
-            e.printStackTrace();
-        }
+        this.serverStubAddress = new InetSocketAddress(ip, port);
+        System.out.println("UNMARSHALLER " +serverStubAddress);
     }
 
     @Override

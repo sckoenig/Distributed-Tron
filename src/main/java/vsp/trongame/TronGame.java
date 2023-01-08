@@ -18,8 +18,11 @@ import vsp.trongame.applicationstub.view.UpdateListenerCallee;
 import vsp.middleware.Middleware;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -48,13 +51,18 @@ public class TronGame extends Application {
         /* BOOT APP */
 
         Configuration config = new Configuration();
+        String networkAddress = config.getAttribut(Configuration.NETWORK_ADDRESS);
+        String ip = findIpAddress(networkAddress);
+        System.out.println(ip);
+        RESTStub.getInstance().setIpAddress(ip);
+
         gameModus = Modus.valueOf(config.getAttribut("gameMode"));
         boolean singleView = gameModus == LOCAL;
 
         if (gameModus != LOCAL) {
             boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
             String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
-            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
+            Middleware.getInstance().start(nameServerAddress, asNameServerHost, ip);
         }
 
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
@@ -81,6 +89,27 @@ public class TronGame extends Application {
         stage.setScene(tronView.getScene());
         stage.show();
 
+    }
+
+    private String findIpAddress(String network) throws SocketException {
+        String[] split = network.split("/");
+        String ip = split[0];
+        short prefix = Short.parseShort(split[1]);
+
+        for(Enumeration<NetworkInterface> eni = NetworkInterface.getNetworkInterfaces(); eni.hasMoreElements(); ) {
+            final NetworkInterface ifc = eni.nextElement();
+
+            List<InterfaceAddress> interfaceAddresses = ifc.getInterfaceAddresses();
+            for (InterfaceAddress address : interfaceAddresses) {
+                if (address.getNetworkPrefixLength() == prefix) {
+                    String interfaceAddress = address.getAddress().getHostAddress();
+                    String networkNumsInterface = interfaceAddress.substring(0, interfaceAddress.lastIndexOf("."));
+                    String networkNumbsConfig = ip.substring(0, interfaceAddress.lastIndexOf("."));
+                    if (networkNumsInterface.equals(networkNumbsConfig)) return interfaceAddress;
+                }
+            }
+        }
+        return "";
     }
 
     private void createApplicationStub(Modus modus, Configuration config, IUpdateListener listener, IGameManager gameManager){

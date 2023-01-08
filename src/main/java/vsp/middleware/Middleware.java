@@ -32,7 +32,7 @@ public class Middleware implements IRegister, IRemoteInvocation {
     private Middleware() {
     }
 
-    public void start(String nameServerAddress, boolean asNameServerHost) {
+    public void start(String nameServerAddress, boolean asNameServerHost, String ip) {
 
         this.isNameServerHost = asNameServerHost;
         this.middlewareExecutor = Executors.newFixedThreadPool(MIDDLEWARE_THREAD_SIZE);
@@ -46,7 +46,7 @@ public class Middleware implements IRegister, IRemoteInvocation {
             }
             INamingService namingService = new NameResolver(middlewareExecutor, nameServerSocketAddress);
             this.marshaller = new Marshaller(middlewareExecutor, namingService);
-            this.unmarshaller = new Unmarshaller(middlewareExecutor, namingService);
+            this.unmarshaller = new Unmarshaller(middlewareExecutor, ip, namingService);
 
         } catch (SocketException e) {
             e.printStackTrace();

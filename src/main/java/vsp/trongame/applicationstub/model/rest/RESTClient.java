@@ -27,7 +27,7 @@ public class RESTClient {
      * @param address the receiver's address
      * @param route the route
      * @return response body as json string or an empty string, if there is no body
-     * @throws IOException on I/O Error
+     * @throws HttpTimeoutException on time out
      */
     public String getRESTRessource(String address, String route) throws IOException {
 
@@ -36,11 +36,10 @@ public class RESTClient {
             HttpRequest request = HttpRequest.newBuilder().uri(new URI(address + route)).timeout(Duration.of(5, SECONDS)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             responseBody = response.body();
-        } catch (HttpTimeoutException  | URISyntaxException e){
-            e.printStackTrace();
-            // Coordinator no longer available
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
+        } catch (URISyntaxException e) {
+        //
         }
         return responseBody;
     }

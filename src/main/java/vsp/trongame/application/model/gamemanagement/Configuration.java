@@ -30,6 +30,7 @@ public class Configuration {
     public static final String P_SECHS = "p6";
     public static final String GAME_MODE = "gameMode";
     public static final String NAME_SERVER = "nameServer";
+    public static final String NETWORK_ADDRESS = "network";
     public static final String NAME_SERVER_HOST = "nameServerHost";
     private static final String FILE_PATH = "tronConfig.properties";
     private static final Map<String, String> DEFAULTS;
@@ -51,6 +52,7 @@ public class Configuration {
         DEFAULTS.put(P_FUENF, "M,N");
         DEFAULTS.put(P_SECHS, "Z,U");
         DEFAULTS.put(GAME_MODE, "LOCAL");
+        DEFAULTS.put(NETWORK_ADDRESS, "127.0.0.0/8");
         DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
         DEFAULTS.put(NAME_SERVER_HOST, "false");
     }
@@ -101,6 +103,7 @@ public class Configuration {
         && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.REST.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
         //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555"); //TODO check for valid ip:port string
+        //TODO check network address
         return true;
     }
 
