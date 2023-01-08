@@ -129,7 +129,7 @@ public class Game implements IGame {
     }
 
     /**
-     * Timeout handeling deoebds on the game state the timer was started in and the current game state.
+     * Timeout handeling on the game state the timer was started in and the current game state.
      *
      * @param startedAt the game state the timer was started in.
      */
@@ -175,7 +175,7 @@ public class Game implements IGame {
      * Creates and saves the given number of players and maps their ID and Color.
      *
      * @param count number of players to be created.
-     * @return a map of the player's ID and Color.
+     * @return a list of the player's ID´s
      */
     private List<Integer> createPlayers(int count) {
         List<Integer>  newPlayers = new ArrayList<>();
