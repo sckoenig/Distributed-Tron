@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.*;
 
+/**
+ * Enables message sending via UDP or TCP.
+ */
 public class Sender implements ISender {
 
     private final DatagramSocket udpSocket;
@@ -17,7 +20,7 @@ public class Sender implements ISender {
         try {
 
             if (protocol == Protocol.TCP) {
-                try (Socket clientSocket = new Socket(address.getAddress(), address.getPort());) {
+                try (Socket clientSocket = new Socket(address.getAddress(), address.getPort())) {
                     OutputStream out = clientSocket.getOutputStream();
                     out.write(message.length);
                     out.write(message);

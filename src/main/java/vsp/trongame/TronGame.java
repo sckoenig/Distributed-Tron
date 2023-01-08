@@ -9,8 +9,7 @@ import vsp.trongame.application.model.gamemanagement.Configuration;
 import vsp.trongame.application.model.ITronModel;
 import vsp.trongame.application.model.ITronModelFactory;
 import vsp.trongame.application.model.gamemanagement.*;
-import vsp.trongame.application.view.ITronViewWrapper;
-import vsp.trongame.application.view.IViewWrapperFactory;
+import vsp.trongame.application.view.TronViewBuilder;
 import vsp.trongame.applicationstub.model.game.GameCallee;
 import vsp.trongame.applicationstub.model.gamemanagement.GameManagerCallee;
 import vsp.trongame.applicationstub.model.rest.RESTStub;
@@ -68,21 +67,33 @@ public class TronGame extends Application {
         modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
         /* local components */
-        ITronViewWrapper tronView = IViewWrapperFactory.getViewWrapper(LOCAL);
-        ITronController tronController = ITronControllerFactory.getTronController(LOCAL);
-        ITronModel tronModel = ITronModelFactory.getTronModel(LOCAL);
+        ITronController tronController = ITronControllerFactory.getTronController(Modus.LOCAL);
+        ITronModel tronModel = ITronModelFactory.getTronModel(Modus.LOCAL);
 
         /* assemble */
         tronController.initialize(tronModel);
+        tronModel.initialize(config, gameModus, singleView, modelExecutor);
+        IUpdateListener listener = TronViewBuilder.buildView(tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
         Modus modelModus = gameModus==REST? NETWORK : gameModus;
         tronModel.initialize(config, modelModus, singleView, modelExecutor);
         tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
-                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING);
+                Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING, stage);
 
         /* stubs if not LOCAL */
         if (gameModus == Modus.NETWORK) createApplicationStub(LOCAL, config, tronView.getListener(), (IGameManager) tronModel);
         if (gameModus == REST) createApplicationStub(REST, config, tronView.getListener(), (IGameManager) tronModel);
+        /* middleware & stubs if not LOCAL */
+        if (gameModus != Modus.LOCAL){
+            boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
+            String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
+            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
+
+            //create stub
+            new GameCallee(config, modelExecutor);
+            new UpdateListenerCallee(listener);
+            new GameManagerCallee((IGameManager) tronModel);
+        }
 
         /* open stage */
         stage.setTitle("LightCycles");

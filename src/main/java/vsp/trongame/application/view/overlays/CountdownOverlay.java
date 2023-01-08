@@ -52,8 +52,8 @@ public class CountdownOverlay {
     }
 
     public void setCounterLabelValue(int value) {
-        counterLabel.setVisible(true);
         counterLabel.setText(String.valueOf(value));
+        counterLabel.setVisible(true);
     }
 
     public void reset(){

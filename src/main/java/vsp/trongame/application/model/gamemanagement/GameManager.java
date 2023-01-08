@@ -30,6 +30,7 @@ public class GameManager implements IGameManager, ITronModel {
     private boolean singleView;
     private ModelState currentState;
     private boolean handleSteerEvents;
+    private int maxListenerCount;
 
     public GameManager() {
         this.currentState = ModelState.MENU;
@@ -60,25 +61,26 @@ public class GameManager implements IGameManager, ITronModel {
     }
 
     @Override
-    public void playGame(int listenerID, int playerCount) {
-        if (currentState == ModelState.MENU) {
-            handleGameState(GameState.REGISTRATION);
+    public void playGame(IUpdateListener listener, int playerCount) {
 
+        if (currentState == ModelState.MENU ){
+            maxListenerCount = singleView? 1 : playerCount;
+            transition(ModelState.WAITING);
             game.prepareForRegistration(playerCount);
+        }
+        if (currentState == ModelState.WAITING && listenersMap.size() < maxListenerCount) {
+            //register listener
+            int nextID = listenersMap.size();
+            listenersMap.put(nextID, listener);
+            listener.updateOnRegistration(nextID);
+            listener.updateOnState(currentState.toString());
+
+            //register at game for updates
             executorService.execute(() -> {
                 int managedPlayerCount = singleView ? playerCount : 1;
-                if (listenersMap.containsKey(listenerID))
-                    listenersMap.values().forEach(listener ->  game.register(this, listenersMap.get(listenerID), listenerID, managedPlayerCount));
+                game.register(this, listener, nextID, managedPlayerCount);
             });
         }
-    }
-
-    @Override
-    public void registerUpdateListener(IUpdateListener listener) {
-        int nextID = listenersMap.size();
-        listenersMap.put(nextID, listener);
-        listener.updateOnRegistration(nextID);
-        listener.updateOnState(currentState.toString());
     }
 
     @Override
@@ -111,8 +113,10 @@ public class GameManager implements IGameManager, ITronModel {
      * @param newState the game state initiating the transition.
      */
     private void transition(ModelState newState) {
-        currentState = newState;
-        executeState();
+        if (currentState != newState) {
+            currentState = newState;
+            executeState();
+        }
     }
 
     /**
@@ -137,6 +141,7 @@ public class GameManager implements IGameManager, ITronModel {
      */
     private void reset() {
         listenersToPlayersMap.clear();
+        listenersMap.clear();
     }
 
 }

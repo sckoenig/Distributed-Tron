@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import vsp.trongame.application.controller.ITronController;
+import vsp.trongame.application.model.IUpdateListener;
 
 /**
  * Overlay, that represents a menu.
@@ -22,11 +23,12 @@ public class MenuOverlay  {
     @FXML
     public Button increasePlayerCountButton;
 
+    private IUpdateListener listener;
+
     private ITronController controller;
-    private int registrationId;
 
     public void handleButtonPress() {
-        this.controller.playGame(registrationId, Integer.parseInt(playerCountLabel.getText()));
+        this.controller.playGame(listener, Integer.parseInt(playerCountLabel.getText()));
     }
 
     public void handleDecrease(){
@@ -38,13 +40,10 @@ public class MenuOverlay  {
         if (value < MAX_PLAYER) playerCountLabel.setText(String.valueOf(value+1));
     }
 
-    public void initialize(ITronController controller, int defaultPlayerCount){
+    public void initialize(ITronController controller, int defaultPlayerCount, IUpdateListener listener){
         this.controller = controller;
         this.playerCountLabel.setText(String.valueOf(defaultPlayerCount));
-    }
-
-    public void setId(int id){
-        this.registrationId = id;
+        this.listener = listener;
     }
 
 }

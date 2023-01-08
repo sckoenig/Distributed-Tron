@@ -13,7 +13,7 @@ public class ITronModelFactory {
     public static ITronModel getTronModel(Modus modus){
         return switch (modus){
             case LOCAL -> (ITronModel) IGameManagerFactory.getGameManager(Modus.LOCAL);
-            case NETWORK, REST -> null;
+            case RPC, REST -> null;
         };
     }
 

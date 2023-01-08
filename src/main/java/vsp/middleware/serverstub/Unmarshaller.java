@@ -16,12 +16,15 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 
+/**
+ * Enables Unmarshalling and Registration {@link IRemoteObject}.
+ */
 public class Unmarshaller implements IUnmarshaller, IRegister {
 
     private final Map<Integer, IRemoteObject> remoteObjectRegister;
     private final BlockingQueue<byte[]> messageQueue;
-    private final ExecutorService executorService;
-    private final Gson gson;
+    private final ExecutorService executorService; // for queue
+    private final Gson gson; // for unmarshalling
     private final INamingService namingService;
     private final Receiver receiver;
     private InetSocketAddress serverStubAddress;
@@ -40,6 +43,9 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         receiver.start();
     }
 
+    /**
+     * Starts a thread that handels messages in queue.
+     */
     private void startServiceCallHandler() {
         executorService.execute(() -> {
             while(!Thread.currentThread().isInterrupted()) {
@@ -60,6 +66,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         });
     }
 
+    @Override
     public void stop() {
         receiver.stop();
     }

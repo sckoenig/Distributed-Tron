@@ -99,12 +99,10 @@ public class Configuration {
         if (isSteerValid(properties.getProperty(P_EINS), properties.getProperty(P_ZWEI), properties.getProperty(P_DREI),
                 properties.getProperty(P_VIER), properties.getProperty(P_FUENF), properties.getProperty(P_SECHS)))
             return false;
-        if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.NETWORK.toString())
+        if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.RPC.toString())
         && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.REST.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
-        //return properties.getProperty(NAME_SERVER).equalsIgnoreCase("127.0.0.1:5555"); //TODO check for valid ip:port string
-        //TODO check network address
-        return true;
+        return isValidIpAddress(properties.getProperty(NAME_SERVER));
     }
 
     /**
@@ -168,6 +166,17 @@ public class Configuration {
                 tempStringArray[index].equalsIgnoreCase("Up") ||
                 tempStringArray[index].equalsIgnoreCase("Down") ||
                 !tempStringArray[index].matches(regex));
+    }
+
+    /**
+     * Checks of the string is a valid ip address.
+     *
+     * @param ipAddress which we want to validate
+     * @return if string is a valid ip address
+     */
+    private boolean isValidIpAddress(String ipAddress){
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:[1-9]\\d{3,4}";
+        return ipAddress.matches(regex);
     }
 
     /**
