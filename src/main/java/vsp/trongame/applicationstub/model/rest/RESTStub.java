@@ -18,8 +18,6 @@ import vsp.trongame.applicationstub.model.rest.registration.RPCRegistration;
 import vsp.trongame.applicationstub.model.rest.ressources.*;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.net.http.HttpTimeoutException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -56,7 +54,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     private String localAddress;
     private final RESTServer restServer;
     private final RESTClient restClient;
-    private final Map<String, RESTRegistration> restRegistrations;
+    private final Map<String, RESTRegistration> restRegistrations; //address to registration
     private final List<RPCRegistration> rpcRegistrations;
     private final ReentrantLock registrationLock;
     private final Map<Coordinate, Direction> coordinateDirectionMapping; //acts as arena
@@ -86,7 +84,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
     public void setIpAddress(String ipAddress){
         localAddress = String.format("http://%s:%s", ipAddress, restServer.getPort());
-        System.out.println("STUB: "+localAddress) ;
+        System.out.println("REST: "+localAddress) ;
     }
 
 
@@ -123,6 +121,10 @@ public class RESTStub implements IGameManager, IGame, IArena {
         }
     }
 
+    /**
+     * Starts a timer.
+     * @param waitingTime waiting time in milliseconds
+     */
     private void startTimer(long waitingTime) {
         executorService.execute(() -> {
             try {
@@ -132,6 +134,22 @@ public class RESTStub implements IGameManager, IGame, IArena {
             }
             if (!currentThread().isInterrupted()) handleTimeOut();
         });
+    }
+
+    /**
+     * Handels the timeout according to states.
+     */
+    private void handleTimeOut() {
+        if (currentState == REST_REGISTRATION && restPlayerCount >= 2) {
+            transitionState(BUILDING_GAME);
+        }
+        if (currentState == REST_REGISTRATION && restPlayerCount < 2) {
+            this.rpcRegistrations.get(0).gameManager().handleGameState(GameState.INIT);
+            transitionState(INIT);
+        }
+        if (currentState == RPC_REGISTRATION && rpcRegistrations.size() != playerCount) {
+            transitionState(REST_REGISTRATION);
+        }
     }
 
     /**
@@ -234,87 +252,43 @@ public class RESTStub implements IGameManager, IGame, IArena {
         localGame.handleSteer(new Steer(steering.playerId(), directionChange));
     }
 
+    /**
+     * Handels the {@link Registration} Ressource.
+     * @param registration the registration
+     * @param address the sender's address
+     * @return true, if the registration was accepted, false otherwise
+     */
     public boolean handleRessource(Registration registration, String address) {
-        System.out.println("RECEIVED REST REGISTRATION");
+        if (registration == null) return false;
 
+        registrationLock.lock();
         boolean registrationAllowed = false;
 
-        if (restRegistrations.isEmpty()) {
-            startTimer(timer / 2);
-        }
         if (isRegistrationAllowed(registration.playerCount())) {
+            if (restRegistrations.isEmpty()) {
+                startTimer(timer / 2);
+            }
             String restAddress = "http://" + address + ":" + registration.port();
             restRegistrations.put(restAddress, new RESTRegistration(restAddress, registration.playerCount(), 0));
             restPlayerCount += registration.playerCount();
             registrationAllowed = true;
 
         }
-        return registrationAllowed;
-    }
-
-    /**
-     * Starts the local game by preparing the game and registering all RPC and REST registrations.
-     */
-    private void startLocalGame() {
-        registrationLock.lock();
-
-        if (restRegistrations.isEmpty() && rpcRegistrations.size() > 1) {
-            this.localGame.prepareForRegistration(rpcRegistrations.size());
-            for (RPCRegistration rpcRegistration : rpcRegistrations) {
-                localGame.register(this, null, 0, 0);
-                this.localGame.register(rpcRegistration.gameManager(), rpcRegistration.updateListener(),
-                        rpcRegistration.listenerId(), rpcRegistration.playerCount());
-            }
-        }
-        if (!restRegistrations.isEmpty() && restPlayerCount > 1) {
-            this.localGame.prepareForRegistration(restPlayerCount);
-            localGame.register(this, null, 0, 0);
-            List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
-            temp.sort(Map.Entry.comparingByValue());
-            for (Map.Entry<String, RESTRegistration> entry : temp) {
-                if (!entry.getKey().equals(this.localAddress)) {
-                    RESTRegistration restReg = entry.getValue();
-                    localGame.register(getInstance(), null, 0, restReg.playerCount());
-                } else {
-                    for (RPCRegistration rpcReg : rpcRegistrations) {
-                        localGame.register(rpcReg.gameManager(), rpcReg.updateListener(), rpcReg.listenerId(), rpcReg.playerCount());
-                    }
-                }
-            }
-        }
         registrationLock.unlock();
-    }
-
-    public RESTStubState getCurrentState() {
-        return this.currentState;
-    }
-
-    public void createArena(int rows, int columns) {
-        this.localArena = IArenaFactory.getArena(Modus.LOCAL, rows, columns);
-    }
-
-
-    public void startGameIfFull() {
-        if (restPlayerCount == playerCount) {
-            transitionState(BUILDING_GAME);
-        }
-    }
-
-    private boolean isRegistrationAllowed(int playerCountToRegister) {
-        return this.playerCount - this.restPlayerCount >= playerCountToRegister;
+        return registrationAllowed;
     }
 
     /**
      * Builds the {@link Game} ressource as defined in {@link RESTProtocol}.
      */
     private void buildGame() {
-        List<Coordinate> coordinates = localArena.calculateFairStartingCoordinates(restPlayerCount);
+        List<Coordinate> gameCoordiantes = localArena.calculateFairStartingCoordinates(restPlayerCount);
         List<SuperNode> superNodes = new ArrayList<>();
         int playerId = 0;
         for (Map.Entry<String, RESTRegistration> restR : restRegistrations.entrySet()) {
             List<LightCycle> lightCycles = new ArrayList<>();
             for (int i = 0; i < restR.getValue().playerCount(); i++) {
-                LightCycle lightCycle = new LightCycle(playerId, coordinates.get(playerId), calculateStartingDirection(coordinates.get(playerId)));
+                LightCycle lightCycle = new LightCycle(playerId, gameCoordiantes.get(playerId), calculateStartingDirection(gameCoordiantes.get(playerId)));
                 lightCycles.add(lightCycle);
                 playerId++;
             }
@@ -327,17 +301,75 @@ public class RESTStub implements IGameManager, IGame, IArena {
         sendRessource(gameJson, ROUTE_PUT_GAME);
 
     }
-    private void handleTimeOut() {
-        if (currentState == REST_REGISTRATION && restPlayerCount >= 2) {
+
+    /**
+     * Sends a string ressource to the given route to all known addresses.
+     * @param ressource ressource to send, must conform to protocol
+     * @param route route to send to, must conform to protocol
+     */
+    private void sendRessource(String ressource, String route) {
+        executorService.execute(() -> {
+            for (String address : restRegistrations.keySet())
+                if (!address.equals(localAddress))
+                    try {
+                        restClient.putRESTRessource(address, route, ressource);
+                    } catch (IOException e) {
+                        // continue with next supernode
+                    }
+        });
+    }
+
+    /**
+     * Starts the local game by preparing the game and registering all RPC and REST registrations.
+     */
+    private void startLocalGame() {
+
+        if (restRegistrations.isEmpty() && rpcRegistrations.size() > 1) {
+            this.localGame.prepareForRegistration(rpcRegistrations.size());
+            registerRPCRegistrationsAtLocalGame();
+        }
+
+        if (!restRegistrations.isEmpty() && restPlayerCount > 1) {
+            this.localGame.prepareForRegistration(restPlayerCount);
+            List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
+            temp.sort(Map.Entry.comparingByValue()); //sorting in order to correctly assign playerIds
+
+            for (Map.Entry<String, RESTRegistration> entry : temp) {
+                if (entry.getKey().equals(this.localAddress)) {
+                    registerRPCRegistrationsAtLocalGame();
+                } else {
+                    RESTRegistration restReg = entry.getValue();
+                    localGame.register(getInstance(), null, 0, restReg.playerCount());
+                }
+            }
+        }
+    }
+
+    private void registerRPCRegistrationsAtLocalGame(){
+        localGame.register(this, null, 0, 0); //making sure this stub is also informed
+
+        for (RPCRegistration rpcRegistration : rpcRegistrations) {
+            this.localGame.register(rpcRegistration.gameManager(), rpcRegistration.updateListener(),
+                    rpcRegistration.listenerId(), rpcRegistration.playerCount());
+        }
+    }
+
+    public RESTStubState getCurrentState() {
+        return this.currentState;
+    }
+
+    public void createArena(int rows, int columns) {
+        this.localArena = IArenaFactory.getArena(Modus.LOCAL, rows, columns);
+    }
+
+    public void startGameIfFull() {
+        if (restPlayerCount == playerCount) {
             transitionState(BUILDING_GAME);
         }
-        if (currentState == REST_REGISTRATION && restPlayerCount < 2) {
-            this.rpcRegistrations.get(0).gameManager().handleGameState(GameState.INIT);
-            transitionState(INIT);
-        }
-        if (currentState == RPC_REGISTRATION && rpcRegistrations.size() != playerCount) {
-            transitionState(REST_REGISTRATION);
-        }
+    }
+
+    private boolean isRegistrationAllowed(int playerCountToRegister) {
+        return this.playerCount - this.restPlayerCount >= playerCountToRegister;
     }
 
     /* ARENA */
@@ -393,14 +425,14 @@ public class RESTStub implements IGameManager, IGame, IArena {
     public void prepareForRegistration(int playerCount) {
         if (currentState == INIT) {
             this.playerCount = playerCount;
-            System.out.println(playerCount);
             transitionState(RPC_REGISTRATION);
         }
     }
 
     @Override
     public void register(IGameManager gameManager, IUpdateListener listener, int listenerId, int managedPlayerCount) {
-        System.out.println("RECEIVED RPC REGISTRATION");
+        registrationLock.lock();
+
         if (currentState == RPC_REGISTRATION && isRegistrationAllowed(managedPlayerCount)) {
             rpcRegistrations.add(new RPCRegistration(gameManager, listener, listenerId, managedPlayerCount));
             if (this.playerCount == this.rpcRegistrations.size()) transitionState(RUNNING);
@@ -408,6 +440,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         } else {
             gameManager.handleGameState(GameState.INIT);
         }
+        registrationLock.unlock();
     }
 
     @Override
@@ -415,28 +448,15 @@ public class RESTStub implements IGameManager, IGame, IArena {
         String turn = steer.directionChange() == DirectionChange.LEFT_STEER? STEERING_LEFT : STEERING_RIGHT;
         Steering steering = new Steering(steer.playerId(), turn);
         String steeringJson = gson.toJson(steering, Steering.class);
+
         handleRessource(steering);
         sendRessource(steeringJson, ROUTE_PUT_STEERING);
-    }
-
-    private void sendRessource(String ressource, String route) {
-        executorService.execute(() -> {
-            for (String address : restRegistrations.keySet())
-                if (!address.equals(localAddress))
-                    try {
-                        restClient.putRESTRessource(address, route, ressource);
-                    } catch (IOException e) {
-                        //continue with next supernode
-                    }
-        });
-
     }
 
 
     /* GAME MANAGER */
     @Override
     public void handleGameState(GameState gameState) {
-        System.out.println(gameState);
         if (gameState == GameState.INIT) {
             transitionState(INIT);
         }

@@ -16,8 +16,6 @@ import vsp.trongame.applicationstub.model.rest.RESTStub;
 import vsp.trongame.applicationstub.view.UpdateListenerCallee;
 import vsp.middleware.Middleware;
 
-import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -45,26 +43,24 @@ public class TronGame extends Application {
     private ExecutorService modelExecutor;
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) throws Exception {
 
         /* BOOT APP */
 
         Configuration config = new Configuration();
-        String networkAddress = config.getAttribut(Configuration.NETWORK_ADDRESS);
-        String ip = findIpAddress(networkAddress);
-        System.out.println(ip);
-        RESTStub.getInstance().setIpAddress(ip);
-
         gameModus = Modus.valueOf(config.getAttribut("gameMode"));
         boolean singleView = gameModus == LOCAL;
+        modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
+        /* components for rpc or rest game */
         if (gameModus != LOCAL) {
+            String networkAddress = config.getAttribut(Configuration.NETWORK_ADDRESS);
+            String ip = findIpAddress(networkAddress);
             boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
             String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
             Middleware.getInstance().start(nameServerAddress, asNameServerHost, ip);
+            RESTStub.getInstance().setIpAddress(ip);
         }
-
-        modelExecutor = Executors.newFixedThreadPool(MODEL_THREAD_SIZE);
 
         /* local components */
         ITronController tronController = ITronControllerFactory.getTronController(Modus.LOCAL);
@@ -74,30 +70,16 @@ public class TronGame extends Application {
         tronController.initialize(tronModel);
         tronModel.initialize(config, gameModus, singleView, modelExecutor);
         IUpdateListener listener = TronViewBuilder.buildView(tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
-        Modus modelModus = gameModus==REST? NETWORK : gameModus;
-        tronModel.initialize(config, modelModus, singleView, modelExecutor);
-        tronView.buildView(tronModel, tronController, Integer.parseInt(config.getAttribut(Configuration.HEIGHT)),
                 Integer.parseInt(config.getAttribut(Configuration.WIDTH)),
                 Integer.parseInt(config.getAttribut(Configuration.DEFAULT_PLAYER_NUMBER)), STATE_VIEW_MAPPING, stage);
+        Modus modelModus = gameModus == REST? RPC : gameModus;
+        tronModel.initialize(config, modelModus, singleView, modelExecutor);
 
         /* stubs if not LOCAL */
-        if (gameModus == Modus.NETWORK) createApplicationStub(LOCAL, config, tronView.getListener(), (IGameManager) tronModel);
-        if (gameModus == REST) createApplicationStub(REST, config, tronView.getListener(), (IGameManager) tronModel);
-        /* middleware & stubs if not LOCAL */
-        if (gameModus != Modus.LOCAL){
-            boolean asNameServerHost = Boolean.parseBoolean(config.getAttribut(Configuration.NAME_SERVER_HOST));
-            String nameServerAddress = config.getAttribut(Configuration.NAME_SERVER);
-            Middleware.getInstance().start(nameServerAddress, asNameServerHost);
-
-            //create stub
-            new GameCallee(config, modelExecutor);
-            new UpdateListenerCallee(listener);
-            new GameManagerCallee((IGameManager) tronModel);
-        }
+        if (gameModus == Modus.RPC) createApplicationStub(LOCAL, config, listener, (IGameManager) tronModel);
+        if (gameModus == REST) createApplicationStub(REST, config, listener, (IGameManager) tronModel);
 
         /* open stage */
-        stage.setTitle("LightCycles");
-        stage.setScene(tronView.getScene());
         stage.show();
 
     }

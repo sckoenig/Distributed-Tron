@@ -52,7 +52,7 @@ public class Configuration {
         DEFAULTS.put(P_FUENF, "M,N");
         DEFAULTS.put(P_SECHS, "Z,U");
         DEFAULTS.put(GAME_MODE, "LOCAL");
-        DEFAULTS.put(NETWORK_ADDRESS, "127.0.0.0/8");
+        DEFAULTS.put(NETWORK_ADDRESS, "127.0.0.0/24"); //only supporting /24 right now
         DEFAULTS.put(NAME_SERVER, "127.0.0.1:5555");
         DEFAULTS.put(NAME_SERVER_HOST, "false");
     }
@@ -102,7 +102,18 @@ public class Configuration {
         if (!properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.LOCAL.toString()) && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.RPC.toString())
         && !properties.getProperty(GAME_MODE).equalsIgnoreCase(Modus.REST.toString())) return false;
         if (!properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("true") && !properties.getProperty(NAME_SERVER_HOST).equalsIgnoreCase("false")) return false;
-        return isValidIpAddress(properties.getProperty(NAME_SERVER));
+        if (!isValidIpAddress(properties.getProperty(NAME_SERVER))) return false;
+        return isValidNetwork(properties.getProperty(NETWORK_ADDRESS));
+    }
+
+    /**
+     * Checks for valid network address with prefix. Only works for /24 at the moment.
+     * @param networkAddress network address
+     * @return true, if valid, false otherwise
+     */
+    private boolean isValidNetwork(String networkAddress) {
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}/24";
+        return networkAddress.matches(regex);
     }
 
     /**
@@ -175,7 +186,7 @@ public class Configuration {
      * @return if string is a valid ip address
      */
     private boolean isValidIpAddress(String ipAddress){
-        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\:[1-9]\\d{3,4}";
+        String regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:[1-9]\\d{3,4}";
         return ipAddress.matches(regex);
     }
 

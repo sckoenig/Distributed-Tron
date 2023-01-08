@@ -6,9 +6,7 @@ import vsp.middleware.IRemoteObject;
 import vsp.middleware.namingservice.INamingService;
 import vsp.middleware.ServiceCall;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,20 +48,37 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
         executorService.execute(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 try {
-                    byte[] message = messageQueue.take();
-                    String json = new String(message, StandardCharsets.UTF_8).trim();
-                    ServiceCall call = gson.fromJson(json, ServiceCall.class);
 
-                    IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
-                    if (remoteObject != null) {
-                        remoteObject.call(call.serviceId(), call.intParameters(), call.stringParameters());
-                    }
+                    byte[] message = messageQueue.take();
+                    ServiceCall call = unmarshal(message);
+                    callOnRemoteObject(call);
 
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         });
+    }
+
+    /**
+     * Calls a Service on a {@link IRemoteObject}. If the object to call is unknown, the call is ignored.
+     * @param call Service call
+     */
+    private void callOnRemoteObject(ServiceCall call){
+        IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
+        if (remoteObject != null) {
+            remoteObject.call(call.serviceId(), call.intParameters(), call.stringParameters());
+        }
+    }
+
+    /**
+     * Unmarshalls a message to {@link ServiceCall}.
+     * @param message byte message
+     * @return service call
+     */
+    private ServiceCall unmarshal(byte[] message){
+        String json = new String(message, StandardCharsets.UTF_8).trim();
+        return gson.fromJson(json, ServiceCall.class);
     }
 
     @Override
@@ -79,7 +94,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void setPort(int port) {
         this.serverStubAddress = new InetSocketAddress(ip, port);
-        System.out.println("UNMARSHALLER " +serverStubAddress);
+        System.out.println("SERVERSTUB: " +serverStubAddress);
     }
 
     @Override

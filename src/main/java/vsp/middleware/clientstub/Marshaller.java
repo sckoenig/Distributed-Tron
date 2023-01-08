@@ -46,20 +46,35 @@ public class Marshaller implements IRemoteInvocation {
         executorService.execute(() -> {
             while (!Thread.currentThread().isInterrupted()){
                 try {
-
                     InvocationTask task = queue.take();
-                    byte[] message  =  gson.toJson(task.serviceCall()).getBytes(StandardCharsets.UTF_8);
+                    byte[] message = marshal(task.serviceCall());
 
-                    String result = namingService.lookupService(task.remoteId(), task.serviceCall().serviceId());
-                    String[] split = result.split(":");
-                    InetSocketAddress address = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
-
+                    InetSocketAddress address = lookUp(task);
                     sender.send(message, address, task.protocol());
-
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
             }
         });
+    }
+
+    /**
+     * Marshals the call to a service.
+     * @param call the service call
+     * @return service call as byte array
+     */
+    private byte[] marshal(ServiceCall call){
+        return gson.toJson(call).getBytes(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Looks up the address needed for a task.
+     * @param task the task
+     * @return the address
+     */
+    private InetSocketAddress lookUp(InvocationTask task){
+        String result = namingService.lookupService(task.remoteId(), task.serviceCall().serviceId());
+        String[] split = result.split(":");
+        return new InetSocketAddress(split[0], Integer.parseInt(split[1]));
     }
 }

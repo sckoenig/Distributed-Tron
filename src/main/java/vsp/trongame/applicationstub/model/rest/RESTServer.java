@@ -1,6 +1,7 @@
 package vsp.trongame.applicationstub.model.rest;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import vsp.trongame.applicationstub.model.rest.ressources.Game;
@@ -65,12 +66,12 @@ public class RESTServer {
      */
     private void createGameRoute() {
         this.server.createContext(ROUTE_PUT_GAME, exchange -> {
-            if (restStub.getCurrentState() == REST_REGISTRATION || restStub.getCurrentState() == BUILDING_GAME) {
-                if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
-                    String body = readRequestBody(exchange);
-                    Game game = gson.fromJson(body, Game.class);
-                    restStub.handleRessource(game);
-                }
+            if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && (restStub.getCurrentState() == REST_REGISTRATION)) {
+                String body = readRequestBody(exchange);
+                System.out.println("REST: received game ressource: " + body);
+
+                Game game = readRessource(body, Game.class);
+                restStub.handleRessource(game);
             }
         });
     }
@@ -82,15 +83,15 @@ public class RESTServer {
         server.createContext(ROUTE_PUT_REGISTRATION, exchange -> {
             int responseCode = STATUS_NOT_AVAILABLE;
 
-            if (restStub.getCurrentState() == REST_REGISTRATION) { //else game is full or active
+            if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && restStub.getCurrentState() == REST_REGISTRATION) { //else game is full or active
+                String body = readRequestBody(exchange);
+                System.out.println("REST: received registration ressource: " + body);
 
-                if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
-                    String body = readRequestBody(exchange);
-                    Registration registration = gson.fromJson(body, Registration.class);
-                    boolean success = restStub.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
-                    responseCode = success ? STATUS_OK : STATUS_DENIED;
-                }
+                Registration registration = readRessource(body, Registration.class);
+                boolean success = restStub.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
+                responseCode = success ? STATUS_OK : STATUS_DENIED;
             }
+
             exchange.sendResponseHeaders(responseCode, -1);
             restStub.startGameIfFull();
         });
@@ -101,25 +102,26 @@ public class RESTServer {
      */
     private void createSteeringRoute() {
         server.createContext(ROUTE_PUT_STEERING, exchange -> {
-            if (restStub.getCurrentState() == RUNNING) {
-                if (exchange.getRequestMethod().equals(SUPPORTED_METHOD)) {
-                    String body = readRequestBody(exchange);
-                    Steering steering = gson.fromJson(body, Steering.class);
-                    restStub.handleRessource(steering);
-                }
+            if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && restStub.getCurrentState() == RUNNING) {
+                String body = readRequestBody(exchange);
+                System.out.println("REST: received steering ressource: " + body);
+
+                Steering steering = readRessource(body, Steering.class);
+                restStub.handleRessource(steering);
             }
         });
     }
 
     /**
      * Reads the request body from the http request.
+     *
      * @param exchange the http request
      * @return the Body as a String
      * @throws IOException on I/O Error
      */
     private String readRequestBody(HttpExchange exchange) throws IOException {
         BufferedReader in = new BufferedReader(new InputStreamReader(exchange.getRequestBody()));
-        StringBuilder requestBody = new StringBuilder("");
+        StringBuilder requestBody = new StringBuilder();
         String inputLine;
         while ((inputLine = in.readLine()) != null) {
             requestBody.append(inputLine);
@@ -129,5 +131,23 @@ public class RESTServer {
 
     public int getPort() {
         return this.port;
+    }
+
+    /**
+     * Reads a Ressource from json String.
+     * @param json json string
+     * @param ressourceClass the ressource's class
+     * @return the ressource or null, if json and class don't match.
+     * @param <T> the ressource's class
+     */
+    private <T> T readRessource(String json, Class<T> ressourceClass) {
+        T ressource = null;
+        try {
+            ressource = gson.fromJson(json, ressourceClass);
+        } catch (JsonSyntaxException e) {
+            System.err.println("REST: message protocol violation: " + json);
+            // ignore message if it doesnt follow protocol
+        }
+        return ressource;
     }
 }

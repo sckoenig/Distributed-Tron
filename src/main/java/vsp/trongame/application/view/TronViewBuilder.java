@@ -29,6 +29,7 @@ public class TronViewBuilder {
 
         ITronView mainView = new TronView();
         stage.setScene(mainView.getScene());
+        stage.setTitle("TRON");
         UpdateListener listener = new UpdateListener();
         MenuOverlay menuOverlay;
         CountdownOverlay countdownOverlay = null;

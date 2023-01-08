@@ -215,7 +215,8 @@ Es wird die zur Verfügung gestellte view library verwendet. Die ITronView wird 
 ## 5.3 Ebene 3 : Application
 ![image info](./diagrams/baustein/bs_layer3_model.png)
 ![image info](./diagrams/baustein/bs_layer3_view.png)
-## 5.2 Ebene 3 : ApplicationStub
+### 5.4 Ebene 3 : ApplicationStub:
+### 5.4.1 Ebene 3 : ApplicationStub: Caller und Callee
 ![image info](./diagrams/baustein/bs_layer3_stub_model.png)
 Für *name* ∈ {IGameManager, IGame, IUpdateListener} gibt es im ApplicationStub eine Komponente der oben beschriebenen Form.
 Die Stubs verwenden darüber hinaus folgende Klassen:
@@ -224,9 +225,13 @@ Die Stubs verwenden darüber hinaus folgende Klassen:
 
 Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das lediglich dazu dient, die RemoteId zu setzen.
 
+### 5.4.2 Ebene 3 : ApplicationStub: REST
+![image info](./diagrams/baustein/bs_layer3_stub_rest.png)
+
+Für REST siehe Abschnitt 8.2.4.
 
 # 6. Laufzeitsicht
-## 6.1 Ebene 1: Use Cases auf MVC-Ebene
+## 6.1 Use Cases auf MVC-Ebene
 ![image info](./diagrams/laufzeit/UC2_startGame.png)
 ![image info](./diagrams/laufzeit/UC2.1_seeKeyMappings.png)
 ![image info](./diagrams/laufzeit/UC3_playGame.png)
@@ -234,8 +239,8 @@ Caller-Objekte können darüber hinaus das ICaller-Interface implementieren, das
 ![image info](./diagrams/laufzeit/UC4_seeResults.png)
 ![image info](./diagrams/laufzeit/UC5_changeScenes.png)
 
-## 6.2 Ebene 2: Model
-### 6.2.1 States
+## 6.2 Model
+### 6.2.1 States im Model
 Die in den States beschriebenen Aktivitäten sind in Abschnitt [Activities im Model](#6.2.3-Activities-im-Model) näher beschrieben.
 ![image info](./diagrams/laufzeit/States.png)
 
@@ -254,6 +259,12 @@ Die in den States beschriebenen Aktivitäten sind in Abschnitt [Activities im Mo
 ### 6.2.3.3 End 
 ![image info](./diagrams/laufzeit/activity_end.png)
 
+## 6.3 ApplicationStub : REST
+![image info](./diagrams/laufzeit/rest_states.png)
+![image info](./diagrams/laufzeit/rest_activity_1.png)
+![image info](./diagrams/laufzeit/rest_activity_2.png)
+![image info](./diagrams/laufzeit/rest_activity_3.png)
+
 # 7. Verteilungssicht
 Es sind beliebige Verteilungen möglich.
 
@@ -263,8 +274,8 @@ Es sind beliebige Verteilungen möglich.
 Die Application kann in drei verschiedenen Modi gestartet werden: `LOCAL`, `RPC`, `REST`. Dies geschieht über die tronConfig.properties Datei.
 
 Der Modus wird aus der Datei gelesen und ein entsprechendes Enum zum instanziieren von Objekten in Factories verwendet. 
-Im RPC-Modus kommen die im ApplicationStub unter [5.2](#5.2-Ebene-3-:-ApplicationStub) beschriebenen Caller- und Callee-Stubs zum Einsatz.
-Im REST-Modus wird der im ApplicationStub unter [5.2](#5.2-Ebene-3-:-ApplicationStub) beschriebene RESTStub sowie die in RPC verwendeten Stubs verwendet.
+Im RPC-Modus kommen die im ApplicationStub unter Abschnitt 5.4.1 beschriebenen Caller- und Callee-Stubs zum Einsatz.
+Im REST-Modus wird der im ApplicationStub unter Abschnitt 5.4.2 beschriebene RESTStub sowie die in RPC verwendeten Stubs verwendet.
 
 ### 8.1.2 Registration-ID
 Um zu ermöglichen, dass mehrere Views mit dem Model kommunizieren können, registriert sich die View als Listener beim Model
@@ -309,7 +320,7 @@ Für das Zusammenspiel mit anderen Teams wird eine Synchronisation des Spiels mi
 Dazu wurde unter allen teilnehmenden Teams ein REST-Protokoll erarbeitet, das von jeder Implementierung umgesetzt werden muss.
 Zentral in dem Protokoll ist, dass zunächst ein Coordinator bestimmt werden muss. Dies geschieht in Absprache mit den anderen
 Teams über einen Name Server, bei dem sich ein Coordinator als `tron.coordinator` anmeldet.
-Implementiert wird das Protokoll durch die rest-Komponente im Applicationstub, beschrieben in Abschnitt [5.2](#5.2-Ebene-3-:-ApplicationStub).
+Implementiert wird das Protokoll durch die rest-Komponente im Applicationstub, dargestellt in Abschnitt 5.4.2.
 
 Das REST-Protokoll ist zu finden unter: https://gitlab.com/jessyvere/rest-protocol
 
