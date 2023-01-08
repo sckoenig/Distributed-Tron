@@ -136,7 +136,7 @@ Aus den [Use Cases](#3.1-business-kontext) ergeben sich folgende benötigte Obje
 | UC  | Funktion             | Objekt |Vorbedingung | Nachbedingung |Ablaufsemantik|Fehlersemantik|
 |-----|----------------------|--|----------- |----------- |----------- |----------- |
 | UC-1 | `registerRemoteObject(serviceId: int, remoteObject : IRemoteObject) : void`                                               | IRegister | ServerStub wurde erstellt                  | Der ServerStub merkt sich das Remote Objekt mit der Service ID | Registeriert ein Remote Object beim ServerStub, damit es von diesem aufgerufen werden kann. | -  |
-|
+
 
 
 ### 4.2.6 INamingService, NameResolver, NameServer
