@@ -374,7 +374,7 @@ listen-Status.
 **Akteur**: Unmarshaller (ServerStub) \
 **Ziel**: Nachricht in Methodenaufruf umwandeln \
 **Auslöser**: Unmarshaller erhält eine Nachricht vom Receiver \
-**Vorbedingungen**: Der Receiver lauscht auf Nachrichten.
+**Vorbedingungen**: Der Receiver lauscht auf Nachrichten. \
 **Nachbedingungen**: UC-8 wird ausgeführt
 
 **Standardfall**:

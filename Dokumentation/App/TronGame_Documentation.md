@@ -359,12 +359,12 @@ siehe Abschnitt 1.2.
 
 **UC-1: Configure Game**
 
-Akteur: Spieler \
-Ziel: Spiel nach seinen Wünschen konfigurieren \
-Auslöser: Öffnen der Config-File \
-Nachbedingungen: Neue Konfigurationsdaten sind gespeichert und werden bei Applikationsstart verwendet.
+**Akteur**: Spieler \
+**Ziel**: Spiel nach seinen Wünschen konfigurieren \
+**Auslöser**: Öffnen der Config-File \
+**Nachbedingungen**: Neue Konfigurationsdaten sind gespeichert und werden bei Applikationsstart verwendet.
 
-Standardfall:
+**Standardfall**:
 
     1. Der Benutzer bearbeitet die Daten der Config-Datei:
         waitingTimer (Sekunden)
@@ -385,7 +385,7 @@ Standardfall:
     5. Das System überprüft die Daten der Konfigurationsdatei auf Fehler.
     6. Das System zeigt den Menu Screen an.
 
-Fehlerfälle:
+**Fehlerfälle**:
 
     6.a. Das System findet einen Fehler in der Konfigurationsdatei oder findet die Konfigurationsdatei nicht.
         6.a.1 Das System erstellt eine neue .properties-Datei mit default Werten.
@@ -394,12 +394,12 @@ Fehlerfälle:
 
 **UC-2: Start Game**
 
-Akteur: Spieler \
-Ziel: Tron-Spiel spielen. \
-Vorbedingungen: Das System befindet sich im Starting-Screen. \
-Nachbedingungen: Es wird ein Tron-Game begonnen und angezeigt.
+**Akteur**: Spieler \
+**Ziel**: Tron-Spiel spielen. \
+**Vorbedingungen**: Das System befindet sich im Starting-Screen. \
+**Nachbedingungen**: Es wird ein Tron-Game begonnen und angezeigt.
 
-Standardfall:
+**Standardfall**:
 
     1. Das System zeigt den Starting Screen mit der defaultPlayerNumber und einen "Spiel starten" Button an.
     2. Der Spieler betätigt den Button.
@@ -411,7 +411,7 @@ Standardfall:
     8. Das System wechselt in den Arena-Screen.
     9. Es beginnt US-3: Play Game
 
-Erweiterungsfälle:
+**Erweiterungsfälle**:
 
     7.a Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit >= 2 Spieler.
         7.a.1 weiter im Standardfall Punkt 7.
@@ -420,7 +420,7 @@ Erweiterungsfälle:
         2.a.2 Das System verwendet den eingegebenen Wert anstelle des Defaultwertes.
         2.a.3 Weiter im Standardfall Punkt 2.
 
-Fehlerfälle:
+**Fehlerfälle**:
 
     7.b Nach Ablauf des Waiting-Timers konnte die Spieleranzahl nicht erreicht werden mit <2 Spieler.
         7.b.1 Das System setzt die Spieldaten zurück.
@@ -430,12 +430,12 @@ Fehlerfälle:
 
 **UC-3: Play Game**
 
-Akteur: Spieler \
-Ziel: Gewinnen \
-Vorbedingungen: UC-2: Spiel Starten erfolgreich abgeschlossen. \
-Nachbedingungen: Das Spiel ist mit "Gewinner" oder "unentschieden" geendet.
+**Akteur**: Spieler \
+**Ziel**: Gewinnen \
+**Vorbedingungen**: UC-2: Spiel Starten erfolgreich abgeschlossen. \
+**Nachbedingungen**: Das Spiel ist mit "Gewinner" oder "unentschieden" geendet.
 
-Standardfall:
+**Standardfall**:
 
     1. Das System zeigt das Spielfeld in der konfigurierten Größe an.
     2. Das System zeigt einen Countdown(3-2-1) an, der 3 Sekunden lang ist.
@@ -457,12 +457,12 @@ Erweiterungsfälle:
 
 **UC-4: See Results**
 
-Akteur: Spieler \
-Ziel: Ergebnisse des letzten Spiels ansehen \
-Vorbedingungen: UC-3: Spiel Spielen erfolgreich abgeschlossen. \
-Nachbedingungen: Die Applikation ist in den Starting-Screen zurückgekehrt.\
+**Akteur**: Spieler \
+**Ziel**: Ergebnisse des letzten Spiels ansehen \
+**Vorbedingungen:** UC-3: Spiel Spielen erfolgreich abgeschlossen. \
+**Nachbedingungen:** Die Applikation ist in den Starting-Screen zurückgekehrt.\
 
-Standardfall:
+**Standardfall:**
 
     1. Das System startet den Ending-Timer.
     2. Das System zeigt den Ending-Screen an, in dem das Ergebnis des Spiels ("Gewinner ist ..." oder "Unentschieden!")
