@@ -5,10 +5,10 @@ import vsp.trongame.application.model.datatypes.Direction;
 
 /**
  * Light Cycle REST ressource. Represents a player participating in a game.
- * @param playerId the player's id
+ * @param id the player's id
  * @param position the player's position
  * @param direction the player's direction
  */
-public record LightCycle(int playerId, Coordinate position, Direction direction) {
+public record LightCycle(int id, Coordinate position, Direction direction) {
 
 }

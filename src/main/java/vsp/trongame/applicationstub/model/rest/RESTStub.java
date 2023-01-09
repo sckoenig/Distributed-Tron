@@ -101,11 +101,13 @@ public class RESTStub implements IGameManager, IGame, IArena {
      *
      * @param newState the new state
      */
-    private synchronized void transitionState(RESTStubState newState) {
+    private void transitionState(RESTStubState newState) {
+        registrationLock.lock();
         if (TRANSITIONS.get(currentState).contains(newState)) {
             this.currentState = newState;
+            registrationLock.unlock();
             executeState();
-        }
+        } else registrationLock.unlock();
     }
 
     /**
@@ -185,12 +187,10 @@ public class RESTStub implements IGameManager, IGame, IArena {
                 coordinator = gson.fromJson(jsonCoordinator, NameServerEntry.class);
                 int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
 
-                if (response == STATUS_NOT_AVAILABLE || response == -1) registerAsCoordinator();
-                if (response == STATUS_DENIED) {
-                    transitionState(RUNNING);
-                    registrationSuccess = true;
-                }
-                if (response == STATUS_OK) registrationSuccess = true;
+                if (response == STATUS_DENIED || response == STATUS_OK) registrationSuccess = true;
+                else registerAsCoordinator();
+
+                if (response == STATUS_DENIED) transitionState(RUNNING); // give up registration and start local game
             }
 
         } catch (IOException e) {
@@ -226,20 +226,21 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * @param game the game from Coordinator
      */
     public void handleRessource(Game game) {
-        restPlayerCount = 0;
-        List<LightCycle> allLightCycles = new ArrayList<>();
-        for (SuperNode superNode : game.superNodes()) {
-            restPlayerCount += superNode.lightCycles().size();
-            RESTRegistration registration = new RESTRegistration(superNode.address(), superNode.lightCycles().size(), superNode.lightCycles().get(0).playerId());
-            restRegistrations.put(superNode.address(), registration);
-            allLightCycles.addAll(superNode.lightCycles());
+        if (currentState == REST_REGISTRATION || currentState == BUILDING_GAME) {
+            restPlayerCount = 0;
+            List<LightCycle> allLightCycles = new ArrayList<>();
+            for (SuperNode superNode : game.superNodes()) {
+                restPlayerCount += superNode.lightCycles().size();
+                RESTRegistration registration = new RESTRegistration(superNode.address(), superNode.lightCycles().size(), superNode.lightCycles().get(0).id());
+                restRegistrations.put(superNode.address(), registration);
+                allLightCycles.addAll(superNode.lightCycles());
+            }
+            for (LightCycle lightCycle : allLightCycles) {
+                this.coordinates.add(lightCycle.position());
+                this.coordinateDirectionMapping.put(lightCycle.position(), lightCycle.direction());
+            }
+            transitionState(RUNNING);
         }
-        for (LightCycle lightCycle : allLightCycles) {
-            this.coordinates.add(lightCycle.position());
-            this.coordinateDirectionMapping.put(lightCycle.position(), lightCycle.direction());
-        }
-
-        transitionState(RUNNING);
     }
 
     /**
@@ -249,7 +250,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      */
     public void handleRessource(Steering steering) {
         DirectionChange directionChange = steering.turn().equals("RIGHT") ? DirectionChange.RIGHT_STEER : DirectionChange.LEFT_STEER;
-        localGame.handleSteer(new Steer(steering.playerId(), directionChange));
+        localGame.handleSteer(new Steer(steering.id(), directionChange));
     }
 
     /**
@@ -264,9 +265,9 @@ public class RESTStub implements IGameManager, IGame, IArena {
         registrationLock.lock();
         boolean registrationAllowed = false;
 
-        if (isRegistrationAllowed(registration.playerCount())) {
+        if (currentState == REST_REGISTRATION && isRegistrationAllowed(registration.playerCount())) {
             if (restRegistrations.isEmpty()) {
-                startTimer(timer / 2);
+                //startTimer(timer / 2);
             }
             String restAddress = "http://" + address + ":" + registration.port();
             restRegistrations.put(restAddress, new RESTRegistration(restAddress, registration.playerCount(), 0));
@@ -283,23 +284,26 @@ public class RESTStub implements IGameManager, IGame, IArena {
      */
     private void buildGame() {
         List<Coordinate> gameCoordiantes = localArena.calculateFairStartingCoordinates(restPlayerCount);
-        List<SuperNode> superNodes = new ArrayList<>();
+        Collection<RESTRegistration> allRestRegistrations = restRegistrations.values();
+        SuperNode[] superNodes = new SuperNode[allRestRegistrations.size()];
+
         int playerId = 0;
-        for (Map.Entry<String, RESTRegistration> restR : restRegistrations.entrySet()) {
+        int index = 0;
+        for (RESTRegistration registration : allRestRegistrations) {
             List<LightCycle> lightCycles = new ArrayList<>();
-            for (int i = 0; i < restR.getValue().playerCount(); i++) {
+            for (int i = 0; i < registration.playerCount(); i++) {
                 LightCycle lightCycle = new LightCycle(playerId, gameCoordiantes.get(playerId), calculateStartingDirection(gameCoordiantes.get(playerId)));
                 lightCycles.add(lightCycle);
                 playerId++;
             }
-            SuperNode superNode = new SuperNode(restR.getValue().address(), lightCycles);
-            superNodes.add(superNode);
+            SuperNode superNode = new SuperNode(registration.address(), lightCycles);
+            superNodes[index] = superNode;
+            index++;
         }
         Game game = new Game(superNodes);
-        String gameJson = gson.toJson(game, Game.class);
+        String gameJson = gson.toJson(game.superNodes(), SuperNode[].class);
         handleRessource(game);
         sendRessource(gameJson, ROUTE_PUT_GAME);
-
     }
 
     /**

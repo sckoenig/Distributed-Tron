@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpServer;
 import vsp.trongame.applicationstub.model.rest.ressources.Game;
 import vsp.trongame.applicationstub.model.rest.ressources.Registration;
 import vsp.trongame.applicationstub.model.rest.ressources.Steering;
+import vsp.trongame.applicationstub.model.rest.ressources.SuperNode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,7 +71,7 @@ public class RESTServer {
                 String body = readRequestBody(exchange);
                 System.out.println("REST: received game ressource: " + body);
 
-                Game game = readRessource(body, Game.class);
+                Game game = new Game(readRessource(body, SuperNode[].class));
                 restStub.handleRessource(game);
             }
         });
