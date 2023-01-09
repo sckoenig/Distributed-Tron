@@ -105,6 +105,7 @@ public class TronGame extends Application {
         return "";
     }
 
+
     private void createApplicationStub(Modus modus, Configuration config, IUpdateListener listener, IGameManager gameManager){
         new GameCallee(modus, config, modelExecutor);
         new UpdateListenerCallee(listener);
@@ -118,8 +119,10 @@ public class TronGame extends Application {
     public void stop() throws Exception {
         super.stop();
         modelExecutor.shutdownNow(); //shutdown any model threads
-        if (gameModus != LOCAL) Middleware.getInstance().stop(); //shutdown any middleware threads
-        if (gameModus == REST) RESTStub.getInstance().stop();
+        if (gameModus != LOCAL) {
+            Middleware.getInstance().stop(); //shutdown any middleware threads
+            RESTStub.getInstance().stop();
+        }
     }
 
 }

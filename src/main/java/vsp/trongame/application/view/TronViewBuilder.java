@@ -52,7 +52,10 @@ public class TronViewBuilder {
                     menuOverlay = loader.getController();
                     menuOverlay.initialize(mainController, defaultPlayerCount, listener);
                 }
-                case CountdownOverlay.IDENTIFIER -> countdownOverlay = loader.getController();
+                case CountdownOverlay.IDENTIFIER -> {
+                    countdownOverlay = loader.getController();
+                    countdownOverlay.reset();
+                }
                 case EndingOverlay.IDENTIFIER -> endingOverlay = loader.getController();
                 default -> {
                 }
