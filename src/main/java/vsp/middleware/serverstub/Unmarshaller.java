@@ -66,6 +66,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
      */
     private void callOnRemoteObject(ServiceCall call){
         IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
+        System.out.println("UNMARSHALLER: "+ call.serviceId());
         if (remoteObject != null) {
             remoteObject.call(call.serviceId(), call.intParameters(), call.stringParameters());
         }

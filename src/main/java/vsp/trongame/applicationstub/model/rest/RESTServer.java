@@ -13,7 +13,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.net.http.HttpResponse;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.function.Function;
 
 import static vsp.trongame.applicationstub.model.rest.RESTProtocol.*;
 import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
@@ -23,6 +26,9 @@ import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
  */
 public class RESTServer {
 
+    private static final int OK = 200;
+    private static final int METHOD_NOT_ALLOWED = 405;
+    private static final int NO_BODY = -1;
     private final ExecutorService executorService;
     private final RESTStub restStub;
     private final Gson gson;
@@ -67,15 +73,21 @@ public class RESTServer {
      */
     private void createGameRoute() {
         this.server.createContext(ROUTE_PUT_GAME, exchange -> {
+            int response = METHOD_NOT_ALLOWED;
+
             if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && (restStub.getCurrentState() == REST_REGISTRATION)) {
                 String body = readRequestBody(exchange);
-                System.out.println("REST: received game ressource: " + body);
+                System.out.printf("REST: received game ressource from %s: %s%n", exchange.getRemoteAddress(), body);
 
                 Game game = new Game(readRessource(body, SuperNode[].class));
                 restStub.handleRessource(game);
+                response = OK;
             }
+            exchange.sendResponseHeaders(response, NO_BODY);
+
         });
     }
+
 
     /**
      * Route for {@link Registration} ressource.
@@ -86,14 +98,14 @@ public class RESTServer {
 
             if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && restStub.getCurrentState() == REST_REGISTRATION) { //else game is full or active
                 String body = readRequestBody(exchange);
-                System.out.println("REST: received registration ressource: " + body);
+                System.out.printf("REST: received registration ressource from %s: %s%n", exchange.getRemoteAddress(), body);
 
                 Registration registration = readRessource(body, Registration.class);
                 boolean success = restStub.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
                 responseCode = success ? STATUS_OK : STATUS_DENIED;
             }
 
-            exchange.sendResponseHeaders(responseCode, -1);
+            exchange.sendResponseHeaders(responseCode, NO_BODY);
             restStub.startGameIfFull();
         });
     }
@@ -105,7 +117,7 @@ public class RESTServer {
         server.createContext(ROUTE_PUT_STEERING, exchange -> {
             if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && restStub.getCurrentState() == RUNNING) {
                 String body = readRequestBody(exchange);
-                System.out.println("REST: received steering ressource: " + body);
+                System.out.printf("REST: received steering ressource from %s: %s%n", exchange.getRemoteAddress(), body);
 
                 Steering steering = readRessource(body, Steering.class);
                 restStub.handleRessource(steering);

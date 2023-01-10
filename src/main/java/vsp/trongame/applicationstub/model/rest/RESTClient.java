@@ -66,7 +66,7 @@ public class RESTClient {
             statusCode = response.statusCode();
 
         } catch (HttpTimeoutException | URISyntaxException e){
-            // Coordinator no longer available
+            System.err.println(e.getMessage());
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
         }

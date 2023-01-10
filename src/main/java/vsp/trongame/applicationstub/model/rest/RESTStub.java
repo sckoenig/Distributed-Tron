@@ -103,9 +103,11 @@ public class RESTStub implements IGameManager, IGame, IArena {
      */
     private void transitionState(RESTStubState newState) {
         registrationLock.lock();
+        System.out.println("state transition has lock");
         if (TRANSITIONS.get(currentState).contains(newState)) {
             this.currentState = newState;
             registrationLock.unlock();
+            System.out.println("state transition has unlocked");
             executeState();
         } else registrationLock.unlock();
     }
@@ -114,6 +116,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * Executes the current state.
      */
     private void executeState() {
+        System.out.println("EXECUTING ... " + currentState);
         switch (currentState) {
             case INIT -> reset();
             case RPC_REGISTRATION -> startTimer(timer / 2);
@@ -171,7 +174,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * possible, the game is started on RPC Registrations only.
      */
     private void registerAtCoordinator() {
-        Registration registration = new Registration(restServer.getPort(), rpcRegistrations.size());
+        Registration registration = new Registration(rpcRegistrations.size(), this.localAddress);
         String registrationJson = gson.toJson(registration, Registration.class);
         boolean registrationSuccess = false;
         NameServerEntry coordinator;
@@ -181,11 +184,14 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
                 String jsonCoordinator = lookUpCoordinator();
                 if (jsonCoordinator.equals("null") || jsonCoordinator.isEmpty()) {
+                    System.out.println("no coordiantor or timeout nameserver");
                     registerAsCoordinator();
-                    break;
+                    continue;
                 }
                 coordinator = gson.fromJson(jsonCoordinator, NameServerEntry.class);
+                System.out.println(coordinator);;
                 int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
+                System.out.println("Coordinator response: " + response);
 
                 if (response == STATUS_DENIED || response == STATUS_OK) registrationSuccess = true;
                 else registerAsCoordinator();
@@ -194,6 +200,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
             }
 
         } catch (IOException e) {
+            e.printStackTrace();
             //on name server problems we start game in rpc middleware only if possible.
             transitionState(RUNNING);
         }
@@ -215,6 +222,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * @throws IOException on name server error
      */
     private void registerAsCoordinator() throws IOException {
+        System.out.println("Registering as Coordinator...");
         NameServerEntry coordinator = new NameServerEntry(COORDINATOR_NAME, localAddress);
         String newCoordinator = gson.toJson(coordinator, NameServerEntry.class);
         restClient.putRESTRessource(REST_NAMESERVER_ADDRESS, PUT_NAMESERVER_ROUTE, newCoordinator);
@@ -261,21 +269,27 @@ public class RESTStub implements IGameManager, IGame, IArena {
      */
     public boolean handleRessource(Registration registration, String address) {
         if (registration == null) return false;
+        System.out.println("registration from : " + address);
 
         registrationLock.lock();
+        System.out.println("rest registration has lock");
         boolean registrationAllowed = false;
 
         if (currentState == REST_REGISTRATION && isRegistrationAllowed(registration.playerCount())) {
             if (restRegistrations.isEmpty()) {
                 //startTimer(timer / 2);
             }
-            String restAddress = "http://" + address + ":" + registration.port();
+            String restAddress = registration.uri();
             restRegistrations.put(restAddress, new RESTRegistration(restAddress, registration.playerCount(), 0));
             restPlayerCount += registration.playerCount();
             registrationAllowed = true;
+            System.out.println("registration from " + registration.uri() + " accepted");
+        } else {
+            System.err.printf("registration from %s denied. With playercount: %s, already registered %s, max playerCount %s. STATE: %s %n", address, registration.playerCount(), restPlayerCount, playerCount, currentState);
 
         }
         registrationLock.unlock();
+        System.out.println("rest registration has unlocked");
         return registrationAllowed;
     }
 
@@ -283,6 +297,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
      * Builds the {@link Game} ressource as defined in {@link RESTProtocol}.
      */
     private void buildGame() {
+        System.out.println("Building game...");
         List<Coordinate> gameCoordiantes = localArena.calculateFairStartingCoordinates(restPlayerCount);
         Collection<RESTRegistration> allRestRegistrations = restRegistrations.values();
         SuperNode[] superNodes = new SuperNode[allRestRegistrations.size()];
@@ -302,8 +317,8 @@ public class RESTStub implements IGameManager, IGame, IArena {
         }
         Game game = new Game(superNodes);
         String gameJson = gson.toJson(game.superNodes(), SuperNode[].class);
-        handleRessource(game);
         sendRessource(gameJson, ROUTE_PUT_GAME);
+        handleRessource(game);
     }
 
     /**
@@ -313,9 +328,11 @@ public class RESTStub implements IGameManager, IGame, IArena {
      */
     private void sendRessource(String ressource, String route) {
         executorService.execute(() -> {
-            for (String address : restRegistrations.keySet())
+            System.out.println("SEND... " + restRegistrations);
+           for (String address : restRegistrations.keySet())
                 if (!address.equals(localAddress))
                     try {
+                        System.out.println("send to address: " + address);
                         restClient.putRESTRessource(address, route, ressource);
                     } catch (IOException e) {
                         // continue with next supernode
@@ -331,9 +348,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
         if (restRegistrations.isEmpty() && rpcRegistrations.size() > 1) {
             this.localGame.prepareForRegistration(rpcRegistrations.size());
             registerRPCRegistrationsAtLocalGame();
-        }
-
-        if (!restRegistrations.isEmpty() && restPlayerCount > 1) {
+        } else if (!restRegistrations.isEmpty() && restPlayerCount > 1) {
             this.localGame.prepareForRegistration(restPlayerCount);
             List<Map.Entry<String, RESTRegistration>> temp = new ArrayList<>(restRegistrations.entrySet());
             temp.sort(Map.Entry.comparingByValue()); //sorting in order to correctly assign playerIds
@@ -346,7 +361,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
                     localGame.register(getInstance(), null, 0, restReg.playerCount());
                 }
             }
-        }
+        } else transitionState(INIT);
     }
 
     private void registerRPCRegistrationsAtLocalGame(){
@@ -436,6 +451,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
     @Override
     public void register(IGameManager gameManager, IUpdateListener listener, int listenerId, int managedPlayerCount) {
         registrationLock.lock();
+        System.out.println("rpc registration has lock");
 
         if (currentState == RPC_REGISTRATION && isRegistrationAllowed(managedPlayerCount)) {
             rpcRegistrations.add(new RPCRegistration(gameManager, listener, listenerId, managedPlayerCount));
@@ -445,6 +461,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
             gameManager.handleGameState(GameState.INIT);
         }
         registrationLock.unlock();
+        System.out.println("rpc registration has unlocked");
     }
 
     @Override
