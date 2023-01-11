@@ -19,7 +19,7 @@ import static java.lang.Thread.sleep;
 public class NameResolver implements INamingService {
 
     private static final int CACHE_CLEARANCE_INTERVAL = 15000;
-    private static final int TIMEOUT = 3000;
+    private static final int TIMEOUT = 1000;
     private final Map<Integer, Map<String, String>> cache;
     private final InetSocketAddress serverAddress;
     private final Gson gson;
@@ -86,7 +86,7 @@ public class NameResolver implements INamingService {
                 //save in cache
                 cache.computeIfAbsent(serviceId, v -> new HashMap<>()).put(remoteId, responseMessage.address());
 
-                return responseMessage.address();
+                response = responseMessage.address();
             }
 
         } catch (IOException e) {

@@ -18,6 +18,7 @@
 
 
     <dependencies>
+
         <dependency>
             <groupId>edu.cads.bai5.vsp.tron</groupId>
             <artifactId>view-library</artifactId>
@@ -71,6 +72,28 @@
 
     <build>
         <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.4.1</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <transformers>
+                                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                            <mainClass>vsp.trongame.Launcher</mainClass>
+                                        </transformer>
+                                    </transformers>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -89,7 +112,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>vsp.trongame/vsp.trongame.TronGame</mainClass>
+                            <mainClass>vsp.trongame/vsp.trongame.Launcher</mainClass>
                         </configuration>
                     </execution>
                 </executions>
