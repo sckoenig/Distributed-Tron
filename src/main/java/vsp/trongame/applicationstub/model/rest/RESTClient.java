@@ -39,7 +39,7 @@ public class RESTClient {
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
         } catch (URISyntaxException e) {
-        //
+            //
         }
         return responseBody;
     }

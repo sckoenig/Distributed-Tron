@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static java.lang.Thread.sleep;
 
@@ -16,18 +17,21 @@ import static java.lang.Thread.sleep;
  * Represents a local name resolver for registration and lookup purposes.
  */
 public class NameResolver implements INamingService {
+
     private static final int CACHE_CLEARANCE_INTERVAL = 15000;
     private static final int TIMEOUT = 3000;
     private final Map<Integer, Map<String, String>> cache;
     private final InetSocketAddress serverAddress;
     private final Gson gson;
     private final ExecutorService executorService;
+    private final ReentrantLock cacheLock;
 
     public NameResolver(ExecutorService executorService, InetSocketAddress address) {
         this.serverAddress = address;
         this.executorService = executorService;
         this.cache = new HashMap<>();
         this.gson = new Gson();
+        this.cacheLock = new ReentrantLock();
 
         startClearCache();
     }
@@ -101,7 +105,9 @@ public class NameResolver implements INamingService {
                 try {
                     // noinspection BusyWait: cache clearance interval
                     sleep(CACHE_CLEARANCE_INTERVAL);
+                    cacheLock.lock();
                     cache.clear();
+                    cacheLock.unlock();
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -116,7 +122,9 @@ public class NameResolver implements INamingService {
      * @return the service prodiver's address, if known, null otherwise.
      */
     private String lookUpCache(String remoteId, int serviceId){
+        cacheLock.lock();
         Map<String, String> serviceProvider = cache.get(serviceId);
+        cacheLock.unlock();
 
         if (serviceProvider != null) return serviceProvider.get(remoteId);
         else return null;

@@ -89,7 +89,6 @@ public class NameServer implements INamingService {
      * @throws IOException on socket error
      */
     private void processMessage(NamingServiceMessage message, Socket clientSocket) throws IOException {
-
         if (message.messageType() == NamingServiceMessage.LOOKUP) {
             String requestedService = lookupService(message.remoteId(), message.serviceId());
             NamingServiceMessage response = new NamingServiceMessage(NamingServiceMessage.RESPONSE,

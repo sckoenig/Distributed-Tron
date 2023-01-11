@@ -13,10 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.net.http.HttpResponse;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.function.Function;
 
 import static vsp.trongame.applicationstub.model.rest.RESTProtocol.*;
 import static vsp.trongame.applicationstub.model.rest.RESTStubState.*;
@@ -55,7 +52,6 @@ public class RESTServer {
 
             server.setExecutor(executorService);
             server.start();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,10 +80,8 @@ public class RESTServer {
                 response = OK;
             }
             exchange.sendResponseHeaders(response, NO_BODY);
-
         });
     }
-
 
     /**
      * Route for {@link Registration} ressource.
@@ -104,7 +98,6 @@ public class RESTServer {
                 boolean success = restStub.handleRessource(registration, exchange.getRemoteAddress().getAddress().getHostAddress());
                 responseCode = success ? STATUS_OK : STATUS_DENIED;
             }
-
             exchange.sendResponseHeaders(responseCode, NO_BODY);
             restStub.startGameIfFull();
         });
@@ -115,13 +108,17 @@ public class RESTServer {
      */
     private void createSteeringRoute() {
         server.createContext(ROUTE_PUT_STEERING, exchange -> {
+            int response = METHOD_NOT_ALLOWED;
+
             if (exchange.getRequestMethod().equals(SUPPORTED_METHOD) && restStub.getCurrentState() == RUNNING) {
                 String body = readRequestBody(exchange);
                 System.out.printf("REST: received steering ressource from %s: %s%n", exchange.getRemoteAddress(), body);
 
                 Steering steering = readRessource(body, Steering.class);
                 restStub.handleRessource(steering);
+                response = OK;
             }
+            exchange.sendResponseHeaders(response, NO_BODY);
         });
     }
 
@@ -142,10 +139,6 @@ public class RESTServer {
         return new String(requestBody);
     }
 
-    public int getPort() {
-        return this.port;
-    }
-
     /**
      * Reads a Ressource from json String.
      * @param json json string
@@ -162,5 +155,13 @@ public class RESTServer {
             // ignore message if it doesnt follow protocol
         }
         return ressource;
+    }
+
+    /**
+     * Gets the http server's port for address and registration purposes.
+     * @return port the http server is bound to
+     */
+    public int getPort() {
+        return this.port;
     }
 }

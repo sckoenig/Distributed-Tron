@@ -26,6 +26,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     private final INamingService namingService;
     private final Receiver receiver;
     private InetSocketAddress serverStubAddress;
+    private String remoteId;
     private final String ip;
 
     public Unmarshaller(ExecutorService executorService, String ip, INamingService namingService){
@@ -66,7 +67,6 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
      */
     private void callOnRemoteObject(ServiceCall call){
         IRemoteObject remoteObject = remoteObjectRegister.get(call.serviceId());
-        System.out.println("UNMARSHALLER: "+ call.serviceId());
         if (remoteObject != null) {
             remoteObject.call(call.serviceId(), call.intParameters(), call.stringParameters());
         }
@@ -85,6 +85,7 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void stop() {
         receiver.stop();
+        namingService.unregisterService(remoteId);
     }
 
     @Override
@@ -95,11 +96,12 @@ public class Unmarshaller implements IUnmarshaller, IRegister {
     @Override
     public void setPort(int port) {
         this.serverStubAddress = new InetSocketAddress(ip, port);
-        System.out.println("SERVERSTUB: " +serverStubAddress);
+        System.out.println("SERVERSTUB: " + serverStubAddress);
     }
 
     @Override
     public void registerRemoteObject(int serviceID, String remoteId, IRemoteObject remoteObject) {
+        this.remoteId = remoteId;
         remoteObjectRegister.put(serviceID, remoteObject);
         namingService.registerService(remoteId, serviceID, serverStubAddress.getAddress().getHostAddress()+":"+ serverStubAddress.getPort());
     }

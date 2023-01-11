@@ -50,7 +50,7 @@ public class Marshaller implements IRemoteInvocation {
                     byte[] message = marshal(task.serviceCall());
 
                     InetSocketAddress address = lookUp(task);
-                    sender.send(message, address, task.protocol());
+                    if (address != null) sender.send(message, address, task.protocol());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -74,7 +74,14 @@ public class Marshaller implements IRemoteInvocation {
      */
     private InetSocketAddress lookUp(InvocationTask task){
         String result = namingService.lookupService(task.remoteId(), task.serviceCall().serviceId());
-        String[] split = result.split(":");
-        return new InetSocketAddress(split[0], Integer.parseInt(split[1]));
+        InetSocketAddress address = null;
+
+        if (result != null){
+            String[] split = result.split(":");
+            address = new InetSocketAddress(split[0], Integer.parseInt(split[1]));
+
+        } else System.err.printf("Marshaller: Service could not be found: %s from %s%n", task.serviceCall().serviceId(), task.remoteId());
+
+        return address;
     }
 }
