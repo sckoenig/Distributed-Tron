@@ -1,4 +1,4 @@
-[[_TOC_]]
+# Dokumentation VSP WiSe22/23, Gruppe Alpha-1
 
 # 1. Einführung und Ziele
 
@@ -10,9 +10,9 @@ Das Spiel soll lokal an einem Computer oder verteilt auf mehrere Computer gespie
 Allgemeine Spielprinzipien:
 
 - Das Spiel wird mit mehreren Spielern gespielt, die jeweils ein Motorrad in einer Arena (das Spielfeld) steuern.
-- Die Motorräder bewegen sich stetig vorwärts, in einer konstanten Geschwindigkeit.
-- Der Spieler kann das Motorrad nach links oder rechts steuern und sich so über das Spielfeld nach oben, unten, links, rechts bewegen.
-- Die Motorräder ziehen farbige “Schatten” hinter sich auf, die für die Lebenszeit des Spielers auf dem Spielfeld bleiben und durch die Vorwärtsbewegung der Motorräder länger werden.
+- Spieler bewegen sich stetig vorwärts, in einer konstanten Geschwindigkeit.
+- Spieler können nach links oder rechts steuern und sich so über das Spielfeld nach oben, unten, links, rechts bewegen.
+- Spieler ziehen farbige “Schatten” hinter sich auf, die für ihre Lebenszeit auf dem Spielfeld bleiben und durch die Vorwärtsbewegung länger werden.
 - Ein Spieler stirbt, wenn er gegen die Wand der Arena oder den Schatten eines anderen Spielers fährt. Treffen zwei Spieler aufeinander, sterben beide.
 - Wenn ein Spieler stirbt, verschwindet sein Schatten aus der Arena und er kann nicht weiterspielen.
 - Alle Spieler spielen gegeneinander. Gewonnen hat der, der am längsten überlebt. Sterben die letzten beiden Spieler gleichzeitig, ist es unentschieden.
@@ -25,7 +25,7 @@ Weitere Anforderungen:
 
 | Ziel                          | Beschreibung                                                                                            |
 |-------------------------------|---------------------------------------------------------------------------------------------------------|
-| Wohldefinierte Schnittstellen | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern :)                                        |
+| Wohldefinierte Schnittstellen | Die Entwickler sollen sich gut um ihre Schnittstellen kümmern.                                          |
 | Kompatibilität                | Mindestens 2 Teams müssen miteinander spielen können.                                                   |
 | Fehlertoleranz                | Ein Spiel soll ungestört durchspielbar sein. Auch wenn ein Teilnehmer abstürzt, läuft das Spiel weiter. |
 | Fairness                      | Das Spiel soll fair sein. Alle Spieler starten mit fairen Konditionen und folgen den gleichen Regeln.   |
@@ -38,7 +38,6 @@ Weitere Anforderungen:
 | Dozent / Kunde | Martin Becke: martin.becke@haw-hamburg.de | Saubere Architektur mit Pattern und wohldefinierten Schnittstellen, Lernfortschritt der Entwickler   |
 | Entwickler | Sandra: sandra.koenig@haw-hamburg.de <br/> Inken: inken.dulige@haw-hamburg.de<br/> Majid: majid.moussaadoyi@haw-hamburg.de| Spaß an der Entwicklung, Architekturentwurf üben, Verteilte Systeme besser verstehen, Zeitmanagement |
 | Spieler   | Teilnehmer des Moduls VS WiSe22/23 | Stabile Anwendung, Spaß am Spielen                                                                   |
-
 
 # 2. Randbedingungen
 
@@ -267,8 +266,10 @@ Die in den States beschriebenen Aktivitäten sind in Abschnitt [Activities im Mo
 ![image info](./diagrams/laufzeit/rest_activity_2.png)
 ![image info](./diagrams/laufzeit/rest_activity_3.png)
 
+
 # 7. Verteilungssicht
 Es sind beliebige Verteilungen möglich.
+
 
 # 8. Querschnittliche Konzepte
 ## 8.1 Application

@@ -10,7 +10,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 import static java.lang.Thread.*;
-import static vsp.trongame.Modus.LOCAL;
 
 /**
  * Implements the game logic.
