@@ -3,7 +3,6 @@ package vsp.trongame.applicationstub.view;
 import edu.cads.bai5.vsp.tron.view.Coordinate;
 import vsp.trongame.application.model.IUpdateListener;
 import vsp.trongame.application.model.datatypes.*;
-import vsp.trongame.application.model.datatypes.GameState;
 import vsp.trongame.applicationstub.util.RemoteId;
 import vsp.trongame.applicationstub.util.Service;
 import vsp.middleware.IRegister;

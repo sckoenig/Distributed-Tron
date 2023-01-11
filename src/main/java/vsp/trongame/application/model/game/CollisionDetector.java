@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implements the Interface ICollisonDetector.
+ * Implements the Interface ICollisionDetector.
  */
 public class CollisionDetector implements ICollisionDetector {
 

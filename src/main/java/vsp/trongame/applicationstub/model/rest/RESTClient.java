@@ -1,6 +1,7 @@
 package vsp.trongame.applicationstub.model.rest;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
@@ -65,8 +66,8 @@ public class RESTClient {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             statusCode = response.statusCode();
 
-        } catch (HttpTimeoutException | URISyntaxException e){
-            System.err.println(e.getMessage());
+        } catch (HttpTimeoutException | ConnectException | URISyntaxException e){
+            System.err.println("Connecting to Address not possible.");
         } catch (InterruptedException e){
             Thread.currentThread().interrupt();
         }

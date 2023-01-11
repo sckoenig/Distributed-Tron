@@ -5,7 +5,6 @@ import javafx.stage.Stage;
 import vsp.trongame.application.controller.ITronController;
 import vsp.trongame.application.controller.ITronControllerFactory;
 import vsp.trongame.application.model.IUpdateListener;
-import vsp.trongame.application.model.gamemanagement.Configuration;
 import vsp.trongame.application.model.ITronModel;
 import vsp.trongame.application.model.ITronModelFactory;
 import vsp.trongame.application.model.gamemanagement.*;

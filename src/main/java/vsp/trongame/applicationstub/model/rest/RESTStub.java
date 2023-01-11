@@ -187,9 +187,8 @@ public class RESTStub implements IGameManager, IGame, IArena {
                 }
 
                 coordinator = gson.fromJson(jsonCoordinator, NameServerEntry.class);
-                int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
-
                 System.out.println("Coordiantor found: " + coordinator);
+                int response = restClient.putRESTRessource(coordinator.address(), ROUTE_PUT_REGISTRATION, registrationJson);
                 System.out.println("Coordinator response: " + response);
 
                 if (response == STATUS_DENIED || response == STATUS_OK) registrationSuccess = true;
@@ -271,7 +270,7 @@ public class RESTStub implements IGameManager, IGame, IArena {
 
         if (currentState == REST_REGISTRATION && isRegistrationAllowed(registration.playerCount())) {
             if (restRegistrations.isEmpty()) {
-                //startTimer(timer / 2);
+                startTimer(timer / 2);
             }
             String restAddress = registration.uri();
             restRegistrations.put(restAddress, new RESTRegistration(restAddress, registration.playerCount(), 0));
