@@ -4,7 +4,7 @@
 This repository contains the code for Distributed Tron - a game developed as a team project
 in the Distributed Systems Course at HAW Hamburg.
 
-## How To Use
+### How To Use
 
 You will need:
 - Java 17
@@ -33,7 +33,7 @@ The game can be played in three modes:
 
 - ```REST```: The players can play distributed in the same network, with other team's implementations via Rest protocol.
 
-For more info, take a look at the detailed information here: 
+For more info, take a look at the detailed documentation here: 
 
 [Game](Dokumentation/App/TronGame_Documentation.md)  
 [Middleware](Dokumentation/Middleware/Middleware_Documentation.md)
